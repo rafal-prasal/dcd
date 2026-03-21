@@ -1,0 +1,160 @@
+#!/bin/sh
+# $Id: dcd.adduser.in,v 1.13 2006/09/11 23:56:33 rav Exp $
+
+CONFIGDIR="@CONFIGDIR@"
+
+dcd_conf="$CONFIGDIR/dcd.conf"
+
+ERROR=/dev/stderr
+
+READ_VAR()
+{
+	tmp=`grep -v ^# "$dcd_conf"|grep -E $1"['[:blank:]''=']+"|cut -f2- -d '='`
+	if [ -n "$tmp" ]; then 
+		echo $tmp; 
+		exit 0
+	fi
+
+	echo Variable \"$1\" not found in \"$dcd_conf\" > $ERROR
+	echo Assuming default value 'dcd.users'> $ERROR
+	echo "dcd.users"
+	exit 0;
+}
+
+
+LOWER="abcdefghijklmnopqrstuvwxyz"
+UPPER="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+
+_dcd_users=`READ_VAR conf_cusers`;
+dcd_users="$CONFIGDIR/$_dcd_users"
+
+dcd_usersnew="$dcd_users.`date`"
+
+echo Script adds user to $dcd_users file
+echo use [:print:] and not [:space:],'$',':','|',,'<','>'
+echo the first character of nick cannot be '#'
+echo -n Nickname: 
+read _nick;
+
+nick=`echo -n "$_nick"|grep --regexp="[[:print:]]"|grep -v --regexp="[[:space:]$:|<>]"|grep -v --regexp="^#"`
+
+[ -z "$nick" ] && echo "Nick has invalid characters" && exit
+
+echo use [:print:] and not '$',':','|','<','>'
+echo -n Password: 
+read _passwd;
+
+passwd=`echo -n "$_passwd"|grep --regexp="[[:print:]]"|grep -v --regexp="[:|$]"`
+
+[ -z "$passwd" ] && echo "password has invalid characters" && exit
+
+#md5_passwd=`echo $passwd|md5sum`;
+code_passwd="$passwd"
+
+
+echo use [:alnum:] and '.','-'
+echo -n Email: 
+read _email
+
+email=`echo -n "$_email"|grep --regexp="[[:alnum:].-]"|grep -v --regexp="[:|$]"`
+[ -n "$_email" ] && [ -z "$email" ] && echo "password has invalid characters" && exit
+
+
+echo -n Comment:
+read _comment;
+
+comment=`echo -n "$_comment"|grep --regexp="[[:print:]]"|grep -v --regexp="[:|$]"`
+
+[ -n "$_comment" ] && [ -z "$comment" ] && echo "Comment has invalid characters" && exit
+
+echo Permissions:
+echo
+echo       c - access to the telnet console
+echo               - can be used with any other priviledge
+echo
+echo       s - superior user
+echo               - mislots/minshare is not tested
+echo               - cant be used with 'a' or 'n' priviledge
+echo               - user can kick/redirect user but not 's' user
+echo
+echo       a - administrator
+echo               - cant be used with 's' or 'n' priviledge
+echo               - user can kick/redirect 'n' users but not any of 's' or 'a' users
+echo
+echo       n - just reserving nick
+echo               - can be used also with c priviledge
+echo
+echo       p - allows user to be in passive mode when allow_passive is set to 0
+echo               - can be used with any other priviledge
+echo
+echo       m - checkout for minsshare is disabled for this user
+echo               - can be used with any other priviledge
+echo
+echo       r - checkout for minslots is disabled for this user
+echo               - can be used with any other priviledge
+echo
+echo       f - allows user to specify his IP in client. Used when user wants to be ACTIVE,
+echo           but he is behind NAT and wants to forward port. Used only when allow_forwarding
+echo           in dcd.conf is set to 0
+echo               - can be used with any other priviledge
+echo -n Choose Permissions: 
+read _privs
+
+privs=`echo -n "$_privs"|grep --regexp="[csanpmrf]"`
+
+[ -z "$privs" ] && echo "privs unknown" && exit
+
+
+#cat "$dcd_users" > "$dcd_usersnew"
+
+nick_upper=`echo $nick|sed "y/$LOWER/$UPPER/"`
+
+echo 1 > "$dcd_usersnew.notfound";
+
+cat "$dcd_users"|while read line; do
+
+    iscomment=`echo -n "$line" |grep --regexp="^#"`;
+    
+    if [ -z "$line" -o -n "$iscomment" ]; then
+
+	echo "$line" >> "$dcd_usersnew";
+
+    else
+	usernick=`echo $line|cut -f1 -d ':'`
+	
+	user_upper=`echo $usernick|sed "y/$LOWER/$UPPER/"`
+
+	if [ "$user_upper" == "$nick_upper" ]; then
+
+		rm -f "$dcd_usersnew.notfound";
+
+		echo User "$user" already exists
+
+		echo -----------------------------------------------------
+		echo $line
+		echo $nick':'$code_passwd':'$email':'$comment':'$privs
+		echo -----------------------------------------------------
+		echo $nick':'$code_passwd':'$email':'$comment':'$privs >> "$dcd_usersnew"
+#		echo $nick':$md5$'$code_passwd':'$email':'$comment':'$privs >> "$dcd_usersnew"
+	else	
+		echo "$line" >> "$dcd_usersnew" 
+
+	fi
+    fi	
+done
+
+echo $found;
+	
+if [ -f "$dcd_usersnew.notfound" ]; then
+
+	rm -f "$dcd_usersnew.notfound";
+	echo Adding User "$nick"
+#	echo $nick':$md5$'$code_passwd':'$email':'$comment':'$privs >> $dcd_users.tmp 
+	echo $nick':'$code_passwd':'$email':'$comment':'$privs >> "$dcd_usersnew"
+fi
+
+cat "$dcd_usersnew" > "$dcd_users"
+rm -rf "$dcd_usersnew"
+exit 0;
+

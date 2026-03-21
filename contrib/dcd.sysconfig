@@ -1,0 +1,7 @@
+# DConnect Daemon startup configuration file
+
+# Try to define nice-level for running DConnect Daemon
+SERVICE_RUN_NICE_LEVEL="+0"
+
+# Command-line options added to DConnect Daemon call:
+#OPTIONS=""

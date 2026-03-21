@@ -1,0 +1,104 @@
+$Id: AUTHORS,v 1.35 2007/03/01 14:03:50 rav Exp $
+========
+AUTHORS:
+========
+[EN]
+Authors sorted in alphabetical order:
+
+Michal `Fela' Felski <fela@ds.pg.gda.pl>
+    - web site design
+
+Pawe³ `blues' Go³aszewski <blues@ds.pg.gda.pl>
+    - ac/am support
+    - cvs support
+    - packaging
+
+Adam 'Czarodziej' Jab³oñski
+    - code cleaning
+    - started punishment system
+	- logo design
+
+Daniel 'cadaver' Jeliñski <danjel@ds.pg.gda.pl>
+    - tracking bugs and fixing them
+
+Dimitij Lebedz
+	- gettext initial version
+
+Rafa³ `R@V' Prasa³ <rav@ds.pg.gda.pl>
+    - ac/am support
+    - network programming
+    - implementing priviledges system
+    - bugfixes
+	- support for MandrakeLinux/Mandriva
+    - new logging style only via syslog
+	- Framework for handling
+		-- protocol
+		-- chat commands
+		-- configuration file
+		-- command line
+
+Sebastian `rawsock' Rosenkiewicz <rawsock@ds.pg.gda.pl>
+    - network programming
+    - protocol implementation
+    - basic framework, debugging, logging & configuration
+
+Krzysztof Smyk  <krzychu@ds.pg.gda.pl>
+    - documentation
+
+Artur P. `ventox' Wójcik <ventox@wp.pl>
+    - future version of framework & configuration parser
+
+Robert `Albert' ¯óralski <robertzor@pletwa.pl>
+    - protocol cracking
+[/EN]
+
+[PL]
+Lista alfabetyczna autorów:
+
+Micha³ `Fela' Felski <fela@ds.pg.gda.pl>
+    - projekt, wykonanie tej strony
+
+Pawe³ `blues' Go³aszewski <blues@ds.pg.gda.pl>
+    - wsparcie ac/am
+    - obs³uga cvs
+    - przygotowanie paczek
+    - logowanie
+
+Adam 'Czarodziej' Jab³oñski
+    - czyszczenie kodu
+    - rozpoczecie systemu kar
+	- projekt logo
+
+Daniel 'cadaver' Jeliñski danjel@ds.pg.gda.pl>
+    - wyszukiwanie i poprawianie b³êdów
+
+Dimitij Lebedz
+	- gettext inicjalna wersja
+
+Rafa³ `R@V' Prasa³ <rav@ds.pg.gda.pl>
+    - wsparcie ac/am
+    - programownie sieciowe
+    - implementowanie systemu uprawnieñ
+    - poprawianie b³êdow
+	- wsparcie dla MandrakeLinux/Mandriva
+    - nowy sposob logowania przez syslog
+    - Framework obs³ugi
+		-- protoko³u
+		-- komend czata
+		-- pliku konfiguracyjnego
+		-- linii poleceñ
+
+Sebastian `rawsock' Rosenkiewicz <rawsock@ds.pg.gda.pl>
+    - programowanie sieciowe
+    - implementacja protoko³u
+    - podstawowe elementy konfiguracji, framework-u i debugging-u
+
+Krzysztof Smyk  <krzychu@ds.pg.gda.pl>
+    - dokumentacja
+
+Artur P. `ventox' Wójcik <ventox@wp.pl>
+    - przysz³e wersje framework-u i parsera konfiguracji
+
+Robert `Albert' ¯óralski <robertzor@pletwa.pl>
+    - z³amanie protoko³u
+[/PL]

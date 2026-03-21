@@ -1,0 +1,1281 @@
+$Id: NEWS,v 1.266 2007/05/30 06:27:09 rav Exp $
+[EN]
+1.1.1
+  * fixing MacOS X compilation problems
+  * handling lack of get_default_domain() better way
+  * LSB compliant initscript for Mandriva
+  * fixing invalid warnings about socket problems
+  * fixing dcd.spec.in for Mandriva
+
+1.1.0
+  * stealth mode is always on
+  * loging only via syslog
+  
+1.0.2
+  * stealth_mode just disconnects users not allowed to connect
+
+1.0.1
+  * fixing SIGSEGV
+  
+1.0.0
+  * 0.9.4 after testing becomes stable
+
+0.9.4
+  * Users who are to talkatibve are removed from hub
+  - command bigger than MAX_USER_BUFFER=(2*MAX_RECEIVE_ONCE)
+
+  - MAX_RECEIVE_ONCE changed to 1024
+
+  - fixed searching in passive mode
+  
+0.9.3
+  * Small bugfixes
+
+0.9.2
+  * many bugfixes
+
+  * dcd.conf
+  - allow_non_us_ascii_nicks
+
+  * Up and UpToo cache
+
+0.9.1
+  * MultiSearch is not allowed at all for passive users
+  - kicking user if passive is not allowed;
+  
+  * Bugfixes
+
+  * dcd.usercommands.txt moved to USERCOMMANDS
+
+0.9.0
+  * DC Protocol
+  - $Lock - Pk has been changed to 'DCONNECT..DAEMON'
+  - $Key - Sprawdzanie klucza
+
+  - HUBNET(bind_interface must be set to a real one)
+  -- MultiConnectToMe[tcp]/ConnectToMe[udp]
+  -- MultiSearch[tcp]/Search[udp]
+  -- Up[udp]/UpToo[udp]
+
+  * EXTENDEDPROTOCOL
+  - UserIP2
+  - UserCommand
+
+  * using strsep() instead of strtok_r()
+  * minor bugfixes
+  * cleanups
+  * speeding up
+  
+  * dcd.conf
+  - registered_only
+  - conf_hublinks contains list of linked hubs
+  - min_slots can be set anytime you want
+    
+0.7.1
+  * fixing
+  - few security vulnerabilities
+  - memory leakage
+  - loging to console
+  - switching console off
+  - now every chat command works
+  - SIGSEGV while validhost() and huge load
+
+0.6.10/0.7.0
+  * SIGSEGV while SIGHUP fixed
+  * better handling of socket errors
+  * "nick is already in use" while hanging session fixed
+  * dcd.conf: 
+  - minimal_sleep_time makes hub wait befor handling all users
+
+0.6.9
+  * Fixing Bugs with file handling
+
+0.6.8
+  * Fixed missing email in config parsing (secrity update)
+
+0.6.7
+  * code cleaning and speed improvements
+  - my_vsprintf() allocates 8192B and then it grows
+  - my_recv() does not allocate memmory for returned message
+  - files welcome/motd/rules/users/nicks_allow are stored in memory
+
+  * FIX
+  - refreshing of userlist
+
+0.6.6
+  * fixed
+  - lack of UINT64_C()
+  
+  * speeding up hub
+  -- We read no more than MAX_RECEIVE_ONCE at once from users socket
+    
+  * dcd.conf
+  - max_receive_once 
+  -- maximal amount of data read at once from socket
+  
+  * New dc Command $Supports 
+  - options fully served
+  -- NoHello
+  -- NoGetINFO
+
+0.6.5
+  * fixed incompatibilities
+  - *BSD
+  - Solaris
+  - compilers not compatible with ISOC99
+
+  * FAQ
+  - added QA for system limits
+
+0.6.4
+  * fixes 
+  - validlogin()
+  - SIGSEGV while disconnecting console user
+
+  * code cleaning
+
+0.6.3
+  * fixed problem with 
+  - private chatting
+  - punishments
+  - console
+  - passive search
+  
+  * code cleaning
+  
+0.6.2
+  * starting gettext()
+  * making things better inside
+  - bugfixes
+  - code cleaning
+  - added
+    -- dc_cmd_exec() to parse DC protocol
+	-- conf_cmd_exec() to parse config line
+	  
+  * new shema of logs and messages
+
+  * better init script for Mandriva
+  
+  * speeded up parsing of protocol, command line, chat command, config
+  
+  * speeded up threads
+
+0.6.1
+  * making things better inside
+  -	added 
+    -- cmd_exec()
+	-- opt_line() to parse command line options
+
+  * chat commands revisited
+  - using cmd_exec()
+  - speeded up parsing of command parameters
+  - rechecked permissions to use commands
+  - removed unused commands
+    -- jq(almost every dc client has apriopriate option)
+    -- boost(breaks protocol)
+    -- password
+    -- pubchat(almost unusuable)
+  -added command
+	-- date and time
+	-- showops
+	-- myip
+
+  * security
+  	-- fake nick on private chat is not allowed
+	-- user must be in registered state to use private chat
+	-- allow_chat blocks also private chats
+
+0.6.0
+  * new age begins
+  
+0.5.10
+  *	speeding up hub
+  * fixing opbreak()
+
+0.5.9
+  * search_interval one more time (difftime())
+
+0.5.8
+  * fixed problems
+  - reading configuration
+  - search_interval from now on works properly
+
+0.5.7
+  * code cleaning
+
+  * updated FAQ
+  * properly handling of multiline punishment reason, while using #punish command
+  * new handling of $MyInfo message
+
+  * new option
+  - search_interval - sOP ignores it
+
+  * new priviledge
+  - i - user can search without waiting for search interval
+
+  * user HUB appeared
+  - used for annoying messages from HUB
+  --> when user not waited for search_interval before next search
+  
+  * new command
+  - msg_prv - sends private message to user as hub (sOP)
+  - msg_prv_all - sends private message to all users as hub (sOP)
+
+
+0.5.6
+  * new options in config
+  - socket_send_buffer/socket_receive_buffer - used for setting system buffer for socket
+
+  * removed problem with updating userlist
+
+0.5.5
+  * motd, rules, welcome files are from now on displayed as they are
+  - we do not remove empty lines and comments are not allowed in this files
+
+  * motd is displayed after slots checking
+
+  * bugfixes in MyINFO message sending and receiving
+
+  * new my_send function
+
+  * passing all options to sockets
+  - removing send_retry and send_retries_time
+
+  * using PRIu64 SCNu64 from <inttypes.h>
+  - removed --with-sscanf-system from configure
+  - autodetection SSCANF_ULL is not needed
+
+  * new config option
+  - conf_rules - specifies file with rules '#rules'
+
+  * new command
+  - #rules displays conf_rules in main chat
+
+  * users nick must be printablein us-ascii.7bit(isprint())
+  
+  * you can use dcd.adduser script
+
+  * protocol compatibility repaired
+  - user gets nicklist before testing amount of his slots
+
+0.5.4
+  * repairing #rehash command
+  - it takes about a second for rehashing configuration
+
+  * exchanging listen_interface to bind_address
+
+  * hardcoding n_user_manager to 1
+  - we need buffering of files in memmory
+
+  * in dcd.conf
+  - user can choose the meaning of minimal_sleep_time
+
+  - new values
+  	max_chat_length
+	kick_max_chat_length
+  
+0.5.3
+  * less logging while receiving signals
+  
+  * bugfixes
+
+0.5.2
+  * new meaning of minimal_sleep_time 
+
+  * bugfixes
+  - minimal_sleep_time handling
+  - logging to console with empty username or password
+
+0.5.1
+  * speeded up slots checking
+
+  * fixes in MT safety
+
+  * new option in dcd.conf
+  - max_commands 
+  --> specifies amount of commands executed by hub at once for each user
+
+0.5.0
+  * lower processor usage by system
+  
+  * better minslots checking
+
+0.4.9
+  * whois command shows ping of user
+
+  * from now on console user of 'S' class can do everything with other users
+  - helpfull when nick is hanging
+  
+  * amount of send_retries can be set to -1 what means 
+    that there is no checking if message was sent correctly
+
+  * Support for MandrakeLinux
+  
+  * Fixes in .spec files
+
+  * removed deadlocks and SIGSEGV
+
+  * renamed options in dcd.conf
+  - ping_timeout to idle_timeout
+  
+  * new option in dcd.conf
+  - n_listen_main
+  --> It is possible to set even 5 listening main accept threads
+
+  - n_user_manager
+  --> It is possible to set even 10 user managing_threads
+  
+  - allow_downloads
+  --> it is possible to disallow users to download from each other
+  
+  - allow_search
+  -- it is possible to disallow users to search
+
+0.4.8
+  * code cleanups
+
+  * removed problems while slots cheking with valknut
+  - file fakesearch.txt is no longer needed
+  
+  * sighup problems removed
+  - changing interface and ports is only possible before dcd starts
+
+0.4.7
+  * new option in config
+  - penalties_update_interval
+  --> sets time between updates of penalties file
+
+  * bugfixes in punish commands
+
+0.4.6
+  * chat messages are now compatible with dc++ style
+  - you can now send multiline messages
+
+  * while sending message to user it is now tested if he received it
+
+  * fixed stability problems
+  
+  * added parameters to dcd.conf
+  - minimal_sleep_time - time of main thread sleeping
+  - send_retries - the number of retries
+  - send_retries_time - period between retries
+
+  * removed parameter from dcd.conf
+  - debug_level  
+  
+  * removed console command 
+  - debug
+  
+  * added console/chat command
+  - whoip - shows users of specified ips 
+  
+0.4.5
+  * fixing stability and compatibility with BSD 4.3
+  * removed comman #lspun because of making #lspunished better
+  * fixed nicklist compatibility with Valknut/dcgui-qt
+
+0.4.4
+  * fixed building
+
+0.4.3
+  * stability fixed
+
+0.4.2 
+  * compatible with -O3 optimalization
+  * added parameters to configure script
+  - --with-sscanf-system
+  --> removing cross compilation problem
+  
+  - --with-buggy-RH
+  --> solves problem with lack of reference to yp_get_default_domain() 
+      in libwrap library on some RH and compatible older distribution
+  --> by default it is autodetected
+
+  * minor fix in (#)stat command
+  
+  * few memleak possibilities removed
+
+  * New options in dcd.conf 
+  - redirect_switch 
+  --> turns on redirection to another hub because of a reason
+  
+  - redirect_access
+  --> address to move user if he has no access to this hub
+  
+  - redirect_hub_is_full
+  --> address to move user if user's limit is reached
+
+  - redirect_min_share 
+  --> address to move user if he did not reach min_share limit
+
+  - redirect_min_slots 
+  --> address to move user if he did not reach min_slots limit
+  
+  * New commands in telnet console/chat window
+  - mmsg <user> <message> 
+  --> sends message to a <user> as you
+  
+  - mmsg_all <message> 
+  --> sends message to all users as you
+  
+  - pubchat
+  --> enables using telnet console as public chat
+  
+  * minor fixes
+  
+0.4.1
+  * removing hanging clients, when send() error appears
+  * new option in dcd.conf
+  - allow_forwarding - if set to 1 allows everyone to forward his port
+  * new permission in dcd.users
+  - f - allows user to forward his port checked when allow_forward set to 0
+
+0.4.0
+  * NEW STABLE RELEASE
+
+0.3.10
+  * removing memleak in function adduser()
+  * removing unused code fragments
+  * SECURITY FIX: testing if user's IP/domain is listed in hosts.allow is before welcome message is sent
+
+0.3.9
+  * possible segmentation faults fixed
+
+0.3.8
+  * security fix 
+    - banned user cannot enter the hub
+	
+0.3.7
+  * stability fixes
+  * cosmetics
+
+0.3.6
+  * Important BugFixes
+  * Turning off EXTENDEDPROTOCOL
+
+0.3.5
+  * Minslots checking from now on works with every known client!
+  * EXTENDEDPROTOCOL($Supports) is sent and received, but it is not tested in the server side!
+  * Bugfixes
+  * IMPORTANT file console.users changed name to dcd.users
+
+0.3.4
+  * New priviledges apeared
+    - m - minshare is not tested
+	- r - minslots is not tested
+  * bugfixes
+  * 'minslots' max value is 999
+
+0.3.3
+  * Prepared changing name of file console.users into dcd.users
+    - The change will appear in version 0.3.5
+  * Specifying listenig interface in dcd.conf
+
+0.3.2 (BOFH-suite)
+  * sscanf format string ompatibility fixed
+  * Code Cleaning
+  * Punishing system
+  * Chat and console commands moved to cmd.users.* files
+  * more commands in main chat and console
+  * New options in dcd.conf
+  * - allow_passive 
+  * - std_penalty_duration
+  * New permission
+  * - 'p' allows user to be in passive mode when pasive mode is not allowed
+  * New config file arrived dcd.penalties
+  * Security fixes :
+    - empty fields in console.users are allowed
+
+0.3.1
+  * added includes support in configs
+  * many smaller fixes
+  
+0.3.0
+  * changed Lu into llu (for Cygwin)
+  * cosmetic fixes and some bugfixes
+  
+0.2.20
+  * Cygwin compatibility
+  * code cleanups
+  * some semaphores
+
+0.2.19
+  * even more stability fixes
+
+0.2.18
+  * fixed bug, which caused server crash
+
+0.2.16 and 0.2.17
+  * stability fixes
+  
+0.2.15
+  * even more mem-leaks removed
+  * more chat-commands
+  
+0.2.14
+  * more mem leaks fixed
+
+0.2.13
+  * initial min_slots support
+  * memleak removed
+  * bugfixes
+
+0.2.12
+  * security fix: user must be in the 4th state to have permissions to have his commands executed by the hub
+
+0.2.11
+  * stability fixes
+ 
+0.2.10
+  * bugfixes and some small impovements
+
+0.2.9 (devel, unstable)
+  * users permissions started(Operator is available)
+  * operator can kick, and redirect
+  * main chat as a managing console started
+  * some fixes
+  * started implementing min_slots
+
+0.2.3
+  * passive mode started
+  * some fixes
+  * started fixing to work with *BSD
+
+0.2.2
+  * make possible build on systems without daemon() function (Solaris)
+  * small cleanup in console code
+
+0.2.1
+  * Workaround for broken libwrap from RH
+
+0.2.0
+  * flood-protection
+
+0.1.9
+  * logging is back
+  * started with manuals
+
+0.1.8
+  * some missing prototypes included
+  * cleanups
+  * make windows telnet working
+
+0.1.7
+  * renamed config files (no confusions while install)
+  * banlist, console.allow list, other similar changes (new configs)
+  * many fixes in console
+  * new console options: kick, flags
+  * user is taken now by name, not uid from config - default from configure option
+  
+0.1.6
+  * major cleanup (removed not used code)
+  * new console commands
+  * zmiany w konfiguracji (nowe pliki)
+  * wprowadzona autoryzacja
+
+0.1.5
+  * bugfixed functions: deluser(), recv()
+  * introduced telnet console
+  * code cleanup
+
+0.1.4
+  * only one bugfix in MyInfo code (maintenance release)
+  
+0.1.3
+  * new options in debug console (stat, debug, detach)
+  * better handling debug() (new config option)
+  * fixed sig11 when client connects
+
+0.1.2
+  * code cleanup
+  * bugfixes
+  * dynamic user data allocation
+  * interactive debug console introduced
+  * no more remote/local overflows
+
+0.1.1
+  * new logging scheme - no external libraries (lwl removed)
+  * more checking for overflows
+  
+0.1.0
+  * passed stability tests - month working without any trouble :)
+  * new option: allow_chat - possibility to deny users chats
+  * polish translations of docs, more docs
+  * code is nicer under ViM :)
+
+0.0.7
+  * started using Log Writer Library - logfile support
+  * new option - Message of the Day (MOTD)
+  * new options - pick uid and gid from config
+  * option existing in code documented in config
+  * added FAQ
+  
+0.0.6
+  * fixed buffer overflow while sending massages
+
+0.0.5
+  bugfix release:
+  * fixed sig11 when using -d option
+  * some fixes for libwrap
+  * fixed handling config-file
+  * killed some sig11
+
+0.0.4
+  * bugfix - empty entry in users list removed
+  * partialy rewritten autoconf/automake support
+  * basic and simple config support
+  
+0.0.3
+  * removed some buffer overflows
+  * fixed libwrap support - works fine now.
+
+0.0.2
+  * config - not working yet
+  * many points of protocol implemented
+  * seems to be usable
+  * initial libwrap implementation
+
+0.0.1
+  * initial, very raw version
+[/EN]
+[PL]
+1.1.1
+  * usunieto problemy z kompilacja pod MacOS X
+  * lepsza obsluga braku yp_get_default_domain()
+  * skrypt uruchomieniowy Mandrivy od tej wersji jest zgodny z LSB
+  * naprawiono bÅ‚Ä™dne komunikaty o problemach z gniazdami
+  * naprawiono dcd.spec.in w Mandrivie
+
+1.1.0
+  * stealth_mode jest zawsze wÅ‚Ä…czony
+  * logowanie przez syslog
+
+1.0.2
+  * stealth_mode po prostu rozlacza uzytkownikow, ktorzy nie maja dostepu
+
+1.0.1
+  * poprawka SIGSEGV
+
+1.0.0
+  * 0.9.4 staje siê stabiln± wersj±
+
+0.9.4
+  * U¿ytkownicy, którzy s± zbyt gadatliwi s± usuwani
+  - komenda wiêksza ni¿ MAX_USER_BUFFER(2*MAX_RECEIVE_ONCE)
+
+  - zmiana MAX_RECEIVE_ONCE na 1024
+
+  - naprawiono wyszukiwanie w trybie pasywnym
+  
+0.9.3
+  * Niewielkie poprawki
+
+0.9.2
+  * wiele poprawek
+
+  * dcd.conf
+  - allow_non_us_ascii_nicks
+
+  * cache dla Up i UpToo
+
+0.9.1
+  * MultiSearch nie jest dla u¿ytkowników pasywnych.
+  - wykopywanie uzytkownika gdy tryb pasywny nie jest dozwolony
+  
+  * Poprawki
+
+  * dcd.usercommands.txt przeniesiono do USERCOMMANDS
+    
+0.9.0
+  *Protokó³ DC
+  - $Lock - Zmiana Pk na 'DCONNECT..DAEMON'
+  - $Key - Sprawdzanie klucza
+  - HUBNET(bind_interface musi byæ ustawione na rzeczywisty interfejs)
+  -- MultiConnectToMe[tcp]/ConnectToMe[udp]
+  -- MultiSearch[tcp]/Search[udp]
+  -- Up[udp]/UpToo[udp]
+
+  * strsep() zamiast strtok_r()
+  * poprawki mniejszych b³êdów
+  * sprz±tanie
+  * przyspieszamy
+
+  * dcd.conf
+  - registered_only	
+  - conf_hublinks zawiera liste po³±czonych hubów
+  - min_slots moze byc ustawiane w dowolnym momencie
+  
+  * EXTENDEDPROTOCOL
+  - UserIP
+  - UserCommand
+
+0.7.1
+  * poprawiono
+  - b³êdy natury bezpieczeñstwa
+  - wyciek pamiêci
+  - logowanie na konsolê telnet
+  - wyl±czenie konsoli telnet
+  - ju¿ wszystkie komendy czata dzia³aj±
+  - SIGSEGV w czasie validhost() i du¿ego obci±¿enia
+
+0.6.10/0.7.0
+  * usuniêto SIGSEGV podczas SIGHUP
+  * lepsza obs³uga b³êdów na socketach
+  * "nick is already in use" przy wisz±cych sesjach naprawiono
+  * zmiany w dcd.conf
+  - minimal_sleep_time powoduje czekanie przed obsluga wszystkich uzytkownikow
+
+0.6.9
+  * poprawiono obs³ugê plików
+
+0.6.8
+  * poprawione pominiêcie istnienia mail-a przy parsowaniu (poprawka security)
+
+0.6.7
+  * czyszczenie kodu i przyspieszanie kodu
+  - my_vsprintf() alokuje 8192B i potem to ro¶nie
+  - my_recv() nie alokuje ju¿ pamiêci na zwracan± wiadomo¶æ
+  - pliki welcome/motd/rules/users/nicks_allow s± przechowywane w pamiêci
+
+  * Poprawki
+  - od¶wie¿anie listy u¿ytkowników
+
+0.6.6
+  * Naprawiono
+  - brak UINT64_C()
+
+  * przyspieszamy huba
+  -- czytamy z socketu na raz nie wiêcej ni¿ MAX_RECEIVE_ONCE
+  
+  * dcd.conf
+  - max_receive_once 
+  -- maksymalna ilo¶æ danych odczytana na raz socketu
+
+  * Nowa komenda DC $Supports 
+  - Obs³ugiwane opcje
+  -- NoHello
+  -- NoGetINFO
+
+0.6.5
+  * naprawiono niekompatybilno¶æ z
+  - *BSD
+  - Solaris
+  - kompilatorami niezgodnymi z ISOC99
+
+  * FAQ
+  - dodano QA odno¶nie zmiany limitów systemowych
+
+0.6.4
+  * poprawki 
+  - validlogin()
+  - SIGSEGV podczas roz³±czania u¿ytkownika konsoli
+
+  * czyszczenie kodu
+
+0.6.3
+  * naprawiono 
+  - czat prywatny
+  - egzekwowanie kar
+  - konsolê
+  - wyszukiwanie w trybie pasywnym
+  
+  * czyszczenie kodu
+  
+0.6.2
+  * rozpoczynamy gettext()
+  * lepsze rozwi±zania wewn±trz
+  - poprawki
+  - czyszczenie kodu
+  - dodano
+    -- dc_cmd_exec() by parsowaæ protokó³ DC
+	-- conf_cmd_exec() by parsowaæ linie konfiguracji
+
+  * nowy schemat logów i wiadomo¶ci
+
+  * lepszy skrypt uruchomieniowy w Mandrivie
+
+  * przyspieszono parsowanie protoko³u, linii poleceñ, komend czata, konfiguracji
+
+  * przyspieszono w±tki
+  
+0.6.1
+  * poprawki wewnêtrzne huba
+  -	dodano 
+    -- cmd_exec()
+	-- opt_line() by parsowaæ opcje wskazane w linii poleceñ
+
+  * komendy czata
+  - uzywa cmd_exec()
+  - przyspieszone parsowanie komend czata
+  - sprawdzone uprawnienia do wykonywania komend
+  - usuniete komendy
+    -- jq(prawie kazdy klient DC ma odpowiedni± opcjê)
+    -- boost(³amie protokó³)
+    -- password
+    -- pubchat(praktycznie bezu¿yteczne)
+  - dodano komende
+	-- date i time
+	-- showops
+	-- myip
+	
+  * bezpieczeñstwo
+    -- nie mo¿na ju¿ na czacie prywatnym podszyæ siê pod kogo¶
+	-- u¿ytkownik musi byæ w stanie REGISTERED, gdy korzysta z czata prywatnego
+	-- allow_chat blokuje równie¿ czaty prywatne
+
+0.6.0
+  * nowa era rozpoczêta
+
+0.5.10
+  *	przyspieszamy huba
+  * poprawki opbreak()
+
+0.5.9
+  * search_interval jeszcze raz (difftime())
+
+0.5.8
+  * poprawiono problemy
+  - odczyt konfiguracji
+  - search_interval dzia³a ju¿ poprawnie
+
+0.5.7
+  * czyszczenie kodu
+
+  * od¶wie¿one FAQ
+  * poprawna obs³uga wielolinijkowego powodu kary przy u¿ywaniu komendy #punish
+  * nowa obs³uga $MyInfo
+
+  * nowa opcja w dcd.conf
+  - search_interval - sOP j± ignoruje
+
+  * nowe uprawnienie
+  - i u¿ytkownik mo¿e wyszukiwaæ nie czakajac przez search_interval
+
+  * pojawil sie uzytkownik HUB
+  - uzywany do wysylania denerwujacych wiadomosci uzytkownikowi
+  --> kiedy uzytkownik nie odczekal search_interval przed kolejnym wyszukiwaniem
+  
+  * nowa komenda
+  - msg_prv - wysy³a prywatn± wiadomo¶æ do u¿ytkownika jako HUB (sOP)
+  - msg_prv_all - wysy³a prywatn± wiadomo¶æ do wszystkich u¿ytkowników jako HUB (sOP)
+
+
+0.5.6
+  * nowe opcje w konfiguracji
+  - socket_send_buffer/socket_receive_buffer - uzywane do ustawienia bufora socketu
+
+  * usunieto problem z odswiezaniem listy uzytkownikow
+
+0.5.5
+  * motd, rules, welcome od teraz s± wy¶wietlane w ca³o¶ci
+  - nie usuwamy ju¿ pustych linii oraz nie ma komentarzy
+
+  * motd jest wyswietlane po sprawdzeniu liczby slotow
+
+  * poprawki w odbiorze i wysylaniu MyINFO
+
+  * my_send() na nowo zaimplementowana
+
+  * przekazywanie wszystkich opcji do socketa
+  - usuwamy send_retry i send_retries_time
+
+  * uzywamy PRIu64 SCNu64 z <inttypes.h>
+  - usunieto --with-sscanf-system z configure
+  - autodetekcja SSCANF_ULL nie jest juz potrzebna
+
+  * nowa opcja konfiga
+  - conf_rules - ustala plik z regulaminem huba '#rules'
+
+  * nowa komenda
+  - #rules - wy¶wietla plik z regu³ami
+
+  * nick u¿ytkownika musi byæ drukowalny w us-ascii.7bit(isprint())
+
+  * mo¿na u¿ywaæ skryptu dcd.adduser
+
+  * naprawiona zgodno¶æ z protoko³em
+  - u¿ytkownik dostaje listê u¿ytkowników zanim sprawdzona zostanie liczba jego slotów
+
+0.5.4
+  * naprawiona komenda #rehash
+  - przeladowania konfiguracji nastepuje po okolo 1s
+
+  * zmiana listen_interface na bind_address
+
+  * n_user_manager ustalona na 1
+  - potrzebujemy buforowania plikow w pamieci
+  
+ 
+  * in dcd.conf
+  - uzytkownik moze wybrac znaczenie minimal_sleep_time
+
+  - nowe wartosci
+  	max_chat_length
+	kick_max_chat_length
+  
+0.5.3
+  * mniejsza gadatliwosc po odebraniu sygnalow
+  
+  * poprawki zauwazonych bledow
+  - obsluga minimal_sleep_time 
+  - logowanie do konsoli z pusta nazwa uzytkownika lub haslem
+
+0.5.2
+  * nowe znaczenie minimal_sleep_time 
+
+  * poprawki zauwazonych bledow
+
+0.5.1
+  * przyspieszono sprawdzanie slotow
+
+  * poprawki stabilnosci wielowatkowej
+
+  * nowa opcja w dcd.conf
+  - max_commands 
+  --> ustawia ilosc komend wykonywanych jednorazowo dla kazdego uzytkownika
+  
+0.5.0
+  * mniejsze zuzycie procesora
+  
+  * lepsze sprawdzanie slotow
+
+0.4.9
+  * whois pokazuje ping uzytkownika
+
+  * uzytkownik konsoli 's' klasy moze zrobic wszystko z kazdym innym uzytkownikiem
+  - pomocne, gdy nick sie zawiesi
+  
+  * ilosc powtorzen wysylania wiadomosci moze byc od teraz ustawiona na -1, 
+    co oznacza, ze nie ma sprawdzania poprawnosci wysylania
+
+  * Wsparcie dla MandrakeLinux
+
+  * poprawki w plikach .spec
+
+  * usunieto zatrzaski i SIGSEGV
+
+  * zmieniono nazwe opcji w dcd.conf
+  - ping_timeout na idle_timeout
+
+  * nowe opcje w dcd.conf
+  - n_listen_main
+  --> Mozliwosc ustawienia do 5 watkow akceptujacych glowne polaczenia
+
+  - n_user_manager
+  --> Mozliwosc ustawienia do 10 watkow obslugujacych uzytkownikow
+
+  - allow_downloads
+  --> blokowanie pobierania plikow
+  
+  - allow_search
+  -- blokowanie wyszukiwania
+
+0.4.8
+  * sprzatanie kodu
+
+  * usunieto problem sprawdzania slotow u klienta valknut
+  - plik fakesearch.txt nie jest juz potzebny
+    
+  * usunieto problemy z sighup
+  - zmiana interfejsu i portow jest mozliwa przed wystartowaniem dcd
+
+0.4.7
+  * nowa opcja w konfigu
+  - penalties_update_interval
+  --> ustala czas pomiedzy kolejnymi aktualizacjami pliku kar
+
+  * poprawki w komendach dotyczacych kar
+
+0.4.6
+  * wiadomosci w czacie sa teraz kompatybilne z dc++
+  - mozna wysylac wiadomosci wieloliniowe
+
+  * podczas wysylania wiadomosci do uzytkownika jest sprawdzanie czy ona do niego dotarla
+
+  * poprawione problemy ze stabilnoscia
+  
+  * dodane parametry do dcd.conf
+  - minimal_sleep_time - czas drzemki glownego watku
+  - send_retries - ilosc powtorzen wysylania komunikatu
+  - send_retries_time - czas pomiedzy kolejnymi powtorzeniami
+
+  * parametry usuniete z dcd.conf
+  - debug_level  
+  
+  * usunieta komenda konsoli
+  - debug
+
+  * dodana komenda konsoli/chat'a
+  - whoip - pokazuje uzytkownikow o okreslonym ip
+  
+0.4.5
+  * poprawiona stabilnosc i kompatybilnosc z BSD 4.3
+  * usunieto #lspun z powodu poprawienia #lspunished
+  * poprawiona kompatybilnosc listy uzytkownikow z valknut/dcgui-qt 
+
+0.4.4
+  * poprawione budowanie
+
+0.4.3
+  * poprawiona stabilnosc
+
+0.4.2
+  * dodano parametry do skryptu configure
+  - --with-sscanf-system
+  -->  usuniêcie problemu kompilacji na FreeBSD i uruchamiania na linux'ie
+
+  - --with-buggy-RH
+  --> rozwi±zuje problem braku referencji do yp_get_default_domain()
+      w bibliotece libwrap na RH i kompatybilnych starszych dystrybujach
+  --> domy¶lnie jest autodetekcja
+    
+  * drobna poprawka w komendzie (#)stat
+
+  * usunieto kilka mozliwosci wycieku pamieci
+
+  * nowe opcje w dcd.conf 
+  - redirect_switch 
+  --> wlacza przenoszenie uzytkownika na innego huba
+  
+  - redirect_access
+  --> adres huba, na ktorego zostanie przeniesiony uzytkownik,
+      gdy nie ma on dostepu do naszego huba
+  
+  - redirect_hub_is_full
+  --> adres huba, na ktorego zostanie przeniesiony uzytkownik,
+      gdy nasz hub juz jest pelny
+	  
+  - redirect_min_share 
+  --> adres huba, na ktorego zostanie przeniesiony uzytkownik,
+	  gdy nie udostepnia on odpowiednio duzo MB
+
+  - redirect_min_slots 
+  --> adres huba, na ktorego zostanie przeniesiony uzytkownik,
+      gdy nie ma wymaganej ilosci slotow
+	    
+  * nowe komendy w konsoli telnet/w glownym czacie
+  - mmsg <user> <message> 
+  --> wysyla wiadomosc do user jako twoja wiadomosc
+  
+  - mmsg_all <message> 
+  --> wysyla wiadomosc do wszystkich jako twoja wiadomosc
+  
+  - pubchat
+  --> wlacza uzywanie konsoli telnet jako glownego czata
+  
+  * minor fixes
+
+0.4.1
+  * usuwanie wisz±cych klientów kiedy pojawi sie blad send()
+  * nowa opcja w dcd.conf
+  - allow_forwarding - je¶li 1 to wszyscy moga forwardowaæ swoje porty
+  * nowe uprawnienie dcd.users
+  - f - pozwala u¿ytkownikowi forwardowaæ swój port
+
+0.4.0
+  * NOWE STABILNE WYDANIE
+
+0.3.10
+  * usuniêto wyciek pamiêci w funkcji adduser()
+  * usuniêto nieu¿ywane czêsci kodu
+  * SECURITY FIX: sprawdzanie czy IP/domena uzytkownika jest w hosts.allow odbywa siê przed wys³aniem powitania huba
+
+0.3.9
+  * poprawki mo¿liwych b³edów powoduj±cych umieranie serwera
+
+0.3.8
+  * poprawiony b³±d zabezpieczeñ 
+    - zabanowany u¿ytkownik nie podl±czy siê do huba
+
+0.3.7
+  * poprawki stabilno¶ci
+  * porz±dki
+
+0.3.6
+  * Poprawki powa¿nych b³êdów
+  * Wy³aczony EXTENDEDPROTOCOL
+  
+0.3.5
+  * Sprawdzanie Minslots dzia³a teraz z ka¿dym klientem.
+  * EXTENDEDPROTOCOL($Supports) jest wysy³ane i otrzymywane, ale nie testowane po stronie serwera
+  * Poprawki b³êdów
+  * WA¯NE: plik console.users zmieni³ nazwê na dcd.users
+
+0.3.4
+  * Nowe uprawnienia
+    - m - minimalne ilosc udostepnianych danych nie jest sprawdzana
+	- r - minimalna liczba slotow nie jest sprawdzana
+  * poprawki b³êdów
+  * maksymalna warto¶æ parametru 'minslots' wynosi 999
+
+0.3.3
+  * Przygotowano zmiane nazwy pliku console.users na dcd.users
+    - zmiana wejdzie w zycie w wersji 0.3.5
+  * Ustalenie interfejsu nasluchujacego w dcd.conf
+
+0.3.2 (BOFH-suite)
+  * Naprawiona kompatybilno¦Æ ci±gu formatuj±cego w sscanf
+  * System kar
+  * Komendy Czata i konsoli przeniesiono do cmd.users.*
+    - Wiêcej komend czata i konsoli
+  * Nowe opcje w dcd.conf
+    - allow_passive 
+    - std_penalty_duration
+  * Nowe uprawnienia
+    - 'p' pozwala uzytkownikowi byæ w trybie pasywnym kiedy tryb pasywny jest zabroniony
+  * Nowy plik konfiguracyjny dcd.penalties
+  * Bezpieczeñstwo :
+    - puste pola w pliku console.users s± dozwolone
+
+
+0.3.1
+  * dodane wsparcie dla includowania plików
+  * du¿o drobnych poprawek
+  
+0.3.0
+  * zmieniono Lu na llu (dla Cygwina)
+  * trochê kosmetyki i poprawek drobnych b³êdów
+
+0.2.20
+  * kompatybilno¶æ z Cygwinem
+  * czyszczenie kodu
+  * trochê semaforów
+
+0.2.19
+  * jeszcze wiêcej poprawek zwiêkszaj±cych stabilno¶æ
+
+0.2.18
+  * poprawka b³êdu, powoduj±cego wyk³adanie siê serwera
+
+0.2.16 i 0.2.17
+  * poprawiona stabilno¶æ
+
+0.2.15
+  * jeszcze wiêcej usuniêtych wycieków pamiêci
+  * nowe komendy w chacie
+  
+0.2.14
+  * usuniête kolejne wycieki pamiêci
+  
+0.2.13
+  * wstêpna obs³uga min_slots
+  * usuniêty wyciek pamiêci
+  * poprawki
+
+0.2.12
+  * security fix: user must be in the 4th state to have permissions to have his commands executed by the hub
+
+0.2.11
+  * poprawki stabilno¶ci
+
+0.2.10
+  * poprawki i ma³e usprawnienia
+
+0.2.9
+  * pocz±tek uprawnieñ dla u¿ytkowników(jest juz Operator)
+  * operator moze wykopywaæ, lub przekierowywaæ ludzi 
+  * pocz±tek g³ównego chat'a jako konsoli administracyjnej
+  * trochê poprawek
+
+0.2.3
+  * pocz±tek trybu pasywnego
+  * trochê poprawek
+  * zaczête poprawki, aby da³o siê pracowaæ na *BSD
+
+0.2.2
+  * Umo¿liwione budowanie w systemach bez funkcji daemon() (Solaris)
+  * porz±dki w kodzie konsoli
+
+0.2.1
+  * Poprawka na popsuty libwrap z RH
+
+0.2.0
+  * flood-protection
+
+0.1.9
+  * powrót logowania
+  * pierwsze manuale
+
+0.1.8
+  * uzupe³nione brakuj±ce prototypy
+  * porz±dki
+  * windowsowy telnet dzia³a
+
+0.1.7
+  * zmienione nazwy plików konfiguracyjnych (nie ma ju¿ niebezpieczeñstwa przy instalacji)
+  * lista banów, console.allow oraz wiele podobnych zmian (nowe configi)
+  * wiele zmian w konsoli
+  * nowe opcje konsoli: kick, flags
+  * u¿ytkownik jest teraz brany po nazwie, a nie po uid - domy¶lny z opcji configure
+
+0.1.6
+  * du¿e sprz±tanie (usuniêty nieu¿ywany kod)
+  * nowe komendy na konsoli
+  * zmiany w konfiguracji (nowe pliki)
+  * wprowadzona autoryzacja
+
+0.1.5
+  * poprawione funkcje: deluser(), recv()
+  * wstêpne wprowadzenie konsoli telnet
+  * porz±dki w kodzie
+  
+0.1.4
+  * tylko jedna poprawka w kodzie MyInfo (wydanie "konserwacyjne")
+
+0.1.3
+  * nowe opcje na konsoli (stat, debug, detach)
+  * lepsza obs³uga debug() (nowa opcja konfiguracyjna)
+  * naprawiony sig11 przy ³±czeniu siê klienta
+
+0.1.2
+  * czyszczenie kodu
+  * poprawki b³êdów
+  * dynamiczne alokowanie danych o u¿ytkownikach
+  * interaktywna konsola debug
+  * usuniêta reszta zdalnych/lokalnych przepe³nieñ bufora
+
+0.1.1
+  * nowy schemat logowania - ¿adnych zewnêtrznych bibliotek (usuniête lwl)
+  * wiêcej kontroli przepe³nieñ bufora
+  
+0.1.0
+  * pomy¶lne testy stabilno¶ci - miesi±c bezproblemowej ci±g³ej pracy :)
+  * nowa opcja: allow_chat - mo¿liwo¶æ zablokowania rozmów pomiêdzy u¿ytkownikami
+  * polskie t³umaczenia dokumentacji, wiêcej dokumentacji
+  * kod przyjemniejszy pod ViM-em :)
+
+0.0.7
+  * przej¶cie na Log Writer Library - wsparcie dla logowania
+  * nowa opcja: Wiadomo¶æ Dnia (MOTD)
+  * nowa opcja: pobieranie UID i GID z configa
+  * opcje istniej±ce w kodzie udokumentowane w configu
+  * dodano FAQ
+  
+0.0.6
+  * naprawione przepe³nienie bufora podczas wysy³ania wiadomo¶ci
+
+0.0.5
+  wydanie poprawkowe:
+  * naprawiony sig11 po u¿yciu opcji -d
+  * poprawki dla libwrap
+  * poprawione u¿ywanie pliku konfiguracyjnego
+  * kilka sig11 naprawionych
+
+0.0.4
+  * poprawka - usuniêta pusta pozycja na li¶cie u¿ytkoników
+  * czê¶ciowo przepisane wsparcie dla autoconf-a/automake-a
+  * podstawowa i prosta obs³uga pliku konfiguracyjnego
+  
+0.0.3
+  * removed some buffer overflows
+  * fixed libwrap support - works fine now.
+
+0.0.2
+  * config - not working yet
+  * many points of protocol implemented
+  * seems to be usable
+  * initial libwrap implementation
+
+0.0.1
+  * pierwsza, "surowa" wersja
+[/PL]

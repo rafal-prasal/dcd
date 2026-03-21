@@ -1,0 +1,49 @@
+$Id: SYSLOG,v 1.1 2007/03/01 13:41:21 rav Exp $
+
+Meaning     log_facility    Syslog_facility
+ACCESS      1               AUTHPRIV
+DEBUG       2               LOCAL0
+PROTOCOL    4               LOCAL1
+DAEMON      8               DAEMON
+USER        16              USER
+CHAT        32              LOCAL2
+NETWORK     64              LOCAL3
+
+Since we use syslog() we would like to encourage admins of DCD to switch to syslog-ng,
+which in our opinion is the best solution for logs. It is possible to filter messages 
+over program name so our logs would not get between system messages and in some way 
+create a mess.
+
+NOTE: 
+    We provide you with example configuration of syslog-ng. 
+    If you want to know more about it read syslog-ng docs.
+
+Place it after sources in syslog-ng.conf
+
+destination d_dcd_access    {   file("/var/log/dcd/access.log" template("[$YEAR-$MONTH-$DAY $HOUR:$MIN:$SEC] $HOST [$LEVEL] $MESSAGE\n")); };
+filter f_dcd_access         {   program("dcd$") and facility(authpriv); };
+log                         {   source(sys); filter(f_dcd_access); destination(d_dcd_access); };
+
+destination d_dcd_debug     {   file("/var/log/dcd/debug.log" template("[$YEAR-$MONTH-$DAY $HOUR:$MIN:$SEC] $HOST [$LEVEL] $MESSAGE\n")); };
+filter f_dcd_debug          {   program("dcd$") and facility(local0); };
+log                         {   source(sys); filter(f_dcd_debug); destination(d_dcd_debug); };
+
+destination d_dcd_protocol  {   file("/var/log/dcd/protocol.log" template("[$YEAR-$MONTH-$DAY $HOUR:$MIN:$SEC] $HOST [$LEVEL] $MESSAGE\n")); };
+filter f_dcd_protocol       {   program("dcd$") and facility(local1); };
+log                         {   source(sys); filter(f_dcd_protocol); destination(d_dcd_protocol); };
+
+destination d_dcd_daemon    {   file("/var/log/dcd/daemon.log" template("[$YEAR-$MONTH-$DAY $HOUR:$MIN:$SEC] $HOST [$LEVEL] $MESSAGE\n")); };
+filter f_dcd_daemon         {   program("dcd$") and facility(daemon); };
+log                         {   source(sys); filter(f_dcd_daemon); destination(d_dcd_daemon); };
+
+destination d_dcd_user    {   file("/var/log/dcd/user.log" template("[$YEAR-$MONTH-$DAY $HOUR:$MIN:$SEC] $HOST [$LEVEL] $MESSAGE\n")); };
+filter f_dcd_user         {   program("dcd$") and facility(user); };
+log                       {   source(sys); filter(f_dcd_user); destination(d_dcd_user); };
+
+destination d_dcd_chat    {   file("/var/log/dcd/chat.log" template("[$YEAR-$MONTH-$DAY $HOUR:$MIN:$SEC] $HOST [$LEVEL] $MESSAGE\n")); };
+filter f_dcd_chat         {   program("dcd$") and facility(local2); };
+log                       {   source(sys); filter(f_dcd_chat); destination(d_dcd_chat); };
+
+destination d_dcd_network   {   file("/var/log/dcd/network.log" template("[$YEAR-$MONTH-$DAY $HOUR:$MIN:$SEC] $HOST [$LEVEL] $MESSAGE\n")); };
+filter f_dcd_network        {   program("dcd$") and facility(local3); };
+log                         {   source(sys); filter(f_dcd_network); destination(d_dcd_network); };

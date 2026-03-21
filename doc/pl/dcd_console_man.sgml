@@ -1,0 +1,121 @@
+<!DOCTYPE RefEntry PUBLIC "-//OASIS//DTD DocBook V3.1//EN" []>
+
+<refentry lang="pl">
+
+  <refmeta>
+    <refentrytitle>dcd.console</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>dcd.console</refname>
+    <refpurpose>Konsola aministracyjna huba DC - DConnectDaemon</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>telnet</command>
+      <arg>nazwa hosta</arg>
+      <arg>numer portu</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Opis</title>
+    <para>Plik ten opisuje, w jaki sposób korzystaæ z administracyjnej konsoli demona Direct Connect. 
+</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Logowanie</title>
+    <para>
+Do konsoli loguje siê za pomoc± komendy <command>telnet</command>. Domy¶lnym portem na którym pracuje konsola DConnectDaemon jest port <envar>511</envar>. 
+Adresy hostów, z których dopuszczalne jest logowanie siê do konsoli administracyjnej huba przechowywane s± w pliku <filename>/usr/local/etc/console.allow</filename>.
+Po telnetowaniu siê na hosta, nale¿y podaæ login i has³o dostêpu administratora huba. Loginy i has³a przechowywane s± w pliku <filename>usr/local/etc/dcd.users</filename>. 
+W wypadku poprawnego podania loginu i has³a, pojawi siê znak zachêty konsoli</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Komendy konsoli</title>
+    <para>Konsola umo¿liwia pe³ne administrowanie hubem DC. Dostêpne s± nastêpuj±ce polecenia administracyjne:
+</para>
+    <variablelist>
+      <varlistentry>
+	<term>conf</term>
+	<listitem>
+	  <para>Wy¶wietla aktualn± konfiguracjê huba</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>rehash</term>
+	<listitem>
+	  <para>Ponownie ³aduje konfiguracjê huba, np. po zmianie w pliku konfiguracyjnym. Pozwala to na zmiany konfiguracji bez restartu serwera.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>quit</term>
+	<listitem>
+	  <para>Wyj¶cie z konsoli administracyjnej</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>stat</term>
+	<listitem>
+	  <para>Wy¶wietla statystyki huba: liczbê zalogowanych u¿ytkowników, wielko¶æ udostêpnianych danych i czas pracy huba.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>debug <option>[debug level]</option></term>
+	<listitem>
+	  <para>Okre¶la poziom debugowania pracy huba. Domy¶ln± warto¶ci± jest <envar>0</envar>.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>whois <option><sgmltag><</sgmltag>nick<sgmltag>></sgmltag></option></term>
+	<listitem>
+	  <para>Wy¶wietla opis u¿ytkownika <envar>nick</envar>.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>who</term>
+	<listitem>
+	  <para>Wy¶wietla u¿ytkowników zalogowanych do konsoli administracyjnej huba. Podaje przy tym login u¿ytkownika, adres hosta z którego zalogowany jest u¿ytkownik, oraz czas bezczynno¶ci.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>users</term>
+	<listitem>
+	  <para>Wy¶wietla listê u¿ytkowników zalogowanych do huba.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>kick <option><sgmltag><</sgmltag>nick<sgmltag>></sgmltag></option> [<parameter>reason</parameter>]</term>
+	<listitem>
+	  <para>Od³±cza od huba u¿ytkownika <parameter><sgmltag><</sgmltag>nick<sgmltag>></sgmltag></parameter>. Jednocze¶nie na czacie wy¶wietlany jest powód <parameter>reason</parameter> od³±czenia u¿ytkownika. Jest to ulubiona komenda administratorów huba ;)</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>jq</term>
+	<listitem>
+	  <para>W³±cza/wy³±cza wy¶wietlanie zdarzeñ pod³±czeñ i roz³±czeñ u¿ytkowników z hubem.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>boost</term>
+	<listitem>
+	  <para>O tutaj mamy opis</para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>See also</title>
+    <para>
+<citerefentry>
+	<refentrytitle>dcd</refentrytitle>
+	<manvolnum>1</manvolnum>
+      </citerefentry>
+</para>
+  </refsect1>
+</refentry>

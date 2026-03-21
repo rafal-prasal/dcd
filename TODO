@@ -1,0 +1,64 @@
+$Id: TODO,v 1.71 2006/08/29 13:10:25 rav Exp $
+==========
+TODO list:
+==========
+
+[EN]
+- IMPORTANT: build docs from sgml source every time you build program
+- Test if my_malloc is used only when needed
+- documentation
+    - good INSTALL file
+    - better README
+- remote FTP/HTTP client interface (?)
+- statistics output with HTML/SQL/SNMP or something
+- scripting (perl, tcl, sh, etc.)
+- IPv6 support (possible?)
+- scripts for Debian, RedHat, etc. ...
+- virtual hosts
+- administration:
+    - web browser console
+- telnet console
+    - console.allow:
+      - fqdn, domains, masks
+- security:
+    - chroot
+    - user to run from command-line option
+- specify which hosts can share anything
+- only specified hosts/domains/classes are visible on hub user list
+- anti-cheaters (maybe in scripts?)
+- passwd file:
+     - password encryption methods: crypt, MD5, SHA1 (from config)
+     - password crypt() script
+- ac/am:
+     - finish libwrap conditional - work with static too
+[/EN]
+
+[PL]
+- WA¯NE: budowanie dokumentacji ze ¼ród³a sgml za ka¿dym razem przy budowaniu.
+- Sprawdzic czy my_malloc jest uzywane tylko wtedy, kiedy trzeba
+- dokumentacja
+    - dobry plik INSTALL
+    - lepszy README
+- zdalny interfejs kliencki FTP/HTTP (?)
+- wyj¶cie ze statystykami do HTML/SQL/SNMP, albo co¶ podobnego
+- skrypty (perl, tcl, etc.)
+- wsparcie dla IPv6 (mo¿liwe?)
+- skrypty dla Debian-a, RedHat-a, etc. ...
+- virtualne hosty
+- administracja:
+    - konsola web-owa
+- konsola telnet
+    - console.allow:
+      - fqdn, domeny, maski
+- bezpieczeñstwo:
+    - chroot
+    - user to run from command-line option
+- okre¶lenie, które hosty s± uprawnione do udostêpniania czegokolwiek
+- tylko okre¶lone hosty/domeny/klasy adresowe s± widoczne na li¶cie u¿ytkowników huba
+- anty-cheatery (mo¿e w skryptach?)
+- plik passwd:
+     - metody szyfrowania hase³: crypt, MD5, SHA1 (okre¶lane z configa)
+     - skrypt robi±cy crypt() hase³
+- ac/am:
+     - dokoñczyæ warunek na libwrap - wykrywanie statycznej biblioteki
+[/PL]

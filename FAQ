@@ -1,0 +1,225 @@
+$Id: FAQ,v 1.38 2007/04/05 21:46:49 rav Exp $
+***********************
+**      DConnect Daemon
+***********************
+
+[EN]
+Frequently Asked Questions
+==========================
+
+If you think that something is missing here, - tell us about that: 
+dc-hub@ds.pg.gda.pl 
+Remember - it's maling list. You have to be subscriber to post anything.
+
+
+Q: I can't compile DConnect. Linking with libwrap fails:
+   t.o pch.o queue.o semaphore.o thread.o  -lwrap -lpthread
+   /usr/lib/gcc-lib/i386-redhat-linux/2.96/../../../libwrap.a(hosts_access.o): In function `host_match':
+   hosts_access.o(.text+0x4d7): undefined reference to `yp_get_default_domain'
+
+A: Take version of dcd >= 0.2.1
+   There is added fix for broken libwrap from RH.
+   
+   When you try to compile dcd >=0.4.2, there is autodetection of this. 
+
+
+Q: I want to compile dcd on linux to use it on solaris. Compilation works fine, 
+   but after that everytime I try to connect hub tells me to share more.
+   
+A: There is no such possibility.
+
+
+Q: After connection to server I can't see any users. Only newly connected are
+   visible for me.
+
+A: You have probably NeoModus Direct Connect 1.0 preview Build 8 client. It's
+   buggy release - please, upgrade. Build 9 and higher works fine.
+
+
+Q: With your Linux Hub I have really weak transfers - please, fix it.
+
+A: We can't :) Transfers are server-independent, these depend only on 
+   connection between you and your connection-party.
+
+
+Q: I can't get my old configuration to work. User cannot become (s)OP?
+
+A: That is because file console.users was renamed to dcd.users. 
+   Change option in dcd.conf or rename console.users file.
+
+ 
+Q: I cant get the admin account to work, every time i try to connect i get
+   this message: 
+                <Hub> Your nick is reserved.
+
+A: Check default settings in file dcd.users and customize them.
+
+
+Q: I'm using linux telnet and I can't insert national characters on
+   administration console.
+
+A: Use option "-8" of telnet command. Some telnet implementations are using
+   7-bit characters by default. "man telnet" in general.
+
+
+Q: How can I punish a user?
+
+A: You have two ways. You can add his ip to the dcd.banned or just type 
+   #punish <who> <how> <duration in minutes> <reason> in main chat.
+
+   
+Q: Why more than one user is punished?
+
+A: That happens when more than one user uses IP that is punished.
+
+
+Q: I get communicate:"You're not allowed to connect"?
+
+A: Please read Usage section in README file and customize your settings in
+   host.allow and host.den files.
+
+
+Q: I share interntet with my linux, i run DConnect Daemon, i forward port(s)
+   on my internet interface for (every) client behind NAT. I also changed
+   the connection setting in my client, but i still can't search or download.
+   What is wrong?
+
+A: By default hub disallows to use other ip than your socket's ip because of
+   security reasons. 
+
+   There are to ways to solve this problem:
+	1) [GOOD] insert nick in dcd.users and set the permission 'f'
+	2) [INSECURE] set allow_forwarding in dcd.conf to 1
+
+
+Q: I start hub but there is a problem. A few users get connected to, but rest gets 
+   in warning.log 'Bad File Descriptor'. 
+
+A: This problem is connected to the limit of opened files by user.
+   Solution:
+   * sysctl.conf: 
+   -- netBSD: kern.maxfiles = 102698
+   -- Linux: fs.file-max = 102698
+   * shell
+   -- bash: ulimit -n 6000
+
+
+Q: While `make` I get error, that SCNu64/PRIu64 is not defined.
+   What to do?
+
+A: Please use version 0.6.5 or newer.
+
+[/EN]
+
+[PL]
+Najczêsciej zadawane pytania - FAQ
+==================================
+
+Je¿eli uwa¿asz, ¿e czego¶ tutaj nie ma co powinno byæ - powiedz nam o tym:
+dc-hub@ds.pg.gda.pl
+Pamiêtaj, ¿e to jest lista mailowa - musisz byæ zapisany, ¿eby cokolwiek wys³aæ!
+
+
+Q: Nie mogê skompilowaæ DConnect-a. Linkowanie z libwrap siê nie udaje:
+   t.o pch.o queue.o semaphore.o thread.o  -lwrap -lpthread
+   /usr/lib/gcc-lib/i386-redhat-linux/2.96/../../../libwrap.a(hosts_access.o): In function `host_match':
+   hosts_access.o(.text+0x4d7): undefined reference to `yp_get_default_domain'
+
+A: U¿yj dcd w wersji >= 0.2.1
+   Jest dodana poprawka na popsut± bibliotekê libwrap z RH.
+
+   Kiedy próbojesz skompilowaæ dcd >=0.4.2 to jest to wykrywane automatycznie.
+
+
+Q: Chcê skompilowaæ dcd pod linuxem i u¿yc tego na solarisie. Kompilacja przebiega prawid³owo, 
+   ale za ka¿dym razem, gdy siê pod³±czam hub mówi mi abym udostêpnil wiêcej.
+   
+A: Nie ma takiej mo¿liwo¶ci.
+
+
+Q: Po po³±czeniu z serwerem nie widzê nikogo. Tylko nowo-pod³±czeni s± dla mnie
+   widoczni.
+
+A: Prawdopodobnie u¿ywasz klienta NeoModus Direct Connect 1.0 preview Build 8.
+   Jest to wersja z b³êdami, prosimy wiêc o zrobienie upgrade. Wersje Build 9
+   i pó¼niejsze chodz± poprawnie.
+
+
+Q: Z waszym Linuksowym Hubem mam s³absze transfery - poprawcie to.
+
+A: Nie mo¿emy :) Transfery nie zale¿± od serwera tylko od po³±czenia miêdzy
+   osobami wymieniaj±cymi siê danymi.
+
+
+Q: Moja stara konfiguracja nie dzia³a. U¿ytkownik nie mo¿e staæ siê (s)OP'em?
+
+A: Jest tak z tego powdu, ¿e plik console.users zosta³ zmieniony na dcd.users. 
+   Zmieñ opcjê w dcd.conf albo zmieñ nazwê pliku console.users.
+
+
+Q: Nie mogê uruchomiæ konta admin, za ka¿dym razem gdy próbuje siê zalogowaæ
+   dostaje wiadomo¶æ:
+                     <Hub> Your nick is reserved.
+
+A: Sprawd¼ domy¶ne ustawienia w pliku dcd.users i dostosuj je do swoich
+   potrzeb:)
+
+
+Q: U¿ywam linuksowego klienta telneta i nie mogê wpisywaæ znaków narodowych
+   na konsoli administracyjnej.
+
+A: U¿yj opcji "-8" programu telnet. Czê¶æ implementacji tego programu
+   domy¶lnie u¿ywaj± 7-bitowych znaków.
+
+
+Q: Jak mogê ukaraæ u¿ytkownika?
+
+A: S± dwa sposoby. Mo¿esz dodaæ jego ip do dcd.banned lub napisaæ w g³ównym
+   czacie:
+   #punish <kogo> <jak> <czas trwania w minutach> <powód>
+
+   
+Q: Dlaczego wiêcej ni¿ jeden u¿ytkownik zostaje ukarany za jednym razem?
+
+A: Taka sytuacja ma miejsce kiedy wiêcej ni¿ jeden u¿ytkownik u¿ywa IP, 
+   które zostaje ukarane.
+
+
+Q: Dostajê komunikat: "You're not allowed to connect"?
+
+A: Przeczytaj sekcjê Usage w pliku README i dostosuj ustawienia w plikach
+   hosts.allow i hosts.deny.
+
+
+Q: Udostêpniam internet moim linuxem, postawi³em tu serwer DC, forwarduje
+   porty na interfejsie internetowym dla ka¿dego klienta za NAT'em. Zmieni³em
+   tak¿e ustawienia odno¶nie po³±czenia w moim kliencie, ale nadal nie mogê
+   wyszukiwaæ/sci±gaæ niczego od innych ludzi. Co jest nie tak?
+   
+A: Domy¶lnie hub nie pozwala u¿yc innego IP ni¿ IP twojego socket'a z powodów
+   bezpieczeñstwa
+
+   S± dwa sposoby na rozwi±zanie tego problemu:
+	1) [DOBRY] wstaw nick'a do dcd.users i ustaw uprawnienie 'f'
+	2) [NIEBEZPIECZNY] ustaw allow_forwarding w dcd.conf na 1
+
+
+Q: Uruchamiam Huba, ale pojawia siê problem. Pod³±cza siê pewna ilo¶æ 
+   u¿ytkowników, a reszta w warning.log ma 'Bad File Descriptor'.
+
+A: Problemy ten zwi±zany jest z limitem otwartych przez u¿ytkownika plików. 
+   Rozwi±zanie:  	   
+   * sysctl.conf: 
+   -- netBSD: kern.maxfiles = 102698
+   -- Linux: fs.file-max = 102698
+   * shell
+   -- bash: ulimit -n 6000	  
+
+
+Q: W czasie `make` dostajê b³±d, ¿e SCNu64/PRIu64 nie jest zdefiniowane.
+   Co zrobiæ?
+
+A: U¿yj wersji 0.6.5 lub nowszej.
+
+
+[/PL]

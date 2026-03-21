@@ -1,0 +1,197 @@
+<!DOCTYPE RefEntry PUBLIC "-//OASIS//DTD DocBook V3.1//EN" []>
+
+<refentry lang="pl">
+
+  <refmeta>
+    <refentrytitle>dcd</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>DConnectDaemon</refname>
+    <refname>dcd</refname>
+    <refpurpose>Demon Huba systemu wymiany plików DirectConnect</refpurpose>
+  </refnamediv>
+  
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>dcd</command>
+      <arg>-c config_file</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>OPIS</title>
+    <para>DConnect Deamon jest hubem Direct Connect (stworzonego przez NeoModus Software) pracujacym pod kontrol± systemu *nix. Stworzyli¶my go, poniewa¿ chcieli¶my otrzymaæ stabilny program, dla stabilnego systemu. DConnect pracuje jako demon systemowy. Jedyn± opcj± programu mo¿e byæ nazwa alternatywnego pliku konfiguracyjnego. Domy¶lnie jest to plik <filename>/usr/local/etc/dcd.conf</filename>.
+</para>
+  </refsect1>
+ 
+ <refsect1>
+    <title>PLIK KONFIGURACJI</title>
+    <para>   
+Po zainstalowaniu, DConnectDaemon uruchamiany jest przy starcie systemu jako demon. O ile podczas instalacji lub przy starcie programu nie zosta³o okre¶lone inaczej, korzysta on z pliku konfiguracyjnego <filename>/usr/local/etc/dcd.conf</filename>. Notacja w pliku jest nastêpuj±ca: <option>opcja = wartosc</option>. Plik konfiguracji zawiera nastêpuj±ce opcje:
+</para>
+
+    <refsect2>
+      <title>Opcje administracji</title>
+
+    <variablelist>
+      <varlistentry>
+	<term>listen_port_main</term>
+	<listitem>
+<para>Port na którym pracuje DCD. Domy¶ln± warto¶ci± jest <envar>411</envar></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>listen_port_cons</term>
+	<listitem>
+	  <para>Port na którym pracuje konsola administracyjna DCD. Domy¶ln± warto¶ci± jest <envar>511</envar></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>user</term>
+	<listitem>
+	  <para>U¿ytkownik przypisany demonowi DCD. Domy¶ln± warto¶ci± jest <envar>nobody</envar></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>group</term>
+	<listitem>
+	  <para>Grupa do której przypisany jest demon DCD. Domy¶ln± warto¶ci± jest <envar>nobody</envar></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename>conf_welcome</filename></term>
+	<listitem>
+	  <para>Nazwa pliku, w którym zawarte jest powitanie wy¶wietlane dla u¿ytkownika na czacie publicznym, po pod³±czeniu sie do huba. Domy¶lnie jest to plik <filename>dcd.welcome</filename>. Je¿eli nie chcesz aby jakikolwiek komunikat by³ wy¶wietlany pozostaw ten plik pusty, ale nie usuwaj tej opcji.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename>conf_motd dcd.motd</filename></term>
+	<listitem>
+	  <para>Nazwa pliku zawieraj±ca "wiadomo¶æ dnia" wy¶wietlan± w oddzielnym oknie klienta DC po pomy¶lnym pod³±czeniu siê do huba. Domy¶lnie jest to plik <filename>dcd.motd</filename>. Je¿eli nie chcesz aby jakikolwiek komunikat by³ wy¶wietlany pozostaw ten plik pusty, ale nie usuwaj tej opcji.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>conf_banned</term>
+	<listitem>
+	  <para>Nazwa pliku w którym znajduje siê lista hostów nie maj±cych dostêpu do huba (bany czyli to co admini lubi± najbardziej :)). Domy¶lnie jest to plik <filename>dcd.banned</filename></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>conf_cusers</term>
+	<listitem>
+	  <para>Nazwa pliku tekstowego w którym znajduje siê lista Administratorów huba. Domy¶lnie jest to plik <filename>dcd.users</filename>. Kolejne linie pliku wpisywane s± w formacie <envar>login:has³o:e-mail:opis:uprawnienia</envar>, gdzie uprawnieniami s± warto¶ci: <option>c</option>-dostêp tylko do danych dostêpnych przez konsolê np. statystyki lub <option>a</option>-pe³ny dostêp administracyjny huba.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>conf_callow</term>
+	<listitem>
+	  <para>Plik tekstowy zawieraj±cy nazwy hostów z których mo¿na zalogowaæ siê na konsolê dcd. Domy¶ln± nazw± pliku jest <filename>console.allow</filename></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>conf_nallow</term>
+	<listitem>
+	  <para>Plik tekstowy zawieraj±cy wzorce nicków u¿ytkowników, dla których logowanie jest dopuszczalne. Domy¶lnie wszystkie nazwy nicków sa dopuszczalne. Nie zmieniaj tego pliku je¿eli ma tak pozostaæ. Je¿eli chcesz ograniczyæ dopuszczalne nicki, u¿yj wzorców np. <emphasis/[ADSL]*/ - dopuszcza tylko nicki zaczynaj±ce siê od oznaczenia [ADSL].
+  Domy¶ln± nazw± pliku jest <filename>nick.allow</filename>.</para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+</refsect2>
+
+  <refsect2>
+    <title>Logowanie</title>
+    <para>DConnectDaemon dopuszcza ustawienie nastêpuj±cych parametrów logowania pracy huba:</para>
+    <variablelist>
+      <varlistentry>
+	<term>log_dir</term>
+	<listitem>
+	  <para>Katalog w którym umieszczany jest plik logowania. Domy¶lnie jest to katalog <filename>/var/log/dcd</filename></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>log_main</term>
+	<listitem>
+	  <para>Plik logowania. Domy¶lnie jest to plik <filename>dcd.log</filename></para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect2>
+
+  <refsect2>
+    <title>Opcje huba</title>
+
+<variablelist>
+	  <varlistentry>
+	    <term>hubname</term>
+	    <listitem>
+	      <para>Nazwa huba. Domy¶lnie jest to <emphasis>DConnectDaemon version #.#.#</emphasis>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>user_limit</term>
+	    <listitem>
+	      <para>Maksymalna dopuszczalna liczba u¿ytkowników huba. Domy¶lnie jest to warto¶æ <symbol>1000</symbol>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>allow_broken_key</term>
+	    <listitem>
+	      <para>Opcja okre¶laj±ca, czy hub ma sprawdzaæ poprawno¶æ klucza u¿ytkownika. Opcja ta jest narazie ignorowana.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>allow_chat</term>
+	    <listitem>
+	      <para>Opcja pozwalaj±ca wy³±czyæ funkcjê czatów zarówno publicznego jak i prywatnego. Zalecane na bardzo obci±¿onych serwerach. Domy¶lnie opcja ta jest w³±czona.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>ping_timeout</term>
+	    <listitem>
+	      <para>W³±czenie tej opcji powoduje roz³±czenie u¿ytkownika, jestli po okre¶lonym czasie (w sekundach) nie zg³osi swojego pod³±czenia do huba. Protokó³ DC wymaga, aby u¿ytkownik raz na 60 sekund potwierdzi³ swoj± obecno¶æ na hubie. Ustawienie tej opcji na 120 zabezpiecza przed pozostawaniem na hubie zawieszonych sesji u¿ytkowników. Niestety niektóre odmiany klientów DC nie uwzglêdniaj± mechanizmu zabezpieczenia przed ponad 60-cio sekundow± bezczynno¶ci±, dlatego opcja ta jest domy¶lnie wy³±czona - warto¶æ <emphasis>0</emphasis>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>register_timeout</term>
+	    <listitem>
+	      <para>Czas (w sekundach) w jakim musi nast±piæ autoryzacja u¿ytkownika po zg³oszeniu chêci pod³±czenia do huba. Domy¶ln± warto¶ci± jest <emphasis>30</emphasis>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>min_share</term>
+	    <listitem>
+	      <para>Minimalna ilo¶æ danych (MB) jak± musi udostêpniæ u¿ytkownik aby pod³±czyæ siê do huba. Domy¶ln± warto¶ci± jest <emphasis>300MB</emphasis>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>min_slots</term>
+	    <listitem>
+	      <para>Minimalna liczba slotów jakie musi mieæ otworzone u¿ytkownik, aby pod³±czyæ siê do huba.</para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+
+  </refsect2>
+  </refsect1>
+  <refsect1>
+    <title>BUGS</title>
+    <para>DCD nie buduje siê na RedHat poniewa¿ jest tam tylko statyczna wersja biblioteki libwrap. Szukamy kogo¶ kto pomo¿e w rozwi±zaniu tego problemu</para>
+  </refsect1>
+  <refsect1>
+    <title>Zobacz tak¯e</title>
+    <para>
+<citerefentry>
+	<refentrytitle>dcd.console</refentrytitle>
+	<manvolnum>1</manvolnum>
+      </citerefentry>
+</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Aktualizacje</title>
+    <para>Najnowsza wersja DConnectDaemon jest dostêpna na stronie <ulink url="http://www.dc.ds.pg.gda.pl"></ulink></para>
+  </refsect1>
+</refentry>
+    

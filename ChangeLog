@@ -1,0 +1,6690 @@
+2007-05-30  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	updating docs
+
+	* contrib/MandrakeLinux/dcd.spec.in:
+
+	fixing RPM Building on Mandriva
+
+	* NEWS:
+
+	updating docs
+
+	* src/main.c:
+
+	* fixing invalid socket problems warnings
+
+2007-04-11  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	* updating docs
+
+2007-04-10  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* contrib/MandrakeLinux/dcd.spec.in:
+
+	* fixes
+
+	* contrib/MandrakeLinux/dcd.init.in:
+
+	fixing "start"
+
+	* contrib/MandrakeLinux/dcd.init.in:
+
+	Fixing
+
+	* contrib/MandrakeLinux/dcd.init.in:
+
+	script is working only with LSB
+
+	* contrib/MandrakeLinux/dcd.init.in:
+
+	Fixing
+
+	* contrib/MandrakeLinux/dcd.init.in:
+
+	more lsb init
+
+2007-04-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/net.h, FAQ, NEWS, conf/dcd.conf.in, configure.ac, src/compatibility.c, src/compatibility.h, src/log.c:
+
+	* fixing MacOS X
+	* better yp_get_default_domain
+
+2007-04-05  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 1.1.1
+
+2007-03-02  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	fixing docs
+
+	* configure.ac:
+
+	started 1.1.0
+
+2007-03-01  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* AUTHORS:
+
+	* updating logs
+
+	* contrib/PLD/dcd.spec.in, contrib/MandrakeLinux/dcd.spec.in:
+
+	cleaning specs files
+
+	* Makefile.am:
+
+	* log_dir cleaning
+
+	* src/net.c, conf/dcd.conf.in, contrib/MandrakeLinux/dcd.spec.in, contrib/PLD/dcd.spec.in, src/cmd.conf.c, src/cmd.user.c, src/main.c, Makefile.am, NEWS, README.in, SYSLOG, configure.ac:
+
+	* dcd.conf.in
+	- SYSLOG added:
+	- option log_facility added
+	- removed unused options
+
+	* SYSLOG
+	- introduction to syslog-ng
+
+	* configure.ac
+	- removing option --with-log-dir
+
+	* dcd.spec
+	- SYSLOG added
+
+2007-02-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/net.c, src/main.c, src/cmd.user.c, src/cmd.conf.c:
+
+	fixing compilation errors
+
+	* src/main.h, src/cmd.conf.c, src/console.c, src/main.c:
+
+	stealth_mode is always on
+
+	redirect_access no longer possible
+
+	* src/console.c, src/main.c, src/net.c, src/cmd.user.c:
+
+	* some cleaning
+
+	* src/log.c, src/log.h:
+
+	* Fixing missing files
+
+2007-02-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.h, src/net.c, src/pch.h, src/penalties.c, src/cmd.conf.c, src/cmd.dc.c, src/cmd.udp.c, src/cmd.user.c, src/conf.c, src/console.c, src/main.c, src/main.h, src/misc.c, src/Makefile.am:
+
+	* initial support for syslog
+
+2007-02-06  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 1.0.3
+
+2006-12-11  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.h, src/misc.c, conf/dcd.conf.in, src/cmd.conf.c, src/console.c, src/main.c, NEWS:
+	*** empty log message ***
+
+2006-10-29  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 1.0.2
+
+2006-10-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, configure.ac:
+
+	1.0.1
+
+2006-10-18  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.dc.c:
+
+	adding debug info
+
+	* src/cmd.dc.c:
+
+	fixing compilation error
+
+	* src/cmd.dc.c:
+
+	* fixing SIGSEGV
+
+	* NEWS:
+
+	adding news
+
+	* src/main.h, src/misc.c, conf/dcd.conf.in, conf/dcd.hublinks, conf/dcd.users, conf/nicks.allow, src/cmd.conf.c, src/cmd.dc.c, src/main.c, conf/console.allow, conf/dcd.banned, configure.ac:
+
+	setting dcd 1.0.0
+
+	* NEWS:
+
+	removing tcp_wrappers_override
+
+2006-10-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.dc.c:
+
+	better way tcp_wrappers_override handling
+
+	* src/cmd.dc.c:
+
+	minor update
+
+	* NEWS, conf/dcd.users, src/cmd.dc.c, src/misc.c:
+
+	'w' permission
+
+	* conf/dcd.conf.in, src/cmd.conf.c, src/cmd.dc.c, src/main.c, src/main.h, NEWS:
+
+	* allow_tcp_wrappers_override
+
+2006-10-01  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - 1.0.1 started
+
+2006-09-23  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, configure.ac:
+
+	* 0.9.4 becomes stable
+
+2006-09-16  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.9.5
+
+2006-09-12  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/dcd.adduser.in:
+
+	try 1
+
+2006-09-11  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	* updating docs
+
+2006-09-07  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.dc.c:
+
+	* fixed passive mode search
+
+	* src/main.c:
+
+	* log compatibility fixed
+
+	* configure.ac:
+
+	* 0.9.4
+
+	* src/cmd.conf.c, src/main.c, src/main.h, src/misc.c, src/misc.h, NEWS, conf/dcd.conf.in:
+	* updating docs
+	* MAX_USER_BUFFER
+	:wq* MAX_RECEIVE_ONCE set to 1024
+
+	* src/misc.h:
+
+	* removing warning
+
+	* src/conf.c:
+
+	removing unused comment
+
+	* src/cmd.user.c, src/main.h, src/misc.c:
+
+	* better way of handling MyINFO flag
+
+	* README.in:
+
+	123 test
+
+	* src/cmd.conf.c:
+
+	fixingcomment
+
+	* src/main.h:
+
+	* test
+
+	* NEWS, src/cmd.user.c, src/misc.c:
+
+	*updating docs
+
+	* src/cmd.dc.c, src/main.h:
+
+	* better solutions for NoHello/NoGetINFO
+
+2006-09-06  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+	* fixing mysinfo??
+
+	* src/cmd.dc.c:
+
+	* fixing parametered commands
+
+2006-09-06  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.9.3
+
+2006-09-06  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	* updating docs
+
+	* src/main.c, src/main.h, src/cmd.udp.c, src/conf.c:
+
+	* Caching of Up UpToo
+	* Timeout retry set up for fixed time ~120s
+
+2006-09-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c:
+
+	* fixing multiparameter commands
+
+	* src/conf.c, src/main.c, src/main.h, src/net.c:
+
+	* cleaning unused variables
+	* default value for allow_non_us_nicks
+
+	* src/misc.c, src/main.h, src/console.c, src/cmd.dc.c, src/cmd.conf.c, NEWS, conf/dcd.conf.in:
+	*** empty log message ***
+
+	* src/main.c:
+
+	* fixing start of listen_udp_th while minslots not set. Required for hubnet
+
+	* src/cmd.user.c, src/console.c, src/cmd.dc.c:
+
+	* fixing chat commands parsing
+
+	* src/conf.c, src/cmd.user.c:
+
+	* fixing parsing of hublinks file
+
+	* src/main.c:
+
+	* fixing console
+
+	* src/misc.c, src/cmd.dc.c, src/cmd.udp.c, src/cmd.user.c, src/conf.c, src/main.c:
+
+	* strsep() problems fixed
+
+	* src/main.c:
+
+	* permanent bans are working from now on
+
+2006-08-31  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.9.2
+
+2006-08-31  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	* updating docs
+
+	* src/cmd.udp.c, src/cmd.dc.c:
+
+	*Multisearch is not allowed for passive users
+	- kicking user whe passive mode is not allowed
+
+	* src/cmd.user.c:
+
+	code should be clean
+
+	* src/cmd.dc.c, src/cmd.user.c:
+
+	*fixing punish command
+
+2006-08-30  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+	* copy paste bug while parsing $MyINFO removed
+
+	* contrib/MandrakeLinux/dcd.spec.in:
+
+	* Added USERCOMMANDS to Mandriva rpm .spec
+
+2006-08-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/PLD/dcd.spec.in: - updated docs in spec
+
+2006-08-30  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* Makefile.am:
+
+	USERCOMMANDS second try
+
+	* conf/Attic/dcd.usercommands.txt, conf/Makefile.am, Makefile.am, USERCOMMANDS:
+
+	moving documentation file dcd.usercommands.txt to USERCOMMANDS
+
+2006-08-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - starting 0.9.1
+
+	* NEWS, configure.ac: - this is 0.9.0 devel version
+
+2006-08-30  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/net.c, src/cmd.dc.c, src/main.c:
+
+	*minor fixes
+
+	* src/net.c, src/main.h, src/misc.c, src/misc.h, src/cmd.dc.c, src/conf.c, src/main.c:
+
+	*caching UserIP and MyINFO command in static buffers
+
+2006-08-29  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.dc.c, src/console.c:
+
+	* optimizing console
+
+	* src/main.c:
+
+	* quite obvious optimalization point
+
+	* src/conf.c, src/conf.h, src/main.c, src/misc.c:
+
+	* sync
+
+	* src/misc.h, src/net.c, src/net.h, src/cmd.dc.c, src/main.c, src/misc.c:
+
+	* better UserIP2 handling
+	* memleak possibility found and removed
+
+	* src/main.c:
+
+	fixing console
+
+	* src/main.c, src/main.h, src/misc.c, src/misc.h, NEWS, TODO, conf/dcd.conf.in, src/cmd.dc.c:
+
+	* $Lock - Pk changed to DCONNECT..DAEMON
+	* $Key - is from now on checked
+
+	* conf/Attic/dcd.usercommands.desc, conf/Attic/dcd.usercommands.txt, conf/Makefile.am:
+
+	renaming dcd.usercommands.desc to dcd.usercommands.txt
+
+	* src/cmd.conf.c:
+
+	* fixing conf.minslots value
+
+	* conf/Makefile.am:
+
+	adding dcd.usercommands.desc file
+
+	* src/main.c, src/cmd.dc.c:
+
+	* last fixes
+
+	* src/cmd.dc.c:
+
+	* fix
+
+2006-08-28  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c, conf/Attic/dcd.usercommands.desc, src/cmd.conf.c, src/cmd.dc.c, src/conf.c, src/main.c, src/main.h, NEWS, conf/Makefile.am, conf/dcd.conf.in, conf/dcd.usercommands:
+
+	* Support for UserCommand
+
+	* NEWS, src/cmd.dc.c, src/main.h:
+
+	* support for UserIP2
+
+	* src/cmd.dc.c, src/cmd.udp.c:
+
+	* code reformating
+	* allow_downloads and alow_search applies also to linked hubs
+
+	* src/main.c:
+
+	* real fix
+
+	* src/main.c:
+
+	* fix
+
+	* src/cmd.dc.c, src/cmd.user.c, src/cmd.user.h, src/console.c:
+
+	* fixing chat commands
+
+	* src/cmd.dc.c, src/cmd.udp.c, src/cmd.user.c, src/main.c, NEWS:
+
+	* reduction of allocating memmory
+	- disttcpf - disttcp
+	- distudpf - distudp
+
+	* src/net.c, src/main.c:
+
+	* standarizing protocol.log
+
+	* src/cmd.udp.c, src/main.c:
+
+	securing HUBNET
+
+	* src/conf.c, src/console.c, src/main.c, src/misc.c, src/net.c, src/net.h, NEWS, src/cmd.dc.c, src/cmd.udp.c, src/cmd.user.c:
+
+	* cleanups
+
+	* src/cmd.udp.c, src/main.c:
+
+	DEBUG_NET for HUBNET
+
+	* conf/dcd.conf.in, src/cmd.conf.c, src/cmd.dc.c, src/cmd.udp.c, src/conf.c, src/main.c, NEWS:
+
+	*minor optimalizations
+	*min_slots can be set at anytime
+	*updating docs
+
+	* src/cmd.dc.c:
+
+	multihub transparency
+
+	* src/cmd.dc.c, src/cmd.udp.c, src/main.c, TODO:
+
+	* HUBNET officially works
+	- I haven't found the client which fully supports it
+
+	* src/main.c:
+
+	-
+
+	* src/cmd.udp.c, src/main.c, src/net.c:
+
+	sync
+
+	* src/cmd.udp.c, src/main.c:
+
+	sync-
+
+	* src/cmd.udp.c, src/main.c:
+
+	fixing
+
+	* src/main.c, src/main.h, src/misc.c, src/net.c, src/cmd.udp.c, src/conf.c:
+
+	* even more fixing
+
+	* src/conf.c:
+
+	synch
+
+2006-08-27  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c, src/main.h:
+
+	still fixing
+
+	* src/main.c, src/cmd.dc.c:
+
+	fixing
+
+	* src/main.h, src/misc.c, src/misc.h, src/net.c, src/net.h, src/cmd.dc.c, src/cmd.udp.c, src/cmd.user.c, src/conf.c, src/conf.h, src/console.c, src/main.c:
+
+	testing hubnet needed
+
+	* src/cmd.udp.c, src/conf.c, src/main.c:
+
+	* implementation of hubnet
+
+	* src/cmd.udp.c, src/main.c:
+
+	* fixing testing for slots
+
+	* src/cmd.udp.c, src/cmd.udp.h, src/compatibility.c, src/compatibility.h, src/main.c, src/misc.c, src/misc.h, src/pch.h, conf/dcd.hublinks:
+
+	real introduction of hubnet
+
+	* src/main.c, src/main.h, src/misc.c, src/misc.h, src/net.c, src/pch.h, NEWS, conf/Makefile.am, conf/dcd.conf.in, src/Makefile.am, src/cmd.conf.c, src/conf.c:
+
+	* hubnet initial
+
+2006-08-24  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* BUGS:
+
+	* updating docs
+
+2006-08-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in:
+
+	dcd.conf repaired
+
+	* src/main.h, NEWS, conf/dcd.conf.in, src/cmd.conf.c, src/cmd.dc.c, src/main.c:
+
+	* registered_pnly
+
+2006-08-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c, NEWS, contrib/MandrakeLinux/dcd.spec.in:
+
+	* minor bugfixes
+
+2006-08-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/misc.c, src/misc.h, configure.ac, NEWS:
+
+	* strsep exchanges strtok_r
+
+2006-08-08  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac, NEWS: - started with 0.7.2
+
+2006-08-04  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, NEWS:
+
+
+	* fixing SIGSEGV while validhost()
+
+2006-08-01  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c:
+
+	*minor fix
+
+	* src/cmd.user.c, NEWS, src/cmd.dc.c:
+
+	Fixing bugs found by Luigi Auriemma
+
+2006-07-29  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.dc.c:
+
+	*minor fix
+
+	* src/conf.c, src/console.c:
+
+	* fixing logging to a console
+
+	* NEWS, src/conf.c, src/conf.h, src/console.c, src/net.c:
+
+	* fixing console
+	* updating docs
+
+	* src/cmd.conf.c:
+
+	- fixing listen_port_cons error
+
+	* src/cmd.dc.c, src/cmd.user.c, src/main.c, src/penalties.c:
+
+	* fixing vulnerabilities spotted by Luigi Auriemma
+	- lack of format string while using pubmsg(), privmsg()
+	- static nick_prev in listen_thread_udp()
+
+2006-07-21  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.7.1
+
+	* NEWS, configure.ac:
+	- because of sorting issue - lets release it as 0.7.0
+
+2006-07-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c:
+
+	fixing duration of penalties
+
+2006-07-14  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.conf.c, src/conf.c, src/main.c, src/main.h, src/penalties.c, NEWS, conf/dcd.conf.in:
+
+	* little code cleaning
+	* changing definition of minimal sleep time
+
+2006-07-13  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/net.c, src/cmd.dc.c, src/main.c, src/main.h, src/misc.c:
+
+	fixing reading from socket
+
+	* src/main.c, src/misc.c:
+
+	checking globally for hanging sessions every time cleaner is started
+
+	* NEWS, src/misc.c:
+
+	* fixing problem with logging to hub while session handling
+
+	* src/net.c:
+
+	minor update
+
+	* conf/dcd.welcome, src/conf.c, src/misc.c, src/net.c, NEWS, conf/dcd.motd, conf/dcd.rules:
+
+	- updating docs
+	- better handling of socket errors
+
+2006-06-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	* minor fix
+
+2006-06-15  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.conf.c, src/main.c, NEWS:
+
+	fixing SIGSEGV while SIGHUP
+
+2006-06-12  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac, NEWS: - started with 0.6.9
+
+2006-06-12  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	updating DOCS
+
+	* src/conf.c, src/main.c:
+
+	* code cleaning.
+
+	* src/conf.c:
+
+	*if you use fopen use also fclose
+
+2006-06-10  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.6.9
+
+2006-05-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c:
+
+	* forgot about email in dcd.users ;(
+
+2006-05-25  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.6.8
+
+2006-05-22  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.dc.c, src/conf.c, src/main.c:
+
+	fixing compatibility with \r\n in win98
+
+	* src/main.h, NEWS, src/conf.c, src/conf.h, src/main.c:
+
+	* speeding up by using memmory buffers instead of files
+
+	* src/main.c, src/main.h, src/misc.c, src/misc.h, NEWS, src/cmd.dc.c, src/cmd.user.c, src/conf.c, src/conf.h:
+
+	* speeding up
+
+2006-05-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, src/cmd.dc.c:
+
+	- refreshing of userlist
+
+	* src/cmd.dc.c, src/main.c, src/misc.c, src/net.c, src/net.h, NEWS, src/cmd.conf.c:
+
+	* code cleaning
+
+2006-05-20  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac, NEWS: - started with 0.6.7
+
+	* configure.ac: - generate 0.6.6
+
+2006-05-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.dc.c, src/conf.c, src/console.c, src/main.c, src/main.h, src/net.c, NEWS:
+
+	* new DC command $Supports
+
+2006-05-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c:
+
+	* forgot about conf command :]
+
+	* src/main.h, src/net.c, NEWS, conf/dcd.conf.in, src/cmd.conf.c, src/main.c:
+
+	* speeding up hub
+	-- from now on we read not more than MAX_RECEIVE_ONCE from users socket
+
+2006-05-13  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/MandrakeLinux/dcd.init.in:
+	- another /bin/bash -> /bin/sh - use default system shell for scripts
+
+	* src/dcd.adduser.in: - use /bin/sh, not /bin/bash
+
+2006-05-09  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.h, src/penalties.c, src/cmd.conf.c, src/cmd.dc.c, src/cmd.user.c, src/console.c, src/main.c:
+
+	* code refactoring
+
+2006-04-28  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	uopdating docs
+
+	* src/cmd.dc.c, configure.ac:
+
+	* UINT64_C() problem solved(BSD.4.11)
+	* uint64_t instead of unsigned long long in configure.ac
+
+2006-04-28  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.6.6
+
+2006-04-27  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* AUTHORS, FAQ, NEWS, src/cmd.dc.c:
+
+	* updating docs
+
+	* removing body of dc_garbage()
+	- made problems for users with low link speed
+
+	* configure.ac:
+
+	*fixing ISOC99 compiler incompatibilities
+
+2006-04-23  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, configure.ac, src/main.c, src/net.c:
+
+	* *BSD fix second try
+	* Solaris compilation fix first try
+
+	* FAQ, src/conf.c, src/main.c, src/main.h, src/net.c:
+
+	* fixing *BSD problem try one
+
+2006-04-22  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	* fixing console
+
+2006-04-21  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.6.5
+
+2006-04-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/cmd.dc.c:
+
+	* more specific while parsing of protocol
+
+	* src/cmd.user.c:
+
+	* update in chat commands
+	- version
+	- help
+
+2006-04-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.c, src/cmd.user.c, src/conf.c:
+
+	* code cleaning
+
+	* src/console.c, src/main.c, src/main.h, NEWS:
+
+	czyszczenie kodu
+
+	* NEWS, src/conf.c, src/console.c, src/main.c:
+
+	* bugfixes
+
+2006-04-18  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.6.4
+
+2006-04-14  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* TODO, NEWS, README.in, FAQ, AUTHORS, BUGS, COPYING:
+
+	* updating docs
+	* tagging them
+
+	* src/misc.c, src/net.c, src/penalties.c, src/main.h, src/console.c, src/main.c, src/cmd.h, src/cmd.user.c:
+
+	* speeding up
+	* code cleaning
+
+	* src/cmd.c, NEWS:
+
+	* code cleaning
+	- speeding up
+
+2006-04-12  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.conf.c, src/cmd.dc.c, NEWS:
+
+	* fixing passive search
+
+	* NEWS:
+
+	*updating docs
+
+	* src/cmd.dc.c:
+
+	* fixing passive search request
+
+2006-04-11  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.dc.c:
+
+	* fixing private chat
+
+2006-04-10  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, src/console.c, src/misc.c:
+
+	* console fixed
+
+	* src/cmd.user.c, NEWS, src/cmd.dc.c:
+
+	* fixing punishments
+
+	* NEWS, src/cmd.dc.c:
+
+	* fixing private chats
+
+2006-04-09  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.6.3
+
+2006-04-09  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, NEWS:
+
+	* speeding up threads
+
+2006-04-04  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c, NEWS:
+
+	* header fix
+	* updating docs
+
+	* src/cmd.user.c, src/cmd.c, src/cmd.conf.c, src/cmd.dc.c, src/cmd.h, src/cmd.opt_line.c:
+
+	* speeding up parsing of options, config, protocol, chat commands
+	- now we use bin_cmd_exec which performs binary search instead of linear
+
+2006-04-03  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* contrib/MandrakeLinux/dcd.init.in, src/cmd.conf.c, src/main.c:
+
+	* minor fixes
+
+	* AUTHORS:
+
+	* updating docs
+
+	* src/main.c, src/penalties.c:
+
+	code cleaning
+
+	* NEWS, src/main.c:
+
+	* minor fix
+	* updating docs
+
+	* contrib/MandrakeLinux/dcd.init.in:
+
+	* better innit script for starting dcd in mandriva
+
+	* TODO, NEWS:
+
+	* updating docs
+
+	* src/cmd.conf.c:
+
+	* better parsing of config line
+	- parse_config_line()
+
+2006-04-02  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c, src/main.c, src/misc.c, src/cmd.conf.c:
+
+	* problem with conf.n_user_manager fixed
+
+	------- TESTING NEEDED
+
+	* src/cmd.conf.h, src/conf.c, src/main.c, src/cmd.conf.c:
+
+	* fixing little misunderstanding
+
+	* src/cmd.conf.h, src/conf.c, src/pch.h, src/Makefile.am, src/cmd.conf.c:
+
+	* new way of handling config file
+
+2006-03-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	* updating docs
+
+	* src/main.c:
+
+	* adduser() uses userrec_t->reason
+
+	* src/main.c, src/net.c, src/cmd.dc.c:
+
+	* logs in standard format
+
+	* SIGSEGV removed
+
+	* src/net.h, src/console.c, src/main.c, src/main.h, src/net.c, src/cmd.dc.c:
+
+	* userrec_t->reson added
+	- now the reason of quiting is in disconnect line
+
+	* src/conf.c, src/main.c:
+
+	* logs are smaller
+
+	* src/misc.c, src/cmd.dc.c:
+
+	* cleaning code
+	* fixing
+	- OpForceMove
+	- Kick
+
+	* src/misc.c:
+
+	* fixing problem with MyINFO without any description
+
+	* src/cmd.user.c, src/main.c, src/misc.c, src/cmd.c, src/cmd.dc.c:
+
+	*fixing
+	- dc protocol handling problems
+	- SIGSEGV in fill_myinfo
+	- fixing redirect_all chat command
+
+	* src/communicates.h:
+
+	*removing warnings
+
+	* src/communicates.h:
+
+	* fixing compilation problem
+
+	* src/net.h, src/pch.h, src/penalties.c, src/penalties.h, src/dcd.adduser.in, src/main.c, src/main.h, src/match.c, src/match.h, src/misc.c, src/misc.h, src/net.c, src/cmd.opt_line.c, src/cmd.opt_line.h, src/cmd.user.c, src/cmd.user.h, src/communicates.h, src/conf.c, src/conf.h, src/console.c, src/console.h, src/cmd.c, src/cmd.dc.c, src/cmd.dc.h, src/cmd.h:
+
+	* adding $Id: ChangeLog,v 1.763 2007/06/08 23:06:08 nobody Exp $
+
+	* src/misc.h, src/net.c, src/net.h, src/pch.h, src/penalties.c, src/penalties.h, src/cmd.user.c, src/cmd.user.h, src/conf.c, src/conf.h, src/console.c, src/console.h, src/main.c, src/main.h, src/match.c, src/match.h, src/misc.c, src/cmd.c, src/cmd.dc.c, src/cmd.dc.h, src/cmd.h, src/cmd.opt_line.c, src/cmd.opt_line.h:
+
+	*code cleaning
+	- code now compiles
+	- header files totally reorganized
+
+	*Intro is extremely short
+
+2006-03-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c, src/cmd.dc.c, src/cmd.dc.h, src/cmd.opt_line.c, src/main.c, src/main.h, src/Makefile.am:
+
+	* completely rewriten handling of DC protocol using cmd_exec()
+	* not tested
+
+2006-01-31  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* AUTHORS:
+
+	updating docs
+
+	* src/main.c, src/pch.h, src/Makefile.am, src/communicates.h, README.in, configure.ac, NEWS:
+
+	* gettext initial
+
+2006-01-24  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.6.2
+
+2006-01-24  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	* updating docs
+
+	* src/main.c, src/misc.c:
+
+	* SECURITY FIX
+	- checking if user does not use fake nick while chating on priv
+	- allow_chat set to 0 disables private chating
+
+	* BUGFIX:
+	- '?' is not allowed in user's nick.
+
+	Greetings for Serge Adrianov
+
+2006-01-16  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+	updating docs
+
+	* src/cmd.user.c:
+
+	* minor bugfixes
+	* added command time for compatibility with other hubs
+
+2006-01-15  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.c:
+
+	code cleaning
+
+	* TODO, NEWS:
+
+	* updating docs
+
+	* src/cmd.user.c:
+
+	*added command
+	- myip - shows current ip of user
+	- showops - shows operators on hub for console user
+
+2006-01-14  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.opt_line.c, src/cmd.opt_line.h:
+
+	* from now on if option is illegal we can display her in opt_unknown()
+
+	* NEWS:
+
+	*updating docs
+
+	* src/cmd.c, src/cmd.opt_line.c:
+
+	*fixing cmd_exec()
+
+	* src/misc.h, src/main.c, src/misc.c, src/cmd.opt_line.h, src/cmd.c, src/cmd.opt_line.c, src/Makefile.am:
+
+	* new parser of command-line options
+
+	* fixing cmd_exec() function
+
+2005-12-16  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/dcd.adduser.in, src/misc.c:
+
+	* '<', '>' are not allowed in nick
+
+2005-12-15  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	updating docs
+
+	* src/cmd.user.c:
+
+	* code cleaning
+
+	* added chat command date - prints Y.M.D H:M:S TZ of hub
+
+	* src/cmd.user.c, src/cmd.user.h:
+
+	* security problem really fixed
+
+	* src/cmd.user.c: *** empty log message ***
+
+	* src/cmd.user.c:
+
+	* security fix
+
+	* NEWS:
+
+	* updating docs
+
+	* NEWS:
+	* updating docs
+
+	* src/main.c, src/main.h, src/Makefile.am, src/cmd.c, src/cmd.h, src/cmd.user.c, src/cmd.user.h, src/console.c:
+
+	* making things in better way
+	- cmd_exec()
+
+	* chat commands revisited
+	- speeded up parsing of command parameters
+	- rechecked permissions to use commands
+	- removed unused commands
+	-- jq(almost every dc client has apriopriate option)
+	-- boost(breaks protocol)
+	-- password
+	-- pubchat(almost unusuable)
+
+2005-12-12  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started 0.6.1
+
+2005-11-30  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, configure.ac:
+
+	* lets start a new age :]
+
+	-- new development process begins
+
+	* NEWS:
+
+	* updating docs
+
+2005-11-29  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/main.c:
+
+	* fixing up #kick command
+
+	* trying to speed up the hub
+	* trying to fix DOS
+
+2005-11-25  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.5.10
+
+2005-11-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.h, src/main.c:
+
+	* communicate for search interval is sent once a 60s :)
+
+	* src/main.c:
+
+	* now this feature should work
+
+	* src/main.c, src/main.h:
+
+	* search_interval communicat is sent only once a search_interval period
+
+	* NEWS:
+
+	* updating documentation
+
+2005-11-24  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h:
+
+	* fixing search_interval
+
+2005-11-24  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac:
+	- started with 0.5.9 (maybe if no bugs'll be found - 0.6.x ?)
+
+2005-11-24  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+	* fixed problem with x86_64
+
+	* NEWS, src/main.c:
+
+	updating documentation
+	search_interval from now on works properly
+
+	* src/conf.c, src/main.c:
+
+	* fixed problem with
+	- setting socket_send_buffer in dcd config
+
+2005-11-23  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.5.8
+
+2005-11-23  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/console.c, src/main.c, src/main.h, src/misc.c:
+
+	* cleaner interval is set to 5s
+
+	* src/main.c:
+
+	* making code more readable - cosmetix
+
+2005-11-18  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/main.c:
+
+	* more logging added
+
+2005-11-17  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c:
+
+	* now this should be thread safe
+
+2005-11-16  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in:
+
+	* removing problem with broken key checking
+
+	* src/console.c, src/console.h, src/main.c, src/main.h, src/misc.c, src/misc.h, src/net.c, src/net.h, src/penalties.c, src/penalties.h, conf/dcd.conf.in, conf/dcd.users, src/cmd.user.c, src/cmd.user.h, src/conf.c, src/conf.h, NEWS:
+
+	  * code cleaning
+
+	  * new handling of $MyInfo message
+
+	  * new option
+	  - search_interval - sOP ignores it
+
+	  * new priviledge
+	  - i - user can search without waiting for search interval
+
+	  * user HUB appeared
+	  - used for annoying messages from HUB
+	  --> when user not waited for search_interval before next search
+
+	  * new command
+	  - msg_prv - sends private message to user as hub (sOP)
+	  - msg_prv_all - sends private message to all users as hub (sOP)
+
+2005-11-12  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c, src/net.c:
+
+	* trying to fix problem on 64bit machines
+
+2005-11-07  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c, src/conf.h, src/main.h, NEWS, README.in:
+
+	* from now on multiline reason of punishment is handled properly
+
+	* src/net.c:
+
+	* better handling of ENOSR
+
+2005-10-31  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/net.c:
+
+	* removing ENOSR - linux specific error CODE
+
+2005-10-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c:
+
+	* fixing help for punish command
+
+2005-10-12  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* FAQ:
+
+	making translation better
+
+	* FAQ, NEWS:
+
+	* updating documentation
+
+2005-10-11  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* BUGS: - one bug
+
+	* configure.ac, NEWS: - started with 0.5.7
+
+2005-10-10  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/net.c, NEWS:
+
+	* removed problem with updating userlist
+
+2005-10-03  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in:
+
+	* bugfixing
+
+	* NEWS, src/conf.c:
+
+	* new names of so_rcvbuf and so_sndbuf
+
+	* NEWS, conf/dcd.conf.in, src/conf.c, src/main.c, src/main.h, src/misc.c:
+
+	* added setting amount of bytes system sockets
+	so_sndbuf, so_rcvbu
+
+2005-10-02  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.5.6
+
+2005-10-01  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+	* while on x86_64 we get SIGSEGV I decided to allocate about 1MiB in my_vsprintf()
+	- this seems to solve problem
+
+2005-09-30  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	* displaying punishments while user gets connected to the hub
+
+2005-09-26  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, TODO:
+
+	* updating docs
+
+	* src/main.c:
+
+	* small fixes
+
+	* src/main.h, src/misc.c, src/net.c, src/penalties.c, src/cmd.user.c, src/conf.c, src/main.c:
+
+	* fixing protocol compatibility
+	- user receives nicklist before testing amount of slots
+
+	* making setting of STATE_QUIT more readable
+
+2005-09-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+	* hub does not accept nick which begins with '#'
+
+	* NEWS:
+
+	* updating docs
+
+	* src/dcd.adduser.in:
+
+	* accepting empty email and comment
+
+	* src/dcd.adduser.in:
+
+	* dcd.adduser.in adds/changes info about users
+	- tests needed
+
+	* src/misc.c:
+
+	* making communicate more usefull
+
+	* NEWS:
+
+	* updating news
+
+	* src/misc.c:
+
+	* from now on nicks must be printable in US-ASCII.7bit character encoding.
+	- this will remove problem with using console, punishing and downloading files
+	on for example valknut 0.3.7 while trying to download from users filelist
+
+2005-09-24  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/penalties.c, src/cmd.user.c, src/conf.c, src/main.c, src/main.h, src/net.c:
+
+
+	* removing n_user_manager limit
+	* making a send and receive buffer bigger
+	* removed semaphores from my_send()
+
+2005-09-23  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	* trying to remove problem with bind() while sockets are in FIN_WAIT state
+
+2005-09-18  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c:
+
+	* minor problem with #help fixed
+
+	* conf/dcd.conf.in:
+
+	- added option in config
+
+	* src/conf.c:
+
+	* problem with playfile() and empty lines solved
+
+	* src/misc.c:
+
+	* minor bug connected with rules file fixed
+
+	* conf/dcd.rules:
+
+	added file dcd.rules
+
+	* NEWS, README.in, conf/Makefile.am, conf/dcd.motd, conf/dcd.welcome, src/cmd.user.c, src/cmd.user.h, src/conf.c, src/main.c, src/main.h:
+
+	* files dcd.rules dcd.motd dcd.welcome are displayed as they are
+	- comments and empty lines are from now on sent to user
+
+	* added new option conf_rules where you can specify rules of the hub
+
+2005-09-17  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, src/cmd.user.c, src/conf.c, src/main.c, src/main.h:
+
+	* still removing unused code
+
+	* conf/dcd.conf.in:
+
+	* removing unused options
+
+	* src/cmd.user.c, src/cmd.user.h, src/conf.c, src/conf.h, src/console.c, src/console.h, src/main.c, src/main.h, src/misc.c, src/misc.h, src/net.c, src/net.h, src/penalties.c, src/penalties.h:
+
+	* removing unused code
+
+	* src/main.c, src/main.h, src/net.c, src/net.h:
+
+	* from now on every option of socket is set
+	receive and send buffers are set to 1MB
+
+2005-09-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	* "warning: cast from pointer to integer of different size" removed on 64bit machines
+
+2005-09-03  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	*fix in user_manager()
+
+	* src/main.c:
+
+	* threads need to sleep more
+
+2005-09-02  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h, src/misc.c:
+
+	* securing host_access() which users strtok
+	* STATE_WELCOME appeared
+	- from now on welcome message is sent from user_manager()
+
+	* src/main.c:
+
+	better slots checking communicate
+
+	* src/misc.c:
+
+	tmp in my_realloc is set to NULL at the beginning
+
+	* src/main.c: *** empty log message ***
+
+	* src/main.h, src/main.c:
+
+	MAXBLOCK has now value 200*1024
+
+	* src/cmd.user.c, src/conf.c, src/console.c, src/main.c, src/main.h, src/match.c, src/misc.c, src/net.c, src/pch.h, NEWS, configure.ac:
+
+	* using PRIu64 SCNu64 from <inttypes.h>
+	  - removed --with-sscanf-system from configure
+	  - autodetection SSCANF_ULL is not needed
+
+	* NEWS, src/console.c, src/main.c, src/main.h, src/misc.c, src/net.c, src/net.h:
+	* MyINFO decoding/coding fix
+	* code cleaning
+	* message of the day is sent to user after slots checking
+	* semaphore is used on my_send()
+
+2005-06-03  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c:
+
+	- fixing opbreak() function
+	from now on it should work as previously planned
+
+2005-05-23  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.5.5
+
+2005-05-04  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in, src/cmd.user.c, src/conf.c, src/main.c, src/main.h, NEWS:
+
+
+	* new options in dcd.conf
+	- max_chat_length
+	- kick_max_chat_length
+
+2005-05-03  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/cmd.user.c: everything can be done easyier
+
+	* src/cmd.user.c: no comments
+
+2005-05-02  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/cmd.user.c: * No message *
+
+	* src/cmd.user.c: * sOP froma console can now kick anybody.
+
+	* src/cmd.user.c: * punishing offline users (#punish <ip>)
+
+2005-04-22  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/net.c:
+
+	* fixing my_send
+
+	* src/net.c:
+
+	* better my_sendf debug code
+
+2005-04-06  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	* updating NEWS
+
+	* conf/dcd.conf.in, src/main.c:
+
+	*user can choose if he wants
+	- new meaning of minimal_sleep_time(default)
+	- old meaning of minimal_sleep_time
+
+	more info in dcd.conf
+
+	* conf/dcd.conf.in, src/conf.c, src/main.h, NEWS:
+
+	* exchanging listen_interface to bind_address
+	- more compatible with other services bind_address option
+
+	* showing info about hardcoded n_user_manager to 1 only when it is set to more than one
+	* updating docs
+
+2005-04-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c:
+
+	n_user_manager is temporarily hardcoded to 1.
+
+	to make this setting availiable we need to have the files buffered in memmory.
+
+2005-03-26  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, src/cmd.user.c, src/main.c:
+
+	* removing deadlock after #rehash command
+
+2005-03-23  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.5.4
+
+2005-03-22  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	* now console is fixed
+
+	* src/main.c, NEWS:
+
+	- removing problem with logging to console
+	--> user is removed when specifies empty username or password
+
+	* NEWS:
+
+	* updating docs
+
+	* src/main.c:
+
+	*commenting debug code
+
+	*removing communicate about SIGPIPE from logs
+
+	* src/main.c:
+
+	*repairing minimal_sleep_time meaning
+
+2005-03-21  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.5.3
+
+2005-03-16  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	- bugfix in th_user_manager table length
+
+	* src/main.c:
+
+	- signals were revised
+
+	* src/main.c:
+
+	- trying to repair signals
+
+	* src/main.c:
+
+	- fixing logging
+
+	* src/main.c:
+
+	- better logging
+
+2005-03-15  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/penalties.c:
+
+	- removing problems with #amnesty <nick> command
+
+2005-03-14  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/console.c:
+
+	- fixing console
+
+	* src/main.c:
+
+	- fixing memleak possibility
+
+	* src/main.c:
+
+	- compilation error when gcc 2.95 used fixed
+	- trying to find solution for not working on FreeBSD, maybe this
+	is an error when using select() function when using to low timeout(1us)
+
+2005-03-12  Micha³ Felski  <fela@ds.pg.gda.pl>
+
+	* AUTHORS: thanks to czarodziej for dcd logo
+
+2005-03-11  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in, src/conf.c:
+
+	- bugfix
+		setting minimal_sleep_time to 1 could stall the hub when MAXUSERS get connected
+
+	* NEWS:
+
+	- updating docs
+
+	* conf/dcd.conf.in, src/conf.c, src/main.c:
+
+	- fix in send_retries
+	--> setting this value to 1 when send_time is set to less or equal to 0
+
+	- fix in minimal_sleep time
+	--> maybe this will remove select()/send errors
+
+	- updating dcd.conf.in
+	--> setting n_user_manager to more than 1 makes glibc errors
+
+2005-03-10  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.5.2
+
+2005-03-10  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	- less loging in protocol.log
+
+2005-03-09  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, conf/dcd.conf.in:
+
+	- updating docs according to working max_command option
+
+	* src/net.c, src/main.c:
+
+	new way of holding usr->buf
+
+	* NEWS:
+
+	- updating docs
+
+	* conf/dcd.conf.in:
+
+	- updating dcd.conf
+
+	* src/main.c:
+
+	rolling back 50 commands per user
+
+	* src/misc.c:
+
+	- repairing uptime()
+
+	* src/conf.c:
+
+	- fixing comment
+
+	* src/conf.c:
+
+	- fixing reading max_commands from config
+
+	* conf/dcd.conf.in, src/cmd.user.c, src/main.c, src/main.h, NEWS:
+
+	- added new option to dcd.conf - max_commands
+
+	* NEWS:
+
+	* updating news
+
+	* src/net.c:
+
+	- fixing usr->ping
+
+	* src/misc.c, src/net.c, src/main.c:
+
+	- I do not know what to believe in with inet_ntoa function, so i leave more secure one version
+	- usr->ping has now the worst ping that user had ever
+	- removing warnings
+
+	* src/main.c, src/misc.c, src/misc.h, src/cmd.user.c:
+
+	- fixing static buffer in uptime
+	- fixing compilation error
+
+	* src/main.c, src/misc.c:
+
+	- inet_ntoa is known to be multithread safe, so the semaphore is not necessary
+	[manual]
+	The return value from inet_ntoa() points to a  buffer  which
+	     is  overwritten on each call.  This buffer is implemented as
+	     thread-specific data in multithreaded applications.
+	[/manual]
+
+	* src/main.c:
+
+	- trying to speed up minslot testing thread
+
+2005-03-08  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	* minor fix
+
+	if there are only a few users on the hub and not many users try to reconnect then client must connect to the hub twice, because once he will stall on slots checking.
+
+	* src/main.c:
+	- cosmetics
+
+	* src/main.c:
+
+	- fix
+
+	* src/main.c:
+
+	- minor fix
+
+	* src/main.c:
+
+	fixing compilation error
+
+	* src/main.c:
+
+	- faster minslots chceckin thread
+
+	* src/main.c:
+
+	- fixing passive search
+
+2005-03-08  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started 0.5.1
+
+2005-03-08  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* Makefile.am, doc/Makefile.am:
+
+	- make dist from now on works fine
+
+2005-03-07  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	- rollback
+
+	* src/main.c:
+
+	- better timeouts
+
+	* src/main.c:
+
+	- removing unnecessary semaphore
+
+	* src/cmd.user.c:
+	- more info in console command conf
+
+2005-03-07  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/logrotate.dcd.in: - don't remove useful things
+
+2005-03-07  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS: updating docs
+
+	* contrib/logrotate.dcd.in:
+
+	- minor fix
+
+2005-03-06  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/MandrakeLinux/.cvsignore: - some cleanups
+
+2005-03-04  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	- minor fix in logging
+
+	* src/main.c:
+
+	fix
+
+	* src/main.c:
+
+	- minor fix
+
+	* conf/dcd.conf.in:
+
+	updating docs
+
+	* src/main.c:
+
+	* minimal_sleep_time is now the minimal_sleep time of whole process not just user_manager thread
+	- time of sleeping for a thread is now minimal_sleep_time*n_user_manager
+
+	* src/net.c:
+
+	-- rollback
+
+	* src/net.c:
+
+	- new sending schema
+
+2005-03-03  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c:
+
+	- fixing
+
+	* src/main.c:
+
+	- checking for slots fixed
+
+	* src/main.c, src/main.h:
+
+	fixing
+
+	* src/main.c, src/main.h:
+
+	- rebuilding Slots checking thread
+
+	* src/main.c:
+
+	- removing compilation problems
+
+	* src/main.c:
+
+	- making code faster
+
+	* src/main.c:
+
+	removing unused semaphore
+
+	* src/net.c, src/cmd.user.c, src/main.c:
+
+	- minor fix
+
+	* src/main.c:
+
+	- try2
+
+2005-03-02  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* doc/Makefile.am, doc/pl/Makefile.am:
+	- make install docs works now... :-/
+
+	* NEWS, configure.ac: - started with 0.5.0
+
+	* contrib/MandrakeLinux/Makefile.am, Makefile.am: - make it build...
+
+2005-03-02  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, configure.ac:
+
+	* minor improvements
+
+2005-02-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, conf/dcd.conf.in, src/conf.c, src/main.c, src/main.h:
+
+	- new options in dcd.conf
+	* allow_search
+	* allow_downloads
+
+2005-02-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/net.c:
+
+	- fix in counting tries while sending data to user
+
+	* src/cmd.user.c:
+
+	- fix
+
+	* src/cmd.user.c:
+
+	minor fix
+
+	* src/cmd.user.c:
+
+	- minor fix
+
+	* NEWS, conf/dcd.conf.in, src/cmd.user.c, src/conf.c, src/console.c, src/main.c, src/main.h, src/misc.c, src/net.c:
+
+	- ping_timeout exchanged to idle_timeout
+	- whois command shows ping
+	- minor fixes
+	- updating docs
+
+2005-02-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* contrib/MandrakeLinux/dcd.spec.in:
+
+	- fixing dependencies
+
+2005-02-13  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/cmd.user.h, src/conf.c, src/conf.h, src/console.c, src/console.h, src/main.c, src/main.h, src/match.c, src/match.h, src/misc.c, src/misc.h, src/net.c, src/net.h, src/pch.h, src/penalties.c, src/penalties.h:
+
+	- reformatting code
+
+	* src/main.c, src/net.c:
+
+	*better logs while signals received
+
+	* src/main.c:
+
+	removing problems with signals
+
+2005-02-12  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/net.c:
+
+	* sighup is no safe
+	* better logs on my_send
+
+2005-02-10  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/penalties.c:
+
+	* now the adding penalty semaphore is in good place
+
+2005-02-09  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c, src/penalties.h:
+
+	* testing if nick is already in use is now working :]
+	- there was a problem that nick was disappearing after connection
+
+2005-02-08  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	* now it is fine
+
+	* src/penalties.c:
+
+	minor fixes
+
+	* conf/dcd.conf.in, src/conf.c, src/main.c, src/main.h, src/net.c, src/penalties.c, NEWS:
+
+	* it is possible to set 1 to 10 user managing threads
+
+	the maximal timeout for sending packets can be from now bigger
+
+2005-02-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	- possible SIGSEGV fixed
+
+	* contrib/MandrakeLinux/dcd.spec.in, contrib/PLD/dcd.spec.in:
+
+	- fix SIGSEGV because of /etc/dcd.penalties file
+
+	* src/conf.c:
+
+	* fix in setting amount of listen_main threads
+
+	* NEWS, conf/dcd.conf.in, src/cmd.user.c, src/conf.c, src/main.c, src/main.h:
+
+	* new option in dcd.conf
+
+	* NEWS:
+
+	updating docs
+
+	* src/main.c, src/main.h:
+
+	- removed from listen_thread_SR
+	-- deadlock
+	-- SIGSEGV
+
+	- remove deadlock possibility while SIGHUP
+	-- user_manager is from now on a thread
+
+	- hardcoded 5 main socket accept() threads
+	-- should remove a problem when only 'STATE: Connected' is shown in the main chat
+
+	* NEWS:
+
+	updating DOCS
+
+	* contrib/MandrakeLinux/dcd.spec.in, contrib/PLD/dcd.spec.in:
+
+	- from now on ./autogen.sh is used before ./configure while building RPM
+
+	* README.in, contrib/MandrakeLinux/dcd.init.in, contrib/PLD/dcd.spec.in:
+
+	- sync
+
+2005-02-05  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/README, src/dcd.adduser.in:
+	- URL fixes, remove not needed vars
+
+2005-02-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* contrib/README:
+
+	updating docs
+
+	* contrib/PLD/dcd.init.in, contrib/PLD/dcd.spec.in, contrib/MandrakeLinux/dcd.init.in, contrib/MandrakeLinux/dcd.spec.in:
+
+	- fixing paths
+
+	* contrib/MandrakeLinux/dcd.init.in, contrib/MandrakeLinux/dcd.spec.in:
+
+	- chkconfig support
+
+2005-02-04  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* contrib/PLD/dcd.spec.in:
+
+	rolling back last changes
+
+	* contrib/MandrakeLinux/dcd.spec.in:
+	- fixing dependencies with tcp_wrappers
+
+	* contrib/MandrakeLinux/dcd.spec.in:
+
+	- removed problem with chkconfig communicate
+
+	* contrib/MandrakeLinux/dcd.spec.in:
+
+	- MandrakeLinux Support
+
+	* contrib/MandrakeLinux/dcd.spec.in:
+
+	one more time
+
+	* contrib/MandrakeLinux/dcd.spec.in:
+
+	now it should be fine
+
+	* contrib/MandrakeLinux/dcd.spec.in:
+
+	inproper date indo
+
+	* src/dcd.adduser.in, src/misc.c, AUTHORS, BUGS, NEWS, configure.ac, contrib/Makefile.am, contrib/MandrakeLinux/Makefile.am, contrib/MandrakeLinux/dcd.init.in, contrib/MandrakeLinux/dcd.spec.in, contrib/PLD/dcd.spec.in, doc/Makefile.am, doc/pl/Makefile.am:
+
+	* Support for building MandrakeLinux rpms
+
+	* Minor updates in dcd.adduser script
+
+	* updating DOCS
+
+2005-01-27  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in:
+
+	minor explanations added
+
+	* NEWS, conf/dcd.conf.in, src/cmd.user.c, src/conf.c, src/net.c:
+
+	minor fixes and improvements
+
+	* from now on you can choose to check if message was sent to user correctly or not
+
+	* if 's' dc user hangs then 's' console user can kick him
+
+2005-01-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/dcd.adduser.in:
+
+	minor fix
+
+	* src/Makefile.am:
+
+	now it is ok
+
+2005-01-20  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Makefile.am: - kill that buggy crapp. R@V, think...
+
+2005-01-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/Makefile.am, src/dcd.adduser.in:
+
+	adding new lines at the end of files
+
+	* src/Makefile.am, src/dcd.adduser.in:
+
+	updates
+
+	* src/dcd.adduser.in:
+
+	minor change
+
+	* src/Makefile.am:
+
+	next one
+
+	* configure.ac, src/dcd.adduser.in:
+
+	prepairing password encrypting
+
+2005-01-10  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.4.9
+
+	* .cvsignore: - more cleanups
+
+	* autom4te.cache/.cvsignore: - to be clean
+
+	* Makefile.am, configure.ac, regen.sh:
+	- now it ready for new ac/am. removed parts of gettext (not used)
+
+	* .cvsignore, autogen.sh, regen.sh: - automake-1.9.4 ready.
+
+	* Attic/missing: - outdated
+
+	* Makefile.am, acinclude.m4, configure.ac:
+	- started with brand new ac/am-stuff
+
+	* Attic/mkinstalldirs: - outdated
+
+2005-01-09  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	removing SIGSEGV while hub shutdown
+
+	* src/main.c:
+
+	*closing listening sockets while shuting down application
+
+	* src/main.c:
+
+
+	SIGNALS:
+	*SIGTERM, SIGKILL, SIGINT, SIGQUIT - make hub shutdown
+	*SIGHUP - reloads configuration
+
+	in case of shutdown process hub blocks working threads and then makes them cancel.
+
+2005-01-06  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	updating docs
+
+	* src/main.c:
+
+	wrapper for strong dc++ no longer needed
+
+2005-01-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in:
+
+	minor improvement
+
+	* conf/dcd.conf.in, src/main.c:
+
+	minor changes
+
+	* Makefile.am, conf/Makefile.am, conf/dcd.conf.in, src/conf.c, src/console.c, src/main.c, src/net.c, src/net.h:
+
+	* from now on using setid()/setgid().
+
+	* conf/dcd.conf.in, src/console.c, src/main.c:
+
+	removing possible problems with working threads while SIGHUP
+
+	* src/console.c, src/main.c:
+
+	* somaxconn added
+	* minor fixes
+
+	* src/main.c:
+
+	reverting removing of vim settings from main.c
+
+2005-01-04  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/console.c, src/main.c, NEWS:
+
+	compatibility with strongDC++ fixed
+
+	* conf/dcd.conf.in, src/conf.c, src/console.c, src/main.c, NEWS:
+
+	description is in NEWS file
+
+2004-12-22  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started 0.4.8 - Christmas suprise :)
+
+2004-12-14  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/penalties.h:
+
+	bugfix
+
+2004-12-12  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in:
+
+	now
+
+	* src/cmd.user.c, src/conf.c, src/console.c, src/main.c, src/main.h, src/misc.c, src/net.c, src/penalties.c, src/penalties.h, NEWS:
+
+	fixing stability there was a problem with punish command
+
+	new option in dcd.conf
+
+	better faster stronger ;)
+
+2004-10-29  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* FAQ, NEWS, configure.ac:
+	- started 0.4.7; better FAQ formating, some questions fixed
+
+2004-10-29  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	docs update
+
+	* conf/dcd.conf.in:
+
+	conf update
+
+	* src/penalties.c, src/main.c:
+
+	removing build problems
+
+2004-10-27  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/console.c, src/main.c, src/net.c:
+
+	this is stable version, but
+
+	1. users should have a very good connection speed(100Mbit)
+
+	good for a LAN with 1000 computers
+
+2004-10-26  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	repairing debug in adduser
+
+	* src/main.c, src/net.c:
+
+	fixing stability
+
+2004-10-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	minor optimalization
+
+	* NEWS:
+
+	synching
+
+	* src/cmd.user.c, src/cmd.user.h:
+
+	*new chat/console command
+	- #whoip - shows users of specified ips
+
+	* src/misc.c, src/net.c:
+
+	compatibility with older glibc fixed
+
+2004-10-24  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, conf/dcd.conf.in, src/conf.c, src/net.c:
+
+	faster better Stronger ;)
+
+	testing of sending packets to user works :)
+
+	* src/cmd.user.c, src/main.c, src/net.c:
+
+	fixing stability
+
+	* src/cmd.user.c, src/misc.c, src/misc.h, src/net.c:
+
+	make_message changed to my_vsprintf
+
+	* src/misc.c:
+
+	removed compatibility with older glibc
+
+	* src/conf.c:
+
+	comment fix
+
+	* src/cmd.user.c:
+
+	minor hlp fix
+
+	* src/cmd.user.c, src/main.c, src/misc.c, src/net.c:
+
+	minor fixes
+
+2004-10-23  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h, src/misc.c, src/misc.h, src/net.c, src/net.h, src/penalties.c, src/penalties.h, conf/dcd.conf.in, src/cmd.user.c, src/cmd.user.h, src/conf.c, src/conf.h, src/console.c, src/console.h:
+
+	*debug_level for console users is obsolete
+
+	*pubchat does not work
+
+	*new parameters in config
+	- minimal_sleep_time:
+	-- user from now on can specify the minimal sleep time for main thread.
+	   with this he can limit the processor usage
+
+	* src/net.c:
+
+	minor fixes
+
+	* src/net.c:
+
+	minor fix
+
+	* src/main.c:
+
+	access.log fixed
+
+	* src/net.c:
+
+	synching
+
+	* NEWS, conf/dcd.conf.in, src/main.c, src/main.h, src/net.c:
+
+	now it is ok
+
+2004-10-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in, src/cmd.user.c, src/conf.c, src/main.c, src/main.h, src/net.c:
+
+	* from now on user can precise how many send retries to make and what is the period of time between retries
+
+	* src/net.c:
+
+	from now on we are sure that whole message was sent to user
+
+	* src/net.c:
+
+	minor opimization
+
+	* src/main.c, src/net.c:
+
+	now it is working
+
+	* src/main.c:
+
+	semaphores reviewed - minor optimizations
+
+	TESTING NEEDED
+
+	* src/net.c:
+
+	my_send function appeare
+
+2004-10-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/net.c:
+
+	mino fixes
+
+	* src/net.c:
+
+	while socket error "resource temporarily unavailable" appears
+	hub waits 0.5ms and then tries to send message one more time till everything is fine
+
+	* src/cmd.user.c:
+
+	* more readable code
+
+	* NEWS, src/cmd.user.c:
+
+	*  from now on there is a possibility to send multiline commands
+
+2004-10-19  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.4.6
+
+2004-10-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, TODO:
+
+	updating documentation
+
+	* src/cmd.user.c, src/cmd.user.h:
+
+	*cleanups
+	*removed unused command patterns
+	*removed command #lspun
+
+	*command #lspunished from now on is showing for sOPs who punished user
+	for others string "HUB" is shown
+
+	* src/main.c:
+
+	removed StrongDC++ hack
+
+	* src/main.c:
+
+	userlist compatibility fixed with
+	* StrongDC++
+	* valknut/dcgui-qt
+
+2004-10-08  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	updating docs
+
+	* configure.ac, src/cmd.user.c, src/console.c, src/main.c, src/net.c, src/penalties.c:
+
+	*removed segmentation fault while punishing persons
+
+	*bzero() exchanged to memset() because of bsd 4.3
+
+2004-09-27  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	*removing memleak possibility
+
+2004-09-26  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/net.c, src/net.h:
+
+	*making manage_sock more readable
+
+2004-09-20  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - 0.4.5 started
+
+	* NEWS: - NEWS added
+
+2004-09-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	*fixing building problems
+
+2004-09-20  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started 0.4.4 (0.4.3 has build problems)
+
+2004-09-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	updating docs
+
+	* src/main.c, src/misc.c:
+
+	*fixing possible stability problems
+
+2004-09-17  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/conf.c, src/net.c:
+
+	fixing stability
+
+	* NEWS, src/main.c:
+
+	updating docs
+
+	* src/main.c:
+
+	cosmetics
+
+	* src/net.c, src/conf.c, src/main.c:
+
+	*fixed memleak when console user sends wrong password
+
+	*changed log when send() fails
+
+	*when user gets STATE_QUIT then it won't change
+
+	* src/main.c:
+
+	*sending MOTD two times when op or sOP logs in fixed
+
+2004-09-16  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.4.3
+
+	* src/Makefile.am: - drop -Werror
+
+2004-09-15  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	fixing minshare redirection(copy paste problem)
+
+	* src/main.c: *** empty log message ***
+
+	* src/main.c, src/misc.c:
+
+	fixing segmentation fault
+
+	* src/cmd.user.c, src/main.c:
+
+	fixing sending MOTD if not testing the amount of upload slots
+
+	* src/main.h, src/misc.c, src/misc.h, src/net.c, src/penalties.c, BUGS, NEWS, conf/dcd.conf.in, doc/pl/dcd.1, src/cmd.user.c, src/cmd.user.h, src/conf.c, src/console.c, src/main.c:
+
+	*updating docs
+
+	*added redirections to another hub
+
+	*new commands in console
+
+	*minor fixes in code(my_duplicate)
+
+2004-09-02  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac:
+	- allow pass external CFLAGS, back to -O2 (till better tests)
+
+2004-08-27  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	updating docs
+
+	* configure.ac:
+
+	now by default we have -O3 optimalization
+
+2004-08-26  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/console.c, src/console.h, src/main.c:
+
+	now it is -O3 optiomization compatible
+
+2004-08-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* AUTHORS:
+
+	fixing docs
+
+2004-08-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, README.in, TODO, configure.ac, src/Makefile.am, src/conf.c, src/main.c, src/main.h:
+
+	minor code cleaning
+
+	updating docs
+
+	* src/conf.c, src/console.c, src/main.c, src/misc.c:
+
+
+	in function fill_info() memleak was found and is now removed
+
+	in other functions possible memleaks while making a duplication of string also removed
+
+2004-08-06  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* FAQ:
+
+	changing answer for one question
+
+	* FAQ, NEWS, configure.ac:
+
+	autodetection of buggy RH -- needs testing...
+
+	adding polish characters to words in documentation files
+
+2004-08-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* FAQ, NEWS:
+
+	fixing some language problems
+
+	* NEWS:
+
+	updating NEWS
+
+	* FAQ, configure.ac:
+
+	changing default --with-buggy-RH value
+	changing answer for question about libwrap yp_get_default_domain() reference
+
+	Adding question about cross compilation sscanf problem
+
+2004-08-04  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* AUTHORS, src/misc.c:
+
+	minor fixes
+
+	* FAQ, NEWS:
+
+	minor Docs update
+
+	* NEWS, configure.ac:
+
+	docs update
+
+	--with-buggy-RH added
+
+2004-07-30  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* BUGS, configure.ac, doc/pl/dcd.sgml:
+
+	removed crosscompilation bug
+
+	* src/cmd.user.c:
+
+	removing compilation problems
+
+2004-07-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c: removing segmentation fault
+
+	* src/main.c, src/misc.c, src/misc.h, src/cmd.user.c:
+	removing minor problem with stat command
+
+	iring code for testing libwrap RH buG
+
+2004-06-25  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - starting with 0.4.2
+
+2004-06-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	*fixing passive mode communicate
+
+	*fixing compilation problems
+
+	* src/main.c, src/main.h:
+
+	SECURITY: preventing DOS Attack.
+
+	* src/main.c, src/net.c:
+
+	*user is checked if "hangs" only when multicasting messages to him for example
+	chat, search,...
+
+	*Logging kicking users because of using passive mode when it is not allowed
+
+2004-06-23  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	documentation update
+
+	* doc/dcd.2, doc/dcd.sgml, doc/dcd_man.sgml, doc/pl/dcd.1, doc/pl/dcd.sgml, doc/pl/dcd_man.sgml, src/net.c, FAQ, README.in, conf/dcd.users:
+
+	logging removing of hanging clients
+
+	updating documentaion
+
+	* NEWS:
+
+	updating documentation
+
+	* src/net.c:
+
+	detecting send errors while sending information to user.
+	From now on if this appears user will be kicked from the hub.
+
+	this should remove hanging clients
+
+2004-05-26  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	*bugfix
+
+	* FAQ, NEWS, conf/dcd.conf.in, conf/dcd.users, src/conf.c, src/main.c, src/main.h:
+
+	*new option in dcd.conf
+	allow_forward allow every user to have his port forwarded
+
+	*new permission in dcd.users
+	'f' checked when allow_forward is set to 0. and allows user to have his port forwarded
+
+2004-05-25  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - lets start "The New Age" :)
+
+	* NEWS: - remember about polish....
+
+	* TODO: - one more
+
+2004-05-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* FAQ, NEWS, configure.ac:
+
+
+	* NEW STABLE RELEASE
+
+2004-05-24  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.h, AUTHORS, FAQ, NEWS, README.in, TODO, src/conf.c, src/main.c:
+
+	*updating documentation
+	*removing unused code
+
+2004-05-18  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in, src/conf.c, src/main.c, src/main.h:
+
+	new option in dcd.conf
+	admin_contact
+
+	it is displayed when user is not allowed to connect to the hub
+
+	* src/main.c:
+
+	*testing if user is allowed to connect is now the first action after user
+	 connects to the hub.
+
+	* src/misc.c:
+
+	*SIGSEGV possibility removed
+
+	* src/main.c, src/misc.c, src/misc.h, src/net.c:
+
+	*writing ip of disconnecting user
+	*lock and pk have always the same length of 100 and 16 bytes respectively
+
+2004-05-09  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - lets start 0.3.10
+
+	* NEWS: - lets say it better
+
+2004-05-09  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	*minor version fix :)
+
+	* NEWS, configure.ac:
+
+	*introducing stable version 0.3.9
+
+	* src/main.c:
+
+	update
+
+	* src/main.c, src/penalties.c:
+
+
+	*minor updates
+	*removing SIGSEGv
+
+	* src/conf.c, src/penalties.c:
+
+	*segmantation fault removed
+
+	* src/main.h, src/misc.c:
+
+	*code cleaning
+
+	* src/main.c, src/misc.c:
+
+	*removing SIGSEGV
+	*code cleaning
+
+	* src/main.c, src/net.c, src/conf.c:
+
+
+	*minor improvements
+	*removing possible SIGSEGV
+
+	* BUGS:
+
+	*updating BUGS because there is no possibility of sending protocol to console user
+
+	* configure.ac, src/main.c, NEWS:
+
+	*SECURITY fix
+	- banned user won't enter the hub
+
+2004-05-08  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS: - updated news
+
+2004-05-08  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c:
+
+	*fix reason can contain ':'
+
+	* src/console.c, src/main.h:
+
+	*update
+
+	* src/conf.c, src/main.c, src/main.h, src/penalties.c, src/cmd.user.c:
+
+	*removing unused semaphores
+	*DEBUG_PROTO is from now on disabled to console user
+
+	* src/net.c, src/penalties.c, src/main.c:
+
+
+	*fixing possible SIGSEGV
+
+2004-05-07  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/penalties.c:
+
+
+	*cosmetics
+	trying to fix segmentation fault when punishing
+
+2004-05-06  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started 0.3.7
+
+	* BUGS, NEWS: - cosmetics
+
+2004-05-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS, configure.ac:
+	* updating info
+
+	* src/main.c:
+
+	code cleaning
+
+	* src/misc.c:
+
+	adding not allowed characters
+
+	* src/main.c:
+
+	*code cleaning
+
+	* src/main.c:
+
+	*repairing fakesearch :)
+
+	* BUGS:
+
+	*updating bugs
+
+	* src/main.c:
+
+
+	fixing userlist
+	- extended protocol is now off
+
+	* src/main.c:
+
+	*fixing userlist refresh problem
+
+	* src/main.c:
+
+	*fixin SIGSEGV
+
+2004-04-26  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	minor problem resolved
+
+	* src/main.c:
+
+	dcgui-qt makes me nervous
+
+	now wrapper should work perfectly
+
+	* src/main.c:
+
+	cosmetic communicate changed
+
+	* src/misc.c:
+
+
+	minslots checking faile communicate has been chaged
+
+	* src/main.c:
+
+
+	wrapper for dctc dcgui-qt minslots checking
+
+	* src/main.h, src/net.c:
+
+	*reniving unused field in userrerc
+
+	* src/main.c, src/misc.c:
+
+
+	listen waits for as many connections as kernel variable
+	kern.ipc.somaxconn
+
+	when checking minslots hub is looking for a file txt/doc/rtf which has a string
+	fake inside his name
+
+2004-04-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c, src/main.c:
+
+
+	minslots is from now on searching for '.'
+
+	* src/misc.c:
+
+	minor improvements
+
+	* src/main.c:
+
+	optimizing memory declarations
+
+2004-04-24  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/misc.c:
+
+	user won't be kicked if checking of his slots is done the second time
+
+	* src/main.h, src/main.c:
+
+	*trying to fix stability
+
+2004-04-24  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/PLD/dcd.spec.in: - added proper trigger for automatic upgrade
+
+2004-04-22  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* TODO:
+
+	*updating TODO
+
+	* src/main.c:
+
+	*memory malloc optimalization
+
+	* src/main.c:
+
+	*memory optimalization
+
+	* README.in, conf/dcd.users:
+
+	some missunderstoods are now fixed :)
+
+	* conf/dcd.users:
+
+	*just adding file :)
+
+	* AUTHORS, README.in, conf/dcd.conf.in:
+
+	updating change of console.users
+
+	* FAQ, NEWS, TODO, conf/Attic/console.users, conf/Makefile.am, doc/dcd.2, doc/dcd.console.2, doc/dcd_console_man.sgml, doc/dcd_man.sgml, doc/pl/dcd.1, doc/pl/dcd.console.1, doc/pl/dcd_console_man.sgml, doc/pl/dcd_man.sgml, src/conf.c, src/main.h, src/misc.c:
+
+	*changing the name of console.users to dcd.users
+
+2004-04-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	problem with fakesearch fixed
+
+	* src/main.c, src/misc.c:
+
+
+	minslots testing is looking for a non zero byte file 'fakesearch.txt'
+
+	* src/misc.c:
+
+	*debugging info in validnick() added
+
+	* src/cmd.user.c:
+
+	*fixing redirect_all/redirect functions :)
+
+	* src/main.c, src/misc.c:
+
+	*minor problems fixed
+	securing pointers
+
+2004-04-21  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac: - change date format
+
+2004-04-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+
+	*after redirect_all nicklist refreshing works fine
+
+	* src/main.c, src/misc.c:
+
+
+	*fake search is from now on looking for mpg, avi, mp3, txt file
+
+2004-04-21  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/penalties.c:
+	my last commit removed rav fixes, sorry
+
+	* src/cmd.user.c, src/cmd.user.h, src/penalties.c:
+	*cmd.user.c,cmduser.h,penalties.c - code cleaning - new function penalmsg() to display penalty messages, now also when penalty ish changed; code cleaning
+
+2004-04-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/main.c:
+
+
+	*minor bugfixes
+
+2004-04-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* BUGS, src/main.c:
+
+	*should work well with dcgui-qt and dctc
+
+	op has to reload his list to see that he is op
+
+	* src/main.c, src/misc.c:
+
+
+	*registration timeout works :)
+
+	* src/main.c, src/misc.c:
+
+
+	*fake search when connecting is looking for a txt file
+
+	* src/main.c:
+
+
+	*dcgui-qt ignores one letter searches :(
+	- now everything should be fine :)
+
+	* src/main.c, src/misc.c:
+
+	minor improvements
+
+2004-04-20  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac:
+	- started with 0.3.5 - WARNING: with this version will be changed config
+	  name with users
+
+2004-04-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+
+	minor improvements
+	$Supports command added
+
+	it is informing client that doesn't have to send GetINFO command
+
+	Todo is detectind GetINFO command in clients string
+
+	* src/main.c, src/main.h, src/misc.c, src/net.c:
+
+	fixing state problems
+
+2004-04-20  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* .cvsignore: - new ignored
+
+	* NEWS: - this is 0.3.4 changelog, not 0.3.3
+
+2004-04-20  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+	*segmentation fault removed
+
+	* src/misc.c:
+
+	*loging to access.log when user is kicked because not responding for slots checking
+
+	* src/main.c:
+
+	*locking user problem fixed
+
+	* BUGS:
+
+	*updating info
+
+	* src/main.c:
+
+	*user gets his own info when locked
+
+	* src/main.c:
+
+	*fixing problem when minslots undefined
+
+	* src/main.c:
+
+	*user has only himself in the userlist before checking his minslots
+
+	* src/main.c:
+
+	*Update
+
+	* BUGS, TODO, src/conf.c, src/main.c, src/main.h, src/misc.c:
+
+
+	*minor bugfixes
+
+	client dcgui-qt still is kicked because of not responding for active search
+
+2004-04-19  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/cmd.user.h, src/penalties.c, src/penalties.h:
+	*** empty log message ***
+
+	* NEWS, src/cmd.user.c, src/cmd.user.h, src/main.c, src/penalties.c, src/penalties.h:
+	*cmd.user.c,cmduser.h - new #lspun command - works like lspunished , shows the punisher, works for s users only;
+	*penalties.c,penalties.h - bugfixes
+
+2004-04-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+
+	*securing minslots int
+
+2004-04-19  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - 0.3.4 should be on the way...
+
+2004-04-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c:
+
+	*fixing communicates after sending a chat command
+
+	* src/penalties.c:
+
+	amnesty fixing :)
+
+	* src/penalties.c:
+
+	#amnesty problem fixed
+
+	* src/cmd.user.c:
+
+	*minor changes
+
+	* src/cmd.user.c:
+
+
+	*other possible segfaults removed
+
+	* src/cmd.user.c:
+
+	*fixing segmentation fault
+
+	* src/main.c, src/main.h:
+
+	*userrec has new field 'slots' :)
+
+	* src/main.c:
+
+
+	*admin is shown on the list before minslots checking
+	*minor problems with userlist removed
+
+	* src/main.c:
+
+
+	*minor improvements
+
+	* src/main.c:
+
+
+	*bugfixes
+
+	* src/main.c, src/misc.c:
+
+	from now on user gets registered after minslots checking
+	he will get to others nicklist after registration
+
+	* src/console.c, src/main.c:
+
+	*minor bugfixex
+
+	* src/console.c, src/main.c, src/misc.c, src/misc.h, src/penalties.c, src/penalties.h:
+
+	*securing inet_ntoa
+	*#amnesty command won't shutdown the hub if user's penalty not found
+
+2004-04-18  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+
+	*minor fix
+
+2004-04-18  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* conf/Makefile.am: - roll-back hasty changes
+
+2004-04-18  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c, src/misc.h:
+
+	*code cleaning
+
+	* src/cmd.user.c, src/conf.c, src/console.c, src/main.c, src/misc.c, src/misc.h:
+
+
+	*removed macro strtok_fix should improve stability
+
+	* src/main.c:
+
+	*fixing warnings
+
+	* src/main.c:
+
+	code cleaning
+
+	* conf/dcd.conf.in, src/main.c, src/main.h, src/net.c, BUGS, NEWS:
+
+
+	*minslots checking always works
+
+	* src/main.c, src/main.h, src/misc.c:
+
+
+	*fixing testing minslots
+
+	* src/main.c:
+
+	*fixing registration timeout
+
+	* NEWS:
+
+	updating documentation
+
+	* src/main.c:
+
+	* code cleaning
+
+	* src/main.c:
+
+	* fixing sighup problem
+
+	* NEWS, README.in, conf/Attic/console.users:
+
+	*updating documentation
+
+	* src/main.c, src/main.h:
+
+	*user gets registere after minslots testing
+	- if user does not respond to minslot testing he gets registration_timeout
+
+2004-04-18  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/main.c: *main.c
+	- disabling console in cygwin removed
+
+	* src/cmd.user.c: *cmd.user.c
+	- cosmetic chages
+
+	hub seems to be stable
+
+	* src/cmd.user.c, src/penalties.c: *penalties.c, *conf.c:
+	-penalties:  punisher nick, user nick, start date are stored in penalties[] and saved into file
+	-updated functions
+
+	*cmd.user.c
+	- updated #lspunished
+	- amnesty of nick is working
+
+	*net.c
+	- nicer looking debug_proto ;)
+	- privmsg(): "from" is now char (nick). not userrec
+
+	* src/cmd.user.c, src/conf.c, src/main.h, src/net.c, src/penalties.c:
+	*cmd.user.c
+
+	- punishmet messages moved to addpenalty()
+	- amnesty by nick, (not yet working correctly)
+
+	* src/net.h: *net.h
+
+	- updated declarations
+
+	* src/cmd.user.h: *cmd.user.h
+	- added penalprvmsg() declaration
+
+	* src/penalties.h: *penalties.h
+	- new defines, updating
+
+	* src/main.c: main.c
+	- console in CYGWIN is disabled because of crashing hub
+
+2004-04-18  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	*fixing misspelling in communicate about minslots
+
+	* src/main.c:
+
+
+	*now user is really kicked :)
+
+	* TODO:
+
+	*updating configuration
+
+	* src/main.c:
+
+	fixing warnings
+
+	* BUGS, NEWS, conf/dcd.conf.in, src/main.c, src/main.h:
+
+	*updating files :)
+
+	* conf/dcd.conf.in, src/conf.c, src/console.c, src/main.c, src/main.h:
+
+	*testing minslots works :)
+	- only when listen interface is specified
+
+2004-04-17  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/Makefile.am:
+
+	*fixing instalation error
+
+	* TODO:
+
+
+	*updating documentation
+
+	* README.in, src/main.h:
+
+	*misspelling fixes in documentation
+	*changing default file to consol.users
+
+	* FAQ, NEWS, README.in, conf/Attic/console.users, conf/dcd.conf.in, conf/dcd.users:
+
+	*updating documentation
+	- file console.users will change its name to dcd.users in version 0.3.5
+
+2004-04-17  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/cmd.user.c: *cmd.user.c
+
+	- punishment messages and lspunished even more readable
+	- pub punishment message split into two lines
+
+	* src/main.c: *main.c
+
+	- fixed what has already been fixed and i blew it by accident...
+	- "Time left" on ban display
+
+	* src/cmd.user.c, src/main.c: *cmd.user.c
+
+	- punishment messages are now more readable
+	- nodl is now correctly shown in #lspunished
+
+	* src/cmd.user.c: *cmd.user.c
+
+	- bug fixed:  segfault on #punish <user> nodl
+	- now nodl is shown in punish info
+
+2004-04-16  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* FAQ:
+
+	*updating FAQ
+
+	* src/console.c:
+
+	*fixing unused variables
+
+	* src/cmd.user.c:
+
+	*security fix
+	- sOP cannot be punished
+
+2004-04-16  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/cmd.user.c: *cmd.user.c
+
+	- displaying punishments little improvements
+
+2004-04-16  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+	*updating documentation
+
+	* FAQ, README.in, conf/Attic/console.users, conf/Makefile.am, conf/dcd.conf.in, conf/dcd.users, src/main.h:
+
+	*changing console.users into more apriopriate name dcd.users
+
+	* src/penalties.c:
+
+	*delpenalty is from now on secured
+
+	* src/cmd.user.c:
+
+	*fixing amnesty_all :)
+
+	* src/main.c, src/conf.c:
+
+	*fixing segmentation fault while connecting banned user
+
+	* src/main.c, src/penalties.c:
+
+
+	*penalties are written to a file after testing MAXUSERS
+
+	* src/main.h, src/penalties.c, src/cmd.user.c, src/conf.c, src/main.c:
+
+	*semaphore on penalty_write
+	*writing penalties while testing user's penalty
+	*one message is sent to user while punishing
+	*penalties are displayed in human readable form
+	*time of penalty is displayed in human readable form
+	*fixing punishing problems
+
+	* src/cmd.user.c, src/penalties.c:
+
+	*code cleaning
+
+	* src/console.c, src/main.c, src/misc.c:
+
+
+	*fixing console connection problem
+
+2004-04-15  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* BUGS, NEWS, configure.ac: - started with 0.3.3 (going into stable)
+
+2004-04-15  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/net.c:
+
+	*code cleaning
+
+	* src/net.c:
+
+
+	*fixing compilation problems
+
+	* src/cmd.user.c:
+
+	fixing :)
+
+	* src/cmd.user.c:
+
+	fixing info about punishing
+
+	* src/cmd.user.c, src/penalties.c:
+
+
+	*fixing multipunishment again
+
+2004-04-15  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS: - lets call it BOFH-suite :)
+
+2004-04-15  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c:
+
+
+	*fixing problem with multipunishment
+
+	* conf/Attic/console.users:
+
+	*updating config files
+
+	* NEWS:
+
+	*updating documentation
+
+	* src/cmd.user.c:
+
+
+	*fixing compilation problems
+
+	* conf/dcd.conf.in, src/cmd.user.c, src/conf.c, src/main.c, src/main.h, src/penalties.c, src/penalties.h, NEWS:
+
+
+
+	*std_penalty_duration in dcd.conf appeared
+
+2004-04-15  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/cmd.user.c: *cmd.user.c
+
+	- fixed compilation error
+
+	* src/cmd.user.c: *cmd.user.c
+
+	- multiple punishments punishing
+	- time and reason are optional
+	- more help @ hlp_punish
+	- if time is 0 then punishment is for 365 days
+	- if time is not specified the time of penalty is specified by STD_PENALTY_DURATION
+	- can punish with reason without speciefied time
+	- i want a raise ;)
+
+	* src/cmd.user.c, src/penalties.h: *penalties.h
+
+	-new define: STD_PENALTY_DURATION - standard duration of penalty in minutes
+
+	* src/penalties.c: *penalties.c
+
+	now new penalty overwrites existing
+
+	* src/cmd.user.c: *cmd.user.c
+
+	- BUGFIX: segmenation fault when (time) in #punish was 0
+
+2004-04-15  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/penalties.c:
+
+
+	*fixing mutex_penalty initialization
+
+2004-04-14  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/main.c, src/penalties.c:
+
+
+	*the duration of penalty is displayed to punished user
+
+	* NEWS:
+
+	*updating documentation
+
+	* README.in:
+
+	* updating documentation
+
+	* FAQ, NEWS, TODO, conf/dcd.conf.in, src/cmd.user.c, src/conf.c, src/main.c, src/main.h, src/penalties.c, src/penalties.h:
+
+	* duration of penalty is now working :)
+	* passive mode can be disallowed.(hub will kick user on download/search attempt)
+	* permission 'p' has appeared. allows a specific user to be in passive mode
+	  when passive is not allowed in dcd.conf
+
+2004-04-07  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* conf/Makefile.am: *conf/makefile.am
+
+	fixed compilation problem
+
+2004-04-07  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c:
+
+	removing some debugs
+
+	* README.in, conf/Attic/dcd.penalties.txt:
+
+	updating documentation
+
+	* conf/Attic/dcd.penalties.txt, src/conf.c, src/main.c, src/misc.c, src/penalties.c:
+
+
+	penalties_read() is working
+	INFO:
+		penalties_read is read only when dcd starts
+
+	FIXED:  banned user when connecting won't kill the hub
+
+	* conf/Attic/dcd.penalties.txt:
+
+	updating info about dcd.penalties format
+
+	* src/cmd.user.c, src/conf.c, src/conf.h, src/main.c, src/misc.c, src/penalties.c:
+
+	penalties_write() is working
+
+	* src/main.c, src/misc.c, src/net.c:
+
+	*debugging info added :)
+	*SECURITY FIX: giving bad password/registration timeout doesn't kill the hub
+
+2004-04-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c, src/net.c:
+
+	* adding debugging info
+
+	* fixing building warnings
+
+	* conf/Attic/dcd.penalties.txt, conf/Makefile.am, conf/dcd.penalties, src/conf.h:
+
+
+	adding files, which did not exist
+
+	* src/cmd.user.c, src/conf.c, src/main.c, src/main.h, src/misc.c, src/net.c, src/penalties.c, src/penalties.h:
+
+	only for sync with czarodziej
+
+2004-04-05  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/cmd.user.c: *cmd.user.c
+
+	Fixed opbreak function didn't show the command correctly,
+	if user is sOP, he is now informed that someone was trying to run a command on him.
+
+2004-04-04  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/cmd.user.c: *cmd.user.c
+
+	cmd_kick displays reason correctly and shows the nick of kicked user
+
+	* src/cmd.user.c: *cmd.user.c
+
+	Fixed cmd_kick function: (#)kick command didn't work when reason was specified.
+
+2004-04-03  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/penalties.c:
+
+	fixing compilation problems
+
+	* src/main.c:
+
+
+	punishing linking to userrec moved from adduser() to $ValidateNick so,
+	from now on sOP cannot be punished
+
+	* src/cmd.user.c, src/main.c, src/misc.c:
+
+	still reformating the code
+
+	* src/cmd.user.c, src/conf.c, src/console.c, src/main.c, src/match.c, src/misc.c, src/net.c, src/penalties.c:
+
+	reformating the code
+
+	* net.c privmsg()
+	- memleak found and now it is corrected
+
+	* FAQ, NEWS, README.in, TODO:
+
+	making documentation more actual
+
+2004-04-03  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/main.c: *main.c
+
+	Removed bug, wich showed the OP, who kicks a message that he is being kicked
+
+2004-04-03  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/main.c:
+
+
+	* cmd.user.c
+	- visibility is uncommented
+	- priviledges needs revising
+
+
+	* main.c
+	- code cleaning
+	- reformating (4 spaces into tab)
+
+2004-04-02  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* AUTHORS, src/cmd.user.c, src/cmd.user.h:
+
+
+	code cleaning in cmd.user.*
+
+	help is displayed only in categories
+
+2004-03-10  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/cmd.user.h: *cmd.user.h
+
+	changes in consts because of '#ip' chat command removal
+
+	cmd.user.c: TODO:
+	- #ignore, #uignore #lsignored commands implementation
+
+	* src/cmd.user.c: *cmd.user.c
+
+	DONE:
+	- #ip chat command removed, its' functionality is already in #whois command
+	- hlp_redirect, hlp_redirect_all, hlp_punish, hlp_msg, hlp_msg_all,  help functions
+
+	TODO:
+	-uncomment 'int visibility' parameter in fmthln()
+	-add the VIS_CHAT, VIS_CONS, and VIS_ALL visibility parameters for fmthln()
+	 in every line in wicht fmthln() occurs
+	-hlp_kick() function
+	-'#help command' slould display description aand help for 'command'
+
+2004-03-10  Daniel Jeliñski  <cadaver@ds.pg.gda.pl>
+
+	* BUGS, configure.ac, src/console.c, src/misc.c:
+	Configure now checks for proper sscanf conversion characted. It does so by compiling and running a simple program, and thus prevents cross-compiling.
+	Also removed a compiler warning in console.c
+
+2004-03-04  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/net.c: *net.c
+	pubmsg; privmsg : my_free(str) added
+
+2004-03-03  czarodziej  <czarodziej@ds.pg.gda.pl>
+
+	* src/cmd.user.c: *cmd.user.c
+	(commented out)
+	added 'int console' param to fmthln
+	wich determines if line is visible only in console, only in chat, or in both;
+	(#defines are in cmd.user.h)
+
+	* src/cmd.user.h: *cmd.user.h
+	added visibility const for fmthln
+
+	* src/cmd.user.c: *cmd.user.c
+	fixed:fmthln - testing of priviliges was messy, now it works fine
+	some cosmetic changes in code
+
+	* src/console.c: *console c
+	fixed: prompt(> ) displaying after command;
+
+2004-03-03  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/cmd.user.c, src/misc.c, src/net.c:
+
+	*cmd.user.c
+	- fmthln() has to be fixed one parameter more is needed somthing like
+	  define CMD_CHAT 1, define CMD_CONS 2, define CMD_ALL  3 which will determine
+	  to show command in help or not, because some commands should be used only
+	  from console, chat, both
+
+	- some commands can be used only from console
+
+	* AUTHORS, BUGS, NEWS, src/cmd.user.c, src/console.c, src/misc.c:
+
+	* new author added
+	* console and chat commands work from now
+	- debug and whois commands are now ok
+
+	more testing needed
+
+2004-03-02  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* BUGS:
+
+	*New Bug
+	console does not work :(
+
+	* src/cmd.user.c, src/console.c, src/main.c:
+
+
+	*fixing compilation problems
+
+	* src/main.h, src/misc.c, src/net.c, src/net.h, src/penalties.c, src/penalties.h, src/Makefile.am, src/cmd.user.c, src/cmd.user.h, src/conf.c, src/console.c, src/main.c:
+
+
+	*new function command() listed in cmd.user.* files is used to control hub
+	by console and chat
+
+	Credits: Adam Jab³oñski Czarodziej@ds.pg.gda.pl
+
+	EVERYTHING works fine, but needs a lot of testing to make it more and more stable :)
+
+2004-03-01  Daniel Jeliñski  <cadaver@ds.pg.gda.pl>
+
+	* src/main.c: removed the unnecessarry constant CMDCOUNT
+	removed unimplemented commands from #help
+	changed commands order in #help
+
+2004-02-28  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	*main.c
+	- bugfixes
+	<> #amnesty (now it works)
+	<> if seting no reason when #punish is used then "NO REASON" will be displayed instead of "(null)"
+
+2004-02-27  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h:
+
+
+	*main.h
+	- cosmetics
+
+	*main.c
+	- only 's' user can use #msg_all
+
+	* src/Makefile.am, src/main.c, src/main.h, src/penalties.c, src/penalties.h:
+
+	*making main.c more readable
+	- Credits: Adam "Czarodziej" Jablonski
+
+2004-02-27  Daniel Jeliñski  <cadaver@ds.pg.gda.pl>
+
+	* BUGS: sscanf %qu is Cygwin - incompatible
+
+2004-02-27  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* NEWS:
+
+
+	*NEWS
+	- updating documentation
+
+2004-02-26  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	*main.c manage_sock()
+	- new commands in main chat
+	#msg <who> <message>
+	#msg_all <message>
+
+	* src/main.c:
+
+	*main.c
+	- when user is punished apriopriate message is send to him.
+	it looks like a private message from op
+
+	* src/main.c:
+
+	*main.c
+	- cosmetics
+
+	* src/main.c:
+
+
+	*main.c
+	- punishing user with ban caused kicking us instead of kicking user
+
+	* FAQ:
+
+	*FAQ
+	- Added question and answer for punishing user
+
+	* NEWS:
+
+	*NEWS
+	- updating info about next version
+
+	* src/main.c:
+
+	*main.c
+	- fixing compilation problems
+
+	* src/main.h, src/main.c:
+
+
+	*main.c main.h
+	- penalties started
+	expiring of penalty has not been implemented,
+	penalties are working until hub restart
+	punishing only from main chat
+
+	credits: Adam "Czarodziej" Jablonski after my bugfixes
+
+2004-02-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/console.c, src/main.c:
+
+	* sendf() fixing error %qu changed into %llu
+	- i like differences in format strings n printf() and scanf()
+
+	* AUTHORS, BUGS, NEWS:
+
+	* AUTHORS BUGS NEWS
+	- updating documentation, so it will be easier to commit new Stable release
+
+	* src/main.c, src/misc.c, src/console.c:
+
+
+	*console.c main.c misc.c
+	- %llu changed to %qu
+	this change was made to make scanf/pintf compatible with FreeBSD convention
+
+	Compatibility:
+	1. Linux   - TESTED
+	2. *BSD    - TESTED
+	4. Cygwin  - ??
+	5. Solaris - ??
+	6. Posix   - ??
+
+2004-02-23  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+	*misc.c fill_info() - usr->share
+	-still fixing compability with gcc 2.95.4 on FreeBSD 4.7 on x86 machine
+	Credits: Vjacheslav Kanivetc <vjaka@spot.lv>
+
+	* src/main.c:
+
+	*main.c manage_sock() $MyInfo
+	- fixing compatibility with gcc 2.95.4 on FreeBSD 4.7 with x86 processor
+	Credits: Vjacheslav Kanivetc <vjaka@spot.lv>
+
+2004-02-22  Daniel Jeliñski  <cadaver@ds.pg.gda.pl>
+
+	* BUGS, src/conf.c, src/console.c:
+	Fixed bug which allowed unauthorized access when included file did not exist.
+	Also removed some spurious messages that appeared before login.
+
+	* src/conf.c:
+	Well. If we remove the leading spaces in console.users, let's do it properly...
+
+	* src/conf.c: empty fields in console.users now are allowed.
+	Console password checking was changed, untested. Old version probably accepted any password (not sure, never used console)
+
+2004-02-16  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* BUGS: - bug - to be fixed ASAP!!
+
+2004-02-15  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started with 0.3.2
+
+2004-02-15  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* AUTHORS:
+
+	*AUTHORS
+	- my mistake in last name of new author is now fixed
+
+	* AUTHORS, TODO, src/conf.c:
+
+	*AUTHORS
+	- new author added
+
+	*TODO
+	- updating
+
+	*conf.c
+	- cleaning up warning in nick_allowed()
+
+2004-02-15  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/PLD/dcd.spec.in: - fix for recent changes
+
+	* NEWS: - opis tej wersji
+
+2004-02-05  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/Attic/console.users:
+
+	*console.users
+	-cosmetic changes in description of priviledges
+
+2004-02-05  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac:
+	- 0.3.1 started (release will be in few days), default config location
+	  changed
+
+2004-02-04  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/Attic/console.users, src/conf.c:
+
+	*console.users
+	- cosmetics in description
+
+	*conf.c nick_allowed()
+	- the bug which appeared with the last commit is now fixed
+
+	* src/conf.c, src/main.c, src/misc.c:
+
+	*conf.c
+	- nick_allowed() bugfix when there was a bug in config file communicate "your nick doesn't match.."
+	appeared
+
+	- validlogin() few comments added
+
+	*main.c manage_sock() $ValidateNick
+	- now log will contain the ip of host whoose nick is validating
+
+	*misc.c validnick()
+	- debug messages changed into comments
+
+2004-02-04  Daniel Jeliñski  <cadaver@ds.pg.gda.pl>
+
+	* src/pch.h:
+	Copied definition of MAXUSERS to pch.h MAXUSERS needs to be defined before FD_SETSIZE, which needs to be defined before #include <sys/types.h>, in order for select to work with large number of users.
+	After this update windows version of dcd was stable.
+	Some more tests and...
+
+2004-02-03  Daniel Jeliñski  <cadaver@ds.pg.gda.pl>
+
+	* src/misc.c, src/misc.h, src/conf.c, src/console.c, src/main.c:
+	Replaced strtok by its reentrant version, strtok_r. Currently a macro strtok_fix is used, which has strtok's syntax, but utilizes strtok_r. Will see if it helps.
+
+	* src/misc.c:
+	Just another bug. This time an uninitialized variable crashed the server whenever someone with sufficiently long nick tried to log in.
+	A lot of debug code left, just in case.
+
+2004-02-01  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/misc.c: - cosmetics
+
+2004-02-01  Daniel Jeliñski  <cadaver@ds.pg.gda.pl>
+
+	* src/misc.h, src/misc.c:
+	fixed a bug in my_free that suddenly got nasty
+	this fix is quite temporary, but works fine.
+
+2004-02-01  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+
+	*misc.c validnick()
+	- checking if nick contains not allowed characters and if it is in use
+	before checkin if it requires password
+
+	* src/console.c, src/main.c, src/misc.c, src/misc.h:
+
+	* console.c main.c misc.c misc.h
+	- code cleaning
+	- bugs fixing
+
+	-> memmory leakage should be slower, but it needs more testing
+
+	-> it seems that libwrap function host_access() sometimes gets segfault
+	especialy when many users try to get into the hub
+
+	* src/conf.c, src/misc.c:
+
+	* conf.c validhost()
+	- now it works fine when checking if host is allowed to connect to console
+
+2004-01-31  Daniel Jeliñski  <cadaver@ds.pg.gda.pl>
+
+	* src/main.c, src/misc.c, src/misc.h:
+	Removed unused function make_string
+	Made function uptime() shorter
+	fixed several error messages
+	fixed one potential bug in manage_sock() ($MyINFO)
+
+2004-01-31  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c, src/conf.h, src/console.c, src/console.h, src/main.c, src/main.h, src/misc.c, src/misc.h, src/net.c, src/net.h:
+
+	*patch made by cadaver icluded
+
+	*other
+	- cosmetic improvements
+
+	*console doesn't work
+
+2004-01-30  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/conf.c:
+
+	*main.c manage_sock()
+	- chat command #redirect won't kill hub anymore
+
+	*conf.c validnick()
+	- should be memleak free
+
+	*conf.c validhost() previous update
+	- credits go to Adam'Czarodziej[PG2]'Jab³onski
+	who proposed the procedure which after a few changes
+	got into dc-hub
+
+	*conf.c
+	- should be more readable
+
+2004-01-29  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* conf/console.allow, conf/dcd.banned, src/conf.c, src/conf.h, src/console.c, src/main.c:
+
+	* conf.c validhost() -> conf.h, main.c, console.c
+	- from now on you can include files in dcd.banned and console.allow
+
+	* console.allow, dcd.banned
+	- updated header in this files
+
+2004-01-24  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac, src/console.c, src/main.c, NEWS: - 0.3.0 (FINALLY!!!)
+	- cosmetic fixes, changed Lu into llu (for Cygwin), spaces into tabs.
+	  Credits goes for Daniel Jeliñski <dumbass@wp.pl>
+
+	* NEWS, configure.ac: - 0.2.20 (devel, non-released RC6)
+
+2004-01-24  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/console.c, src/main.c, src/misc.h:
+
+	- synchronization in critical section has appeared
+	- minor code cleaning
+	- compatibility with cygwin/windows has been improved
+
+	appropriate patch sent Daniel Jeliñski<dumbass@wp.pl>
+
+2004-01-22  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - 0.2.19
+
+2004-01-22  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+	misc.c check_timeout()
+	- hub waiting for many users to send password could be blocked for other users
+
+2004-01-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* BUGS, conf/dcd.conf.in, src/console.c, src/main.c:
+
+	BUGS
+	- new bug added :(
+
+	dcd.conf.in
+	- LOG changed from 63 to 55
+
+	console.c addcons()
+	- user_set_state() is now after bzero()
+
+	main.c adduser()
+	- user_set_state() is now after bzero()
+
+	* FAQ, src/main.c:
+
+	main.c manage_sock()
+	->message with '#' as the first letter even after spaces,
+	-> sent to the main chat from now on is send back
+	-> only to a user, who sent it
+
+2004-01-21  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - 0.2.18
+
+2004-01-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	main.c manage_sock()
+	-> a bug was found by Rados³aw Matusiak<roscoe@o2.pl> when parsing chat
+	--> a string whitch consisted of only a space character was killing hub
+	--> now everything should be fine
+
+2004-01-20  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac, NEWS: - 0.2.17
+
+2004-01-06  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/net.c, FAQ, src/console.c, src/main.c, src/main.h, src/misc.c:
+
+	from now on users have states listed in main.h
+	so many changes were made
+
+	those functions need testing on non intel machines
+	user_set_state()
+	user_tst_state()
+
+	manage_sock() and few other functions should be more readable
+
+	when user sends invalid nick, communicate $Validenied is send back
+
+	when user sends incorrect password, hub asks client for another password
+
+	deluser() function is used only once, so hub should be more stable
+
+	repaired non working MOTD(message of the day)
+
+2003-12-09  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac: - 0.2.16
+
+2003-11-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	-> main.c manage_sock() -> chat command
+	--> #version now shows _HUB_VERSION_ in the message topic
+
+2003-11-22  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+	->misc.c nick2id()
+	-->users nick must be validated before testing if it is a the nick we are searching
+
+2003-11-22  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h: - final fixes in buildtime setting
+
+	* configure.ac: - lexical fix
+
+	* NEWS, configure.ac: - 0.2.15 - setting build time feature
+
+2003-11-21  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h:
+
+	main.h, main.c -> manage_sock()
+	-> #version command returns the time of building DCD
+
+2003-11-19  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	main.c
+	minor bug noticed an it was repaired
+
+	* src/main.c:
+
+	main.c
+	-> new commands in the chat window added
+	--->#version
+	--->#redirect only 'a' or 's'
+	--->#redirect_all only 's'
+
+	* src/main.c, src/net.c:
+
+	-> minor bugfixes
+
+	-> communication Client<->Server is logged in protocol.log
+	--> helps finding why server is crashing and should be disabled
+	--> unless you want to know what was server doing when he crashed
+
+	* src/conf.c, src/main.c, src/net.c:
+
+	-> logging repaired
+
+	net.c sendf()
+	-> multicasts messages only to users, who are fully registered in the hub
+
+	* src/conf.c, src/misc.c:
+
+	->crashing hub when user tried to connect to console is now repaired
+
+	* src/conf.c, src/main.c, src/misc.c:
+
+	conf.c
+	-> few functions were made more readable
+	-> parse_config() - formatting in vim repaired
+	-> validlogin() - memleak was found and it was repaired
+
+	main.c
+	-> manage_sock() - was made more readable
+
+	misc.c
+	-> validnick() - cosmetic changes
+
+2003-11-18  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+	misc.c debug();
+	> format of logging changed to [ yyyy.m.d time ] message
+	>>i think that it is more readable now
+
+	* src/main.c:
+
+	*main.c manage_socket()
+	$SR  - command should be memleak free
+	$Kick - user 's' can kick anyone, user 'a' can kick anyone but 's' user
+
+	code was formatted to be more readable
+
+2003-11-14  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	main.c manage_sock()
+	$Oplist will be send to a specific user unless his OP so it will be send to everybody
+	$SR command in passive mode should be memleak free
+
+2003-11-14  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* BUGS, NEWS, configure.ac: - 0.2.14
+
+2003-11-14  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	main.c
+	> memleak was found in $SR in passive mode so it was rapaired
+
+	misc.c
+	> nothing was changed, but i have changed the date of file
+
+2003-11-01  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/misc.c:
+
+	* misc.c -> validnick()
+	-> memory leak fixed
+
+2003-10-26  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - 0.2.13 (it can be assumed as 0.3.0rc1)
+
+	* src/main.c: - readded missing #help comment
+
+2003-10-26  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+	* main.
+
+	* src/main.c, src/misc.c:
+	* main.c
+	-> $ForceMove now doesn't make the hub dead
+
+	* misc.c
+	-> memleak was found so it was fixed
+
+2003-10-26  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.c: - added comment in chat help.
+
+2003-10-26  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	* main.c
+	-> passive search works fine
+	--> hub filters its results by min_slots criterium
+	--> IMPORTANT some clients do not respond for a Passive Mode Search
+	--> dctc not, dc_gui-qt not, dc++ yes
+
+	* src/main.c:
+
+	* main.c
+	-> kickin user because less amount of slots than min_slots added
+	--> works when someone makes a passive search
+
+2003-10-25  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - 0.2.12 (3rd release today :) )
+
+2003-10-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	main.c
+	* security update
+	-> user who didn't send password won't be able to see listof the nicks anymore
+	-> user must be in the 4th state to have permissions to have his commands executed by the hub
+
+	* src/main.c:
+
+	main.c
+	* manage_sock minor fixes
+	* stability improved
+
+	* src/main.c:
+
+	main.c
+	* trying to fix stability
+
+2003-10-25  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac: - 0.2.11
+
+	* FAQ, NEWS, conf/Attic/console.users: - typos, updates NEWS and FAQ
+
+2003-10-25  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/main.c:
+
+	main.c
+	* fixing building problems
+
+	* conf/Attic/console.users, src/conf.c, src/main.c, src/misc.c:
+	console.users
+	* description of the priviledges added
+
+	conf.c
+	* validalogin() nick in the console.users is not case sensitive
+
+	main.c
+	* 's' users doesn't have to share apriopriate amount of data
+
+	misc.c
+	* the nick of users listed in a console.users doesn't have to match pattern anymore
+
+	* src/main.c:
+
+	main.c
+	* $GetNickList some optimizations
+
+	* $Kick/$OpForceMove user of 's'(superior) class added
+
+	* main chat trying tu fix a bug in #uptime command
+
+2003-10-24  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started 0.2.10
+
+	* BUGS, NEWS, TODO: - some comments and infos
+
+2003-10-24  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c, src/main.c:
+
+	trying to fix previous version
+	ESPECIALLY: when many users try to connect it can be very unstable:(
+
+	* src/conf.c: *** empty log message ***
+
+2003-10-24  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.c, src/misc.c: - bugfixes
+
+	* src/misc.c: - functions roll-up
+
+	* src/main.c, src/misc.c: - cosmetics and formating
+
+2003-10-24  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* AUTHORS, NEWS, configure.ac, src/main.c:
+
+	main.c
+		few comments removed
+
+	configure.ac
+		changed dcd version number to 0.2.9
+
+	NEWS
+		the newest features listed
+
+	AUTHORS
+		new author appeared
+
+2003-10-24  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* TODO: - Things done by R@V
+
+2003-10-23  Rafa³ Prasa³  <rav@ds.pg.gda.pl>
+
+	* src/conf.c, src/main.c, src/main.h, src/misc.c:
+
+
+	conf.c
+		validlogin()
+			added getting user password and permissions for nick that is reserved
+
+
+	main.c
+		manage_sock()
+			$ValidateNick
+				checks if nick is reserved
+				claims for password
+
+			$Mypass
+				is now available
+				sets permissions
+						n -> normal user
+						a -> administrator
+						c -> console
+
+			$Kick
+				is now available
+
+				checks permissions and then kick user or not
+
+			$OpForceMove
+				is now available
+
+				checks permissions and then redirects user or not
+
+			main chat
+				can be used as managing
+				available commands:
+					#help -> shows help screen
+					#uptime -> shows hub uptime
+
+	main.h
+		struct userrec
+			char state
+				changed meaning of
+				2 - waiting for password
+				3 - nick validated, user logged in
+				4 - info validated, user fully registered
+
+			char *password
+				added (used with reserved nicks to get password from file)
+
+	misc.c
+		my_free()
+			sets pointer to NULL
+
+2003-10-23  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* BUGS: - bug added
+
+	* src/Makefile.am, .cvsignore, Makefile.am, TODO, configure.ac, src/.cvsignore:
+	- added detection of BSD pthreads by Volodin D. P. <bugreport@dv.net.ru>
+
+	* TODO: - expanded TODO...
+
+2003-10-16  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, src/main.c:
+	- fix for *BSD by Volodin D. P. <bugreport@dv.net.ru>
+
+2003-09-30  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c: Fixed tiny bug in logging of disconnect msgs.
+
+	* src/main.c: Fixed bug in $Search sanity check.
+
+2003-09-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, TODO, configure.ac: - info about passive mode
+
+2003-09-29  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c: Passive mode works now.
+
+2003-09-18  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/console.c, src/main.c, src/misc.c:
+	First part of passive mode support.
+
+2003-04-10  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Makefile.am: - use AM_CPPFLAGS - advised in new automake
+
+	* NEWS, src/Makefile.am, src/console.c, src/console.h, src/main.c, src/main.h, src/misc.h, src/net.c:
+	- console code separated. TODO: separate socket commands too
+
+	* NEWS, README.in: - updated
+
+	* configure.ac, src/misc.c, src/misc.h:
+	- added detection in configure of daemon and setsid functions
+
+2003-03-28  Jakub Uniejewski  <kubiku@ds.pg.gda.pl>
+
+	* Attic/.cvspass:
+
+	heh, oby sie wiecej nie powtorzylo
+
+	* Attic/.cvspass: New file.
+
+2003-03-25  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/misc.c, src/misc.h: daemon() implemented.
+
+2003-03-22  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* AUTHORS: - pl-literki in names
+
+2003-03-20  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/misc.c, src/misc.h:
+	- avoid to warn by older gcc (like on Solaris) missing declaration
+
+	* NEWS, configure.ac: - started working at 0.2.2
+
+	* BUGS, FAQ, NEWS, TODO: - fixes after fixing "RH-libwrap-feature"
+
+2003-03-19  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/misc.c:
+	- added workaround for buggy libwrap.a from RH ( thanks to Seweryn
+	  Walentynowicz <seweryn@walor.torun.pl> )
+
+2003-03-12  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started working on 0.2.1
+
+2003-02-19  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/net.h, src/pch.h, src/conf.c, src/conf.h, src/main.c, src/main.h, src/match.h, src/misc.c, src/misc.h, src/net.c:
+	cosmetix
+	`users' command output fix
+	partial flood protection
+	terminate on memory alloc fail
+
+2003-02-18  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac:
+	- removed default building with debug, don't check if c++ compiler is
+	  present (silly me)
+
+2003-02-18  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c: dctc debug junk cut-off.
+
+	* src/conf.c, src/main.c, doc/dcd.sgml: I don't remember=)
+
+2003-02-02  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac: - Started new series!! - 0.2.0
+
+	* configure.ac, contrib/PLD/dcd.spec.in:
+	- commented out fragments that made problems on some linux distros
+
+2003-01-31  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in, doc/dcd_console_man.sgml, doc/dcd_man.sgml:
+	english->english
+
+2003-01-14  Krzysztof Smyk  <krzychu@ds.pg.gda.pl>
+
+	* doc/pl/dcd.1:
+	-bug fix (NAME & SYNOPSIS translation)
+
+	* doc/dcd.2, doc/dcd.console.2, doc/pl/dcd.1:
+	- syntax check
+	- english dates
+
+2003-01-14  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* doc/dcd_console_man.sgml: English to english translation =)
+
+2003-01-13  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in, src/conf.c, src/main.c, src/main.h, src/misc.c:
+	console.log
+
+2003-01-13  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* doc/pl/dcd.sgml: - forgotten
+
+2003-01-13  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/misc.c, src/main.c: Log timestamp.
+
+	* src/main.c, src/misc.c: Few more logging msgs.
+
+2003-01-13  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/logrotate.dcd.in: - updated logrotate file
+
+	* contrib/PLD/dcd.spec.in, doc/Attic/dcd_pl.sgml, doc/pl/.cvsignore:
+	- added new files to spec, forgotten files removed and forgotten added
+
+	* doc/Attic/dcd.1.pl, doc/Attic/dcd.console.1.pl, doc/Attic/dcd_console_man_pl.sgml, doc/Attic/dcd_man_pl.sgml, doc/Makefile.am, doc/pl/Makefile.am, doc/pl/dcd.1, doc/pl/dcd.console.1, doc/pl/dcd_console_man.sgml, doc/pl/dcd_man.sgml, configure.ac:
+	- manuals splited to lang-dependent directories, instalation fixed
+
+	* Makefile.am: - make proper rights to logs directory
+
+	* doc/Makefile.am: - included manuals to package
+
+	* TODO: - few things out :)
+
+2003-01-13  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* conf/dcd.conf.in: skleroza
+
+	* conf/dcd.conf.in: Config update.
+
+	* src/main.c, src/main.h, src/misc.c, src/net.c, src/conf.c:
+	More logging files.
+
+2003-01-13  Krzysztof Smyk  <krzychu@ds.pg.gda.pl>
+
+	* doc/Attic/dc1.txt, doc/Attic/dc2.txt, doc/Attic/dc3.txt, doc/Attic/dc4.txt, doc/Attic/dc5.txt, doc/Attic/dc6.txt, doc/Attic/dcd_man_pl.sgml, doc/Attic/dcd_pl.sgml, doc/Attic/dchub-1.html, doc/Attic/dchub-2.html, doc/Attic/dchub-3.html, doc/Attic/dchub-4.html, doc/Attic/dchub-5.html, doc/Attic/dchub-6.html, doc/Attic/dchub-7.html, doc/Attic/dchub.html, doc/Attic/dchub.sgml, doc/Attic/dchub.txt, doc/Attic/dchub_man.sgml, doc/Attic/dchub_man_pl.sgml, doc/Attic/dchub_pl.sgml, doc/Attic/documentation.txt, doc/dcd.2, doc/dcd.sgml, doc/dcd_man.sgml:
+	-some corrections
+	-cleanup :)
+
+2003-01-12  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* AUTHORS: =)
+
+2003-01-12  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS: - updated
+
+2003-01-12  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.h, src/misc.c, src/misc.h, src/net.c, conf/dcd.conf.in, src/conf.c, src/main.c:
+	Logging stuff. Initial version.
+
+2003-01-12  Krzysztof Smyk  <krzychu@ds.pg.gda.pl>
+
+	* doc/Attic/dcd.console.1.pl, doc/Attic/dcd_console_man_pl.sgml, doc/dcd.console.2, doc/dcd_console_man.sgml:
+	-Modify man pages
+	-Add console man pages
+	Do czego jest opcja boost konsoli??
+
+	* doc/Attic/dcd.1.pl, doc/Attic/dchub_man.sgml, doc/Attic/dchub_man_pl.sgml, doc/dcd.2:
+	-Some corrections
+	-beta version pl_man for console
+
+	* doc/Attic/dcd.1.pl, doc/dcd.2:
+	 Added Files:
+	 	dcd.1.pl dcd.2
+	- converted manpages
+	- sorki zapomnia³em o "normalnych" wersjach manów :)
+
+	* doc/Attic/dchub_man.sgml, doc/Attic/dchub_man_pl.sgml:
+	Added Files:
+	 	dchub_man.sgml dchub_man_pl.sgml
+	- en & pl manpages
+
+	- Niech kto¶ to sprawdzi czy dobrze pokuma³em opcje allow_broken_key. Tak se my¶lê ¿e do konsoli man machnê w oddzielnym pliku dcd.console. Ale to pó¼niej - znaczy sie jutro lub pojutrze.
+
+2003-01-10  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/net.h, src/pch.h, config.h.in, src/conf.h, src/main.c, src/main.h, src/match.h, src/misc.c, src/misc.h, src/net.c:
+	- changed name in intro
+
+2003-01-10  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c, src/misc.c: Version stuff added.
+
+2003-01-10  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, TODO, configure.ac: - started working on 0.1.9
+
+2003-01-10  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h, src/misc.c:
+	Fixed extracting data from packets.
+
+2003-01-09  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/conf.c, src/main.c, src/main.h, src/misc.c, src/misc.h, src/net.c:
+	free -> my_free
+
+2003-01-09  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* FAQ: - added question about telnet
+
+	* NEWS: - info about cleanups
+
+2003-01-09  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/conf.c, src/main.c, src/main.h, src/misc.c: Warnings cleanup
+
+2003-01-09  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.c, src/match.c, src/misc.c, src/net.c:
+	- removed not needed rcs_id
+
+2003-01-05  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* config.h.in: - cut-off not needed changelog
+
+	* config.h.in, configure.ac: - libwrap detection is done better now
+
+	* BUGS: - added entry about fucked up libwrap from RH
+
+2003-01-01  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* README.in: - about daemon
+
+	* configure.ac:
+	- changed default group/user to daemon (nobody group is not in all unices)
+
+2002-12-27  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS: - about prototypes
+
+	* src/Makefile.am, src/conf.c, src/misc.c, src/net.c:
+	- show all warnings during compilation - some missing prototypes included,
+	  still some warnings is present (important - it doesn't work on big
+	  endian mashines...)
+
+2002-12-22  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started working on 0.1.8
+
+	* contrib/.cvsignore: - logrotate.dcd ignored in cvs
+
+	* BUGS, README.in, TODO: - updated informational files
+
+	* Makefile.am, TODO, conf/.cvsignore, conf/Makefile.am, conf/dcd.conf.in, configure.ac, contrib/Makefile.am, contrib/PLD/dcd.spec.in, contrib/README, contrib/logrotate.dcd.in, src/main.h:
+	- more macros in contrib part (one file was existing and was missing in
+	  package...)
+	- TODO updated
+	- LOG_DIR is now taken as optional configure option, commented out
+	  hardcoded location from code
+	- more macros in configuration
+
+2002-12-21  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/Attic/logrotate.dcd: - outdated
+
+2002-12-20  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* FAQ: - added Q about administration via DC client.
+
+2002-12-19  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/conf.c, src/conf.h, src/main.c:
+	Exit on configuration parsing error (except rehash).
+
+	* src/net.c, src/net.h, src/main.c: kick fixed
+
+2002-12-19  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac: - use quoted value
+
+2002-12-19  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h, src/misc.c: user/group
+
+2002-12-19  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac: - require ac 2.50
+
+2002-12-19  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h, src/misc.h, src/net.c, src/net.h:
+	flags reset not needed
+
+2002-12-19  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* TODO: - one done
+
+	* contrib/PLD/dcd.spec.in, src/main.c:
+	- fixed working of join/quit message
+
+	* contrib/PLD/dcd.spec.in, NEWS:
+	- updated sample spec: fixed permisions, fixed trigger
+	- added info about recent changes
+
+	* configure.ac: - require proper version of autoconf
+
+	* conf/dcd.conf.in, configure.ac:
+	- changed passing *ID's to user/group - this should be resolved later.
+
+2002-12-18  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c: info-booster
+
+	* src/main.c, src/main.h, src/misc.c, src/misc.h, src/net.c:
+	'jq' console option
+	configuration boolean flags
+
+2002-12-17  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c: `kick' console command
+
+	* src/main.c: MB/GB/TB in whois
+
+	* src/main.c: idle in whois
+
+	* src/main.c: 'users' console command
+
+	* src/conf.c, src/main.c, src/main.h: Obsolete nick_pattern removed.
+
+	* src/main.h: uids back
+
+	* src/conf.c, src/main.h, src/pch.h: user/group by name from config
+
+2002-12-17  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* TODO: - one done
+
+	* contrib/PLD/dcd.spec.in: - use daemon user in spec
+
+	* conf/dcd.conf.in, configure.ac, src/main.h:
+	- UID and GID are picked from configure
+
+	* conf/Attic/dcd.conf, conf/Makefile.am, conf/dcd.conf.in, TODO, configure.ac:
+	- config file is now autogenerated
+
+	* TODO: - few words about docs
+
+	* NEWS: - added news about 0.1.7
+
+	* TODO: - nicks.allow removed
+
+2002-12-17  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c: joins/quits commented out
+
+2002-12-17  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* conf/Makefile.am: - added nicks.allow
+
+2002-12-17  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.h, src/misc.c, conf/Attic/dcd.conf, conf/nicks.allow, src/conf.c, src/conf.h, src/main.c:
+	nicks.allow
+
+2002-12-17  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* conf/Attic/dcd.conf: - fix in example pattern (we use it)
+
+	* conf/Makefile.am: - typo
+
+	* TODO: - few more TODO...
+
+2002-12-17  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c: MB/GB/TB in stat
+
+2002-12-17  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* TODO: - dcd.deny is done
+
+	* conf/Makefile.am: - renamed config files, added new ones
+
+2002-12-17  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* conf/Attic/dcd.conf, conf/dcd.banned, src/conf.c, src/main.c, src/main.h, src/misc.c:
+	banned hosts file
+	irc-like joins/quits messaging on publicmsg
+
+2002-12-16  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* conf/Attic/console.users, conf/Attic/dcd.conf, conf/Attic/motd, conf/Attic/passwd, conf/Attic/welcome, conf/console.allow, conf/dcd.motd, conf/dcd.welcome, src/conf.c, src/main.c, src/main.h, src/misc.c, src/misc.h:
+	new file names
+	console.allow
+
+	* src/main.h: oops
+
+	* src/conf.c, src/main.c, src/main.h, src/misc.c, src/misc.h, src/net.c:
+	Controlled memory allocing.
+
+	* src/misc.c, src/net.c, src/main.c: LF -> CR/LF
+
+	* src/main.c: Telnet ECHO OFF on password req.
+
+	* src/main.c, src/misc.c: Nick validation after password req.
+
+2002-12-14  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac, src/devel/Attic/dchub-0.1.2.tar.gz, src/devel/Attic/opendchub-0.6.7.tar.gz:
+	- started work on 0.1.7
+
+	* TODO: - one more TODO
+
+	* contrib/PLD/dcd.spec.in: - added new config files to spec
+
+	* src/Attic/motd, src/Attic/passwd, src/Attic/welcome, .cvsignore, Makefile.am, conf/.cvsignore, conf/Attic/dcd.conf, conf/Attic/motd, conf/Attic/passwd, conf/Attic/welcome, conf/Makefile.am, configure.ac, src/Attic/dcd.conf, src/Makefile.am:
+	- moved configs to separate directory
+
+	* FAQ, NEWS, TODO: - removed outdated info about admin account from FAQ
+	- updated info in NEWS about 0.1.6
+	- removed done (started) things from TODO
+
+2002-12-13  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/Attic/passwd, src/conf.c, src/misc.c:
+	Logins in passwd are now reserved nicks.
+
+	* src/Attic/dcd.conf, src/Attic/passwd, src/conf.c, src/conf.h, src/main.c, src/main.h, src/misc.c, src/misc.h:
+	Passwd file support.
+
+	* src/Attic/dcd.conf, src/Attic/motd, src/Attic/welcome, src/conf.c, src/conf.h, src/main.c, src/main.h, src/misc.c, src/net.c, src/net.h:
+	Welcome and MOTD files support.
+
+2002-12-12  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/Attic/debug.c, src/Attic/debug.h, src/Attic/error.c, src/Attic/error.h, src/Attic/list.c, src/Attic/list.h, src/Attic/mutex.c, src/Attic/mutex.h, src/Attic/pch.c, src/Attic/queue.c, src/Attic/queue.h, src/Attic/semaphore.c, src/Attic/semaphore.h, src/Attic/thread.c, src/Attic/thread.h, src/Makefile.am, src/conf.c, src/devel/Attic/Makefile, src/main.c, src/match.c, src/misc.c, src/net.c, src/pch.h:
+	clean up
+	changes in debug()
+
+	* src/main.c, src/misc.c: "who" console command.
+	Validation of console nicks.
+
+	* src/main.c: Privmsg to console fixed.
+
+	* src/Attic/dcd.conf, src/conf.c, src/main.c, src/main.h, src/misc.c, src/net.c:
+	Console user handling fix.
+	Debugging levels per user.
+
+	* src/main.c, src/net.c: Display IP instead of "Unknown".
+
+	* src/conf.c, src/main.c: Config file path resolving.
+
+2002-12-12  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started working on 0.1.6 :)
+
+2002-12-12  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/Attic/dcd.conf, src/main.c, src/main.h, src/misc.c:
+	Pattern msg fix & new motd scheme.
+
+2002-12-12  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.c:
+	- move bind test after config read (don't try to bind always 411) and
+	  after seteuid
+
+2002-12-12  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c: "whois" console command
+
+2002-12-12  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* TODO: - removed passwd crap
+
+	* NEWS, TODO: - fix in NEWS and updated to current state of discussion.
+
+	* src/misc.c:
+	- show pattern in message to user (they are confused, because thay do not
+	  know what the pattern is...)
+
+2002-12-11  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/Attic/dcd.conf, src/conf.c, src/main.c, src/main.h, src/misc.c, src/net.c, src/net.h:
+	code cleanup and minor bugfixes
+	remote console developement
+	rehashing should work now for all variables including listening ports
+	use of seteuid() instead of setuid() so we can regain root privileges
+
+2002-12-11  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS: - updated about telnet console...
+
+	* TODO: - few out, more in.
+
+	* src/Attic/dcd.conf, src/main.h: - changed default console port to 511
+
+2002-12-11  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.h, src/misc.c, src/misc.h, src/net.c, src/net.h, src/Attic/dcd.conf, src/conf.c, src/main.c:
+	Remote console introduced (development version).
+
+2002-12-10  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c: Small improvements.
+
+2002-12-09  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Attic/semaphore.c, src/Attic/semaphore.h, src/Attic/thread.c, src/Attic/thread.h, src/Attic/debug.c, src/Attic/debug.h, src/Attic/error.c, src/Attic/error.h, src/Attic/list.c, src/Attic/list.h, src/Attic/mutex.h, src/Attic/pch.c, src/Attic/queue.c, src/Attic/queue.h, src/conf.c, src/conf.h, src/main.c, src/main.h, src/match.h, src/misc.c, src/misc.h, src/net.c, src/net.h, src/pch.h:
+	- remove useless changelogs (summary changelog is in ChangeLog file)
+
+	* TODO: - debug levels are done by rawsock :)
+
+	* NEWS: - about fixed function
+
+2002-12-09  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/main.c: recv() fix.
+
+2002-12-09  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS: - updated changes for 0.1.5
+
+2002-12-09  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* AUTHORS, src/Attic/dcd.conf, src/conf.c, src/main.c, src/misc.c, src/misc.h:
+	deluser() bugfix, cosmetix & stuff
+
+2002-12-07  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, configure.ac: - started working on 0.1.5
+
+2002-09-24  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.c: - fix by rawsock
+
+2002-09-21  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* TODO: - one more TODO
+
+2002-09-04  Sebastian Rosenkiewicz  <rawsock@ds.pg.gda.pl>
+
+	* src/conf.c: Syntax correction.
+
+2002-08-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Attic/dcd.conf: - added new debug option to default config
+
+	* contrib/PLD/dcd.spec.in: - fix in logdir properties
+
+	* contrib/PLD/dcd.spec.in: - this should be done in preun, not postun
+
+	* contrib/PLD/dcd.spec.in: - cosmetic
+
+	* configure.ac: - started work on 0.1.4
+
+	* src/main.c: - small typo fixed
+
+	* AUTHORS, BUGS, NEWS, src/conf.c, src/main.c, src/main.h, src/misc.c, src/misc.h, src/net.c:
+	- new part merging with rawsock's code:
+	  * new options in debug console (stat, debug, detach)
+	  * better handling debug() (new config option)
+	  * fixed sig11 when client connects
+
+2002-08-29  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/PLD/dcd.spec.in:
+	- more macros, added trigger for upgrade from previous version (keep
+	  previous configuration)
+
+	* src/misc.c:  -cosmetic fix
+
+	* src/Attic/dcd.conf: - port 411 is back
+
+	* NEWS, configure.ac: - started work on 0.1.3
+
+2002-08-28  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Attic/dcd.conf, src/conf.c, src/main.c, src/misc.h:
+	- next merge with rawsock...
+
+	* BUGS, TODO, src/match.c, src/match.h, src/misc.c, src/misc.h, src/net.c, src/net.h:
+	- first part of merge with rawsock finished :)
+	- new things introduced:
+	- administration debug console
+	- seems that there is no overflows possible now
+	- some code clean-ups
+	more fixes on the way :)
+
+	* src/Attic/dcd.conf, src/conf.c, src/conf.h, src/main.c, src/main.h:
+	- first part synchronization with rawsock. NFY
+
+	* BUGS, NEWS, TODO: - started merge with rawsock
+
+	* configure.ac: - started working on 0.1.2
+
+2002-08-16  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* COPYING: - back to clear txt version - my fault
+
+2002-08-15  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac, src/pch.h:
+	- removed header netinet/ip.h - seems to be unused and causes problems on
+	  Solaris
+
+2002-08-14  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* configure.ac, src/conf.c, src/main.c, src/misc.c, src/misc.h, src/net.c, src/pch.h:
+	- finally removed all (I hope) entries about lwl
+
+2002-08-12  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS: - cosmetics
+
+	* config.h.in: - removed windows ends of line
+
+2002-08-09  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* TODO: - one TODO added
+
+2002-08-07  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/conf.c, src/main.c: - slightly better logging
+
+	* src/misc.c: - commented out not used now functions
+
+	* configure.ac, src/Makefile.am, src/main.h: - changed config-file name
+
+	* src/Attic/dcd.conf: - new name
+
+	* src/Attic/dchub.conf: renamed to dcd.conf
+
+	* src/main.c, src/conf.c: - removed all uses of lwl
+
+	* NEWS: - forgotten
+
+	* src/main.h, src/misc.c, src/misc.h, src/net.c, src/net.h, NEWS, src/main.c:
+	- second part of merge with rawsock <rawsock@ds.pg.gda.pl>.
+	- finished (I hope) - please test
+
+2002-08-07  Robert Janeczek  <rashid@ds.pg.gda.pl>
+
+	* NEWS: typo fix
+
+2002-08-07  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/conf.c, src/misc.c, src/misc.h:
+	- first part of merge with changes by rawsock <rawsock@ds.pg.gda.pl>
+
+2002-08-06  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.h, contrib/Attic/logrotate.dcd, contrib/PLD/dcd.spec.in:
+	- move logs by default to /var/log/dcd/ directory
+
+	* contrib/PLD/dcd.spec.in: - added Vendor entry
+
+	* NEWS, configure.ac: - started work on 0.1.1
+
+	* doc/Makefile.am: - added new docs to package
+
+	* doc/Attic/documentation.txt, TODO: - readded from Attic
+
+	* autogen.sh: - forgotten commit to new configure name scheme
+
+2002-08-05  Micha³ Felski  <fela@ds.pg.gda.pl>
+
+	* COPYING: remove some ends of lines in licence file
+
+	* Attic/ChangeLog, Attic/TODO, COPYING, TODO, doc/Attic/protocol.html, doc/protocol.html:
+	bug fix, documentation
+
+2002-08-03  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-08-02  Krzysztof Smyk  <krzychu@ds.pg.gda.pl>
+
+	* doc/Attic/dchub.sgml, doc/Attic/dchub_pl.sgml, doc/Attic/documentation.txt, doc/Attic/readme.html, doc/readme.html:
+	- Polish documentation
+	- Some cleaning
+
+2002-08-02  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-08-01  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in, configure.ac:
+	- renamed + few improvements for autoconf
+
+2002-08-01  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-07-31  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/TODO, TODO: - translated almount everything
+
+	* Attic/TODO, NEWS, TODO, src/Attic/dchub.conf, src/conf.c, src/conf.h, src/main.c, src/main.h, src/misc.c:
+	- one TODO is out - it's possible now to turn off chats
+
+	* src/conf.h: - header added
+
+	* src/main.c, src/misc.c: - basic frame for $UniSearch
+
+	* FAQ: - whole FAQ translated
+
+2002-07-31  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-07-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Attic/debug.c, src/Attic/debug.h, src/Attic/error.c, src/Attic/error.h, src/Attic/list.c, src/Attic/list.h, src/Attic/mutex.c, src/Attic/mutex.h, src/Attic/pch.c, src/Attic/queue.c, src/Attic/queue.h, src/Attic/semaphore.c, src/Attic/semaphore.h, src/Attic/thread.c, src/Attic/thread.h, src/conf.h, src/main.c, src/main.h, src/match.c, src/match.h, src/misc.h, src/net.c, src/net.h, src/pch.h:
+	- all files have now vim helpers - in *.h files only Intro and ChangeLog
+	  are hidden. In *.c files all functions are hidden.
+	- added "/" at the end of address, fixed missing.
+
+	* src/misc.c: - intro hidden
+
+	* src/main.c: - one more helper for vim
+
+	* src/Attic/list.c, src/Attic/debug.c: - helpers for vim
+
+	* src/devel/Attic/dchub-0.1.2.tar.gz:
+	08c19a8f12329dfe0ce807bf80ced310  dchub-0.1.2.tar.gz
+
+	* FAQ: - next one translated
+
+	* FAQ: - translation (NFY)
+
+	* FAQ: - started translating FAQ
+
+	* AUTHORS: - cosmetic
+
+2002-07-26  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-07-25  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/TODO, TODO: - more items, few translated to PL, some cleanups
+
+2002-07-21  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-07-20  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Attic/queue.c: - automatic action taken by vim
+
+	* src/net.c: - some helper functions for vim
+
+	* src/Attic/mutex.c: - vim helper strings
+
+	* src/main.c, src/misc.c: - more helper signs for vim
+
+	* BUGS: - translation
+
+	* AUTHORS: - added Krzysztof Smyk and translated
+
+	* src/conf.c: - final touch
+
+	* src/conf.c: - helper descritptions for vim
+
+	* src/misc.c: - things to use with vim's slidding functions
+
+2002-07-20  Micha³ Felski  <fela@ds.pg.gda.pl>
+
+	* AUTHORS, Attic/TODO, BUGS, FAQ, NEWS, TODO:
+	changed file format of AUTHORS,TODO,FAQ,NEWS,BUGS to work with website
+
+2002-07-18  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-07-17  Krzysztof Smyk  <krzychu@ds.pg.gda.pl>
+
+	* doc/Attic/dchub-1.html, doc/Attic/dchub-2.html, doc/Attic/dchub-3.html, doc/Attic/dchub-4.html, doc/Attic/dchub-5.html, doc/Attic/dchub-6.html, doc/Attic/dchub-7.html, doc/Attic/dchub.html, doc/Attic/dchub.sgml, doc/Attic/dchub.txt:
+	English documentation in sgml, html, txt
+
+2002-07-13  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-07-13  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/TODO, TODO: - one more thing.
+	- well, It's getting bigger...
+
+2002-07-10  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-07-09  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in: - gettext is temporary out
+
+2002-07-09  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-07-08  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* FAQ: - spelling fixed (tnx sebo :)
+
+	* FAQ: - one more question :)
+
+	* contrib/PLD/dcd.spec.in: *** empty log message ***
+
+	* contrib/Attic/logrotate.dcd: - added logrotate script
+
+	* .cvsignore: - bz2 files are ignored
+
+	* Makefile.am:
+	- now it's possible to create tar.bz2 archives with make dist-bzip2
+
+2002-07-04  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-07-03  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in: - fixes in pthread detection
+
+2002-07-02  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-07-02  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/misc.c:
+	- first part helper functions for vim - only for testing temporary...
+
+2002-07-01  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in, NEWS: - started work on 0.1.0
+	0.0.7 release - seems to be really nice.
+
+2002-06-30  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.c: - fixed privmessage handling
+
+2002-06-30  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.c: - nice comments on not supported options
+
+	* AUTHORS, NEWS: - documented changes
+
+	* contrib/PLD/dcd.spec.in: - permisions to logfile
+
+	* src/misc.c: - change ownership of logfile
+
+	* src/main.c:
+	- well... all HUPing is back... to many hours I'm sitting here - I've got
+	  brain-damage....
+
+	* src/main.c: - temporary removed reopening log file on SIGHUP
+
+	* src/main.c:
+	- user nobody is back - daemon does not have to own anything
+
+2002-06-30  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Attic/debug.c, src/Attic/debug.h, src/Attic/error.c, src/Attic/error.h, src/Attic/list.c, src/Attic/list.h, src/Attic/mutex.c, src/Attic/mutex.h, src/Attic/pch.c, src/Attic/queue.c, src/Attic/queue.h, src/Attic/semaphore.h, src/Attic/thread.c, src/Attic/thread.h, src/pch.h:
+	- switched to our main web page
+
+	* src/Attic/error.h, src/Attic/semaphore.c: - finish of the cosmetics
+
+	* src/Attic/queue.c: - cosmetics
+
+	* src/Attic/mutex.c: - fixed
+
+	* src/Attic/mutex.c, src/misc.c, src/match.c, src/Attic/list.c, src/Attic/debug.c, src/Attic/debug.h:
+	- cosmetics
+
+	* src/Attic/dchub.conf, src/conf.c, src/main.c, src/misc.c, src/net.c:
+	- more logging
+
+2002-06-30  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/misc.c: - log PID too...
+
+	* src/misc.c: - new commanline option - alternate log file
+
+2002-06-30  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/PLD/dcd.spec.in: - sort in alfabetical order
+
+2002-06-30  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/PLD/dcd.spec.in: - added log
+
+2002-06-30  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Attic/dchub.conf, src/conf.c, src/main.c, src/main.h, src/misc.c:
+	- added MOTD utility
+
+	* src/net.c: - bugfix
+
+	* src/net.c: - more logging
+
+	* src/net.c: - cleanups
+
+	* Attic/TODO, TODO: - one more
+
+	* src/main.c: - more cleanups
+	- one lost setuid/setgid corrected
+
+	* src/main.c: - cleanups
+
+	* src/Attic/dchub.conf: - removed my private configuration
+
+	* src/conf.c: - clean-ups
+
+	* src/conf.c: - debug renamed to daemon
+
+	* src/Attic/dchub.conf: - modified config
+
+	* src/conf.c, src/main.c, src/main.h, src/misc.c, src/net.c:
+	- even more cleanups
+	- UID and GID are now config options
+	- status expanded
+
+	* Attic/TODO, TODO: - one more TODO :)
+
+	* src/misc.c: - more cleanups
+
+	* src/misc.c: - some cleanups
+
+	* Attic/TODO, TODO: - one more
+
+	* Attic/TODO, TODO: - one out, many in
+
+	* src/conf.c, src/main.h: - missing changes
+
+	* Attic/configure.in, src/Attic/dchub.conf, src/conf.c, src/main.c, src/main.h, src/misc.c, src/misc.h, src/net.c, src/pch.h:
+	- massive attack:
+	- new logging scheme - used Log Writer Library
+	- autoconf stuff adapted partially
+
+2002-06-29  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-28  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* BUGS, FAQ, Makefile.am, contrib/PLD/dcd.spec.in:
+	- added FAQ - feel free to fill it :)
+
+2002-06-25  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-24  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in: - started work on 0.0.7
+
+2002-06-24  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-24  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, src/main.h, src/net.c: - killed buffer overflow
+	- BUF_SIZE grown to 4096
+	That should be 0.0.6 (as bugfix...)
+
+	* src/net.c, NEWS: - few cosmetic fixes, nothing to care about.
+
+2002-06-20  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-19  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/devel/Attic/opendchub-0.6.7.tar.gz:
+	- concurent hub - we should "borrow" from them some things :)
+
+2002-06-19  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-18  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* BUGS: - notified bug in Neomodus client
+
+	* contrib/PLD/dcd.init.in: - stupid mistake fixed
+
+2002-06-18  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-17  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in: - started work on 0.0.6
+
+	* contrib/PLD/dcd.init.in, contrib/dcd.sysconfig:
+	- added options to script dcd call
+
+2002-06-16  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-15  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* NEWS, src/conf.c, src/main.c: - Done things added to NEWS
+	- fixed handling config-file, killed some sig11 - functional now (0.0.5
+	  ready, I think...)
+
+	* NEWS: - news
+
+	* Attic/configure.in, config.h.in: - define PROCESS_OPTIONS for libwrap
+
+	* contrib/PLD/dcd.spec.in: - better (correct) handle of config file
+
+	* contrib/PLD/dcd.init.in: - take default config location
+
+2002-06-14  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-13  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* doc/Makefile.am: - documentation.txt added
+
+	* Attic/configure.in: - well... this will be bug-fix 0.0.5 version.
+
+2002-06-13  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-12  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/conf.c: - one mem-leak removed (tnx marosin :) )
+	- no sig11 when debug from command line - new option in config - NFY
+
+	* config.h.in: - new line at the end
+	- no windows end-lines
+
+2002-06-07  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-07  Krzysztof Smyk  <krzychu@ds.pg.gda.pl>
+
+	* doc/Attic/documentation.txt: Documentation for 0.0.4 version.
+	In TXT file now.
+
+2002-06-06  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Attic/error.h, src/Attic/list.h, src/Attic/queue.h, src/Attic/semaphore.h, src/Attic/thread.h, src/conf.h, src/main.h, src/match.h, src/misc.h, src/net.h, src/pch.h, src/Attic/debug.h:
+	- add new line at the end of the file - causes warnings in RH
+
+2002-06-06  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-05  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in, NEWS: - Started working on 0.1.0
+
+2002-06-05  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-05  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in, README.in:
+	- renamed configure options - better names
+
+	* contrib/PLD/dcd.init.in: - small fix to make reload working
+
+	* README.in, src/Makefile.am: - fixed configuration directory handling
+	- few words to README
+
+	* doc/Makefile.am: - added readme.html
+
+	* contrib/PLD/dcd.spec.in: - fixed config-file location
+
+	* Attic/configure.in: - cosmetic
+
+	* src/conf.c: - use given config file location
+	- one more logging to syslog added
+
+2002-06-05  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-06-04  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in:
+	- added new option - location of config-file - now CONFIGDIR is defined
+
+	* acinclude.m4:
+	- AC_DEFINE_DIR macro - very usefull to define directories
+
+2002-06-04  Krzysztof Smyk  <krzychu@ds.pg.gda.pl>
+
+	* doc/Attic/readme.html, doc/readme.html:
+	- documentation - first release :)
+		HTML in this moment
+
+2002-06-01  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-31  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* contrib/PLD/dcd.init.in, contrib/PLD/dcd.spec.in, src/conf.c, src/conf.h, src/misc.c:
+	- fixed handling config, reverted my mistakes, fixed initscripts and specs
+
+	* README.in, src/main.c:
+	- few words in README and added web site address in welcome message.
+
+2002-05-31  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-30  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Attic/dchub.conf: - small fices in config
+
+	* BUGS: - one more bug
+
+	* src/main.c: - some things should be send to syslog
+
+	* src/conf.c, src/conf.h: - definition of config moved to .h file
+
+	* src/conf.c: - config works now basically, but... not nice.
+
+	* src/Makefile.am, src/conf.c, NEWS: - added entry to news
+	- Makefile.am completed with new files from config
+	- added warning when config is not found.
+
+2002-05-29  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-28  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/conf.c, src/conf.h: Oops... forgot to add files.
+
+	* src/Attic/dchub.conf, src/Attic/mutex.h, src/Attic/queue.h, src/Attic/semaphore.c, src/Attic/semaphore.h, src/Attic/thread.c, src/Attic/thread.h, src/main.c, src/main.h, src/match.c, src/misc.c, src/misc.h, src/net.c, BUGS:
+	Simple config file parser and minimum share requirements.
+	Please view the changes and test it.
+
+2002-05-28  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.c: - nicer comments
+
+2002-05-28  Robert Janeczek  <rashid@ds.pg.gda.pl>
+
+	* AUTHORS: made it REALLY sorted alphabeticaly, by names
+
+2002-05-20  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-19  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Makefile.am: - added new files
+
+2002-05-19  Artur Wójcik  <ventox@ds.pg.gda.pl>
+
+	* src/Attic/queue.c, src/Attic/queue.h: - initial revision
+
+	* src/devel/Attic/Makefile: - rules for queue.o module added
+
+2002-05-19  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-18  Artur Wójcik  <ventox@ds.pg.gda.pl>
+
+	* src/Attic/dchub.conf: no message
+
+	* config.h.in: *** empty log message ***
+
+	* src/Attic/pch.c, src/pch.h: - cosmetics in coments
+
+	* src/Attic/result.txt: *** empty log message ***
+
+	* src/Attic/mutex.c, src/Attic/mutex.h, src/Attic/result.txt, src/Attic/semaphore.c, src/Attic/semaphore.h, src/Attic/thread.c, src/Attic/thread.h:
+	- initial revision
+
+	* src/misc.c: - type name 'status_t' changed to '_status_t'
+
+	* src/Attic/debug.c, src/Attic/debug.h, src/Attic/error.c, src/Attic/error.h, src/Attic/list.c, src/Attic/list.h:
+	- some errors corrected
+
+	* src/devel/Attic/Makefile: - new modules added
+
+2002-05-18  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in:
+	- fix configure when called without any arguments - NFY
+
+2002-05-18  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-18  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.c: - some cosmetics in comments
+
+	* src/net.h: - nicer comments
+
+	* src/Attic/dchub.conf: - added bigger warning :)
+
+	* NEWS, README.in, contrib/PLD/dcd.spec.in:
+	- gziping docs moved to build section in PLD spec
+	- cosmetics in some files
+
+	* BUGS: - one removed, one added
+
+2002-05-15  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-14  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h, src/misc.c, src/misc.h: - empty users bugfix
+	- registration timeout introduced (default = 30sec.)
+	- a listen() backlog issue corrected
+
+2002-05-14  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-13  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* BUGS: - I see one bug..
+
+2002-05-12  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-11  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* regen.sh: - one more ac/am helper script
+
+	* Attic/TODO, Attic/configure.in, TODO:
+	- one TODO removed - libwrap is now detected in configure
+
+2002-05-11  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-11  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Makefile.am: - one -I. removed
+
+2002-05-10  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* BUGS: - rolled back not implemented things - this is in TODO
+
+	* AUTHORS, BUGS, NEWS: - cosmetic updates in info files
+
+2002-05-10  Artur Wójcik  <ventox@ds.pg.gda.pl>
+
+	* win32/dc-hub.zip: visual c++ project files
+
+2002-05-09  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-08  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in: - started working on 0.0.4
+
+2002-05-08  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-08  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* autogen.sh: - run autoheader if proper ac word is used
+
+	* contrib/PLD/dcd.init.in:
+	- start daemon later and turn it off much faster
+
+	* contrib/PLD/dcd.spec.in:
+	- fixes to spec by PLD-team :) <qboosh@pld.org.pl>, <kloczek@pld.org.pl>
+	- more buildrequires, some spellings.
+
+	* Attic/configure.in: - patch by Tomasz K³oczko <kloczek@pld.org.pl>
+	- avoid redundant linking with libnsl on Linux and ac 2.5x fix.
+
+2002-05-08  sebo  <sebo@ds.pg.gda.pl>
+
+	* README.in: Spelling again ;-)
+
+	* README.in: Spelling ;-)
+
+	* README.in, src/misc.c, AUTHORS, Attic/TODO, BUGS, TODO, src/main.c:
+	Some update
+
+2002-05-08  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-07  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/main.c, src/misc.c: Problem with libwrap hopfuly solved.
+
+	* src/main.c: Small fix.
+
+2002-05-07  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-05-07  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h, src/misc.c:
+	Ignoring too long lines instead of shutting down hub. Not tested 'cause I'm going to bed ;-)
+
+2002-05-06  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.h: - Use project name as default name
+
+	* src/main.h: - use 1000 users by default
+
+2002-05-06  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/main.c: $MultiConnectToMe "support"
+
+2002-04-29  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-04-28  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in: - Started working on 0.0.3
+
+	* NEWS: - few words...
+
+	* src/Attic/dchub.conf, contrib/PLD/dcd.spec.in:
+	- This is finally 0.0.2 :)
+	- info in config
+	- configs marked as config(noreplace)
+
+2002-04-28  sebo  <sebo@ds.pg.gda.pl>
+
+	* Attic/TODO, TODO, src/Attic/debug.h, src/main.c, src/main.h, src/misc.c:
+	Daemon mode now works (I hope) and is the default. `-d' debug mode introduced.
+
+2002-04-28  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/main.c:
+	- move this logging to main function (do not show on every thread create)
+
+	* src/main.c: - Started logging to syslog
+
+	* contrib/PLD/dcd.spec.in: - added one buildrequire to spec
+
+	* contrib/PLD/dcd.spec.in:
+	- added post and postun section in contrib/PLD/dcd.spec.in
+
+	* contrib/README: - small typo
+
+	* contrib/PLD/Makefile.am: - no README in PLD directory
+
+	* contrib/Makefile.am: - changed spec to sysconfig....
+
+	* contrib/README: - added small README files for contrib directory
+
+	* Makefile.am, contrib/PLD/Makefile.am:
+	- dcd.spec has been moved - Makefiles had to be corrected too
+
+	* contrib/PLD/.cvsignore: - Makefiles ignored now.
+
+	* AUTHORS, Attic/TODO, Attic/configure.in, README.in, TODO, src/Attic/dchub.conf, src/Attic/dchub.conf.in, src/Makefile.am:
+	- back to non-generated version of dchub.conf file - this is not needed
+	- more written in README, one TODO added, AUTHORS filled
+
+	* Attic/configure.in, contrib/PLD/dcd.spec.in, src/Attic/dchub.conf, src/Attic/dchub.conf.in, src/Makefile.am:
+	- dchub.conf moved to autogenerated version - few more fixes
+
+	* Attic/configure.in, contrib/Makefile.am, contrib/dcd.sysconfig:
+	- added sysconfig file and fixed contrib/PLD/Makefile.am
+
+	* Attic/configure.in, contrib/.cvsignore, contrib/PLD/.cvsignore, contrib/PLD/Makefile.am, contrib/PLD/dcd.init.in:
+	- added init script for PLD
+	- some files ignored
+
+2002-04-28  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-04-27  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in, Attic/dcd.spec.in, Makefile.am, contrib/Makefile.am, contrib/PLD/Makefile.am, contrib/PLD/dcd.spec.in:
+	- started making contrib directory
+
+	* Attic/dcd.spec.in: - More automatics and one fix...
+
+	* src/.cvsignore: - ignore dcd binary
+
+	* Makefile.am, config.h.in, src/Makefile.am:
+	- added files missing in tar.gz package
+	- commented-out threads check in config.h.in - this is redundant and not
+	  needed here, I think...
+
+2002-04-27  Artur Wójcik  <ventox@ds.pg.gda.pl>
+
+	* config.h.in: - some file header modifications made
+	- macros DELETE_ARRAY and DELETE had been removed
+	- new macro DELETE_PTR added
+
+2002-04-27  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Makefile.am: - current dir add to includes list
+
+	* src/.cvsignore: - src/.libs ignored
+
+	* Attic/configure.in, src/Makefile.am: - small fix
+
+2002-04-27  Artur Wójcik  <ventox@ds.pg.gda.pl>
+
+	* src/devel/Attic/Makefile: nothing important...
+
+2002-04-27  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Makefile.am, Attic/configure.in: - fixed linking
+
+2002-04-27  Artur Wójcik  <ventox@ds.pg.gda.pl>
+
+	* src/devel/Attic/Makefile: nothing importand... :)
+
+	* src/devel/Attic/Makefile:
+	woops! i've forgot config.h is in the main directory, not in ../config/
+
+	* src/devel/Attic/Makefile: *** empty log message ***
+
+	* src/Attic/debug.c, src/Attic/debug.h, src/Attic/error.c, src/Attic/error.h, src/Attic/list.c, src/Attic/list.h, src/Attic/pch.c, src/main.c, src/main.h, src/match.c, src/match.h, src/misc.c, src/misc.h, src/net.c, src/net.h, src/pch.h:
+	New file.
+
+	* src/.cvsignore: no message
+
+	* src/devel/Attic/Makefile: some errors in header were corrected...
+
+	* src/devel/Attic/Makefile: New file.
+
+	* src/devel/.cvsignore: no message
+
+2002-04-27  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/TODO, README.in, TODO:
+	- Added initial description in README and added in TODO (libwrap detection)
+
+2002-04-27  sebo  <sebo@ds.pg.gda.pl>
+
+	* Attic/TODO, TODO:
+	Hosts access works. Notice that it now needs a libwrap to compile.
+
+	* Attic/TODO, TODO: TODO update.
+
+	* Attic/ChangeLog, src/Attic/error.h, src/main.c, src/misc.c, src/pch.h:
+	Changed my nickname everywhere.
+
+	* src/devel/Attic/Makefile: Simple makefile for developing.
+
+	* src/Attic/dchub.conf, src/Attic/error.h, src/main.c, src/main.h, src/misc.c, src/misc.h, src/pch.h:
+	Added hosts.allow|deny support (!), but not tested yet - may be bugged.
+	I've commented out some things that caused make to dump error (even with
+	my own, short Makefile) or the code to dump seg fault.
+
+2002-04-27  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-04-26  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in:
+	- defined HAVE_MITPTHREADS  - now it should be used other way in
+	  config.h.in
+
+	* Attic/config.guess, Attic/config.sub, Attic/configure.in: - cosmetic
+
+	* .cvsignore, Attic/configure.in, Attic/ltmain.sh, config.h.in:
+	- some work to make it build...
+
+	* .cvsignore, Attic/configure.in, config.h.in, src/Makefile.am:
+	- removed loop in headers
+
+	* Makefile.am: - README.in added to package
+
+	* .cvsignore, Attic/aclocal.m4: - not needed in cvs...
+
+	* Attic/README, Attic/aclocal.m4, Attic/config.guess, Attic/config.sub, Attic/configure.in, Attic/ltmain.sh, README.in, src/Makefile.am, src/pch.h:
+	- bugfixed configure.in
+	- README is now autogenerated
+	- few cosmetics
+
+	* config.h.in: - now it's on exactly GPL v2 license
+
+	* Attic/configure.in: - socket.h and pthread.h added to checked headers
+
+	* src/Makefile.am: - added new files, some cleanups.
+
+	* autogen.sh, Attic/configure.in: - temporary removed using autoheader
+
+	* .cvsignore, po/.cvsignore: - few more files ignored...
+
+	* intl/.cvsignore: - more files ignored in cvs
+
+	* intl/.cvsignore: - ignored...
+
+2002-04-13  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-04-12  Artur Wójcik  <ventox@ds.pg.gda.pl>
+
+	* src/Attic/list.c, src/Attic/list.h, src/Attic/pch.c, src/Attic/stdpch.c, src/Attic/stdpch.h, src/pch.h, src/Attic/error.h, src/main.c, src/main.h, src/match.c, src/misc.c, src/misc.h, src/net.c, src/Attic/error.c, src/Attic/debug.h, src/Attic/debug.c:
+	*** empty log message ***
+
+2002-04-09  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-04-08  Artur Wójcik  <ventox@ds.pg.gda.pl>
+
+	* src/Attic/debug.c, src/Attic/error.c, src/main.c, src/Attic/stdpch.h, src/Attic/debug.h:
+	*** empty log message ***
+
+2002-04-04  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-04-03  Artur Wójcik  <ventox@ds.pg.gda.pl>
+
+	* src/Attic/debug.h, src/Attic/config.h: *** empty log message ***
+
+	* src/Attic/stdpch.h, src/Attic/debug.h:
+	some diagnostic stuff (initial revision)
+
+	* config.h.in: *** empty log message ***
+
+2002-04-03  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/Attic/dchub.conf, src/main.c, src/main.h, src/misc.c:
+	Daemon mode (something is still fucked up, ventox should know what to do;)) and
+	TTY mode (default).
+
+2002-03-30  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-03-29  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/config.status: - not needed
+
+2002-03-29  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-03-28  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Makefile.am: - this should be in package too
+
+	* Attic/dcd.spec.in: - config added
+
+	* .cvsignore: - ignored in cvs
+
+	* Attic/Makefile: - not needed in cvs
+
+	* src/Makefile.am: - sysconfdir macro corrected
+
+	* .cvsignore: - next one...
+
+	* .cvsignore, Attic/configure: - not needed
+
+	* Attic/dcd.spec.in: - some fixes
+
+	* Attic/configure.in, Makefile.am: - spec added
+
+	* Attic/dcd.spec.in: - raw rpm-spec
+	39e77c3db1ddcaceb7ef5c017292a96c  dcd.spec.in
+
+	* src/Makefile.am: - old location to includes too
+
+	* .cvsignore: - and one more...
+
+	* .cvsignore: - one more ignored
+
+	* src/Attic/stdpch.h, src/Makefile.am: - added new file, some cleanups.
+
+2002-03-28  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-03-27  Artur Wójcik  <ventox@ds.pg.gda.pl>
+
+	* src/Attic/stdpch.c, src/Attic/stdpch.h: some framework suff
+
+	* src/Attic/error.h: initial error handling system... very alpha stage
+
+	* src/Attic/config.h:
+	-- this ought to be created during system configuration (need to be fixed) --
+
+2002-03-25  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-03-24  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* .cvsignore: - more ignored.
+
+	* Attic/Makefile, Makefile.am: - add cleaning tar.gz too
+
+2002-03-24  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-03-23  sebo  <sebo@ds.pg.gda.pl>
+
+	* AUTHORS: New me :-)
+
+2002-03-23  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-03-23  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Makefile.am: - added configs otherwise
+
+2002-03-23  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-03-23  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/Makefile, Attic/aclocal.m4, Attic/config.status, Attic/configure, autogen.sh, config.h.in, src/Makefile.am:
+	- framework for gettext support
+
+	* Attic/configure.in: - cosmetics and first try for gettext
+
+	* .cvsignore: - one more
+
+2002-03-23  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-03-23  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* BUGS: - few words more
+
+2002-03-23  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-03-23  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Makefile.am:
+	- clean *~ files, move binary to sbin directory (can be run only by root)
+
+	* Makefile.am: - other ChangeLog
+
+	* NEWS: - few words update
+
+2002-03-23  Nobody  <nobody@ds.pg.gda.pl>
+
+	* Attic/ChangeLog: - ChangeLog update by changelog.sh
+	  (by Arkadiusz Miskiewicz <misiek@pld.org.pl>)
+
+2002-03-23  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* build.sh: - better look
+
+	* NEWS: - not needed
+
+	* Attic/TODO, TODO: - 2 out
+
+	* Attic/README: - frame for more text :)
+
+	* COPYING: - short description (for tests)
+
+	* Attic/Makefile: - regenerated
+
+	* autogen.sh: - nicer script.
+
+	* Makefile.am: - added support for making rpm package
+
+2002-03-21  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/Attic/dchub.conf, src/main.h, src/misc.c:
+	Nickname pattern checking (done). See NICK_PATTERN in main.h.
+
+	* src/main.c, src/misc.c: Use data from conf struct instead of defs.
+
+	* src/main.c, src/main.h, src/misc.c, src/misc.h:
+	"Virtual" reading of configuration.
+
+2002-03-20  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/Attic/dchub.conf:
+	Sample config file. I think it should look similar to this.
+
+	* src/main.c, src/main.h, src/match.h, src/misc.c:
+	Frame for command-line options.
+
+2002-03-20  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Makefile.am: - new files
+
+	* doc/.cvsignore: - trash...
+
+	* src/.deps/.cvsignore: - one more trash...
+
+2002-03-20  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/match.c, src/match.h, src/misc.c, src/misc.h, src/main.c:
+	Frame support for allowed IPs.
+	Wildcard routine for matching things like nickname patterns.
+
+2002-03-19  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/main.c: Default action for SIGTERM (Hub shutdown).
+
+	* src/main.c:
+	Frame for SIGHUP support.
+
+	* src/main.c: *** empty log message ***
+
+2002-03-18  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* .cvsignore: - last one
+
+	* Attic/Makefile: - autoupdated after play....
+
+	* src/.cvsignore: - ... more
+
+	* src/.cvsignore: - one more...
+
+	* Attic/Makefile.in: - removed - not needed
+
+	* Makefile.am: - build.sh and autogen.sh included into package
+
+	* build.sh: - short script that allows to build program
+
+	* Attic/Makefile, Attic/Makefile.in, Attic/config.status, Attic/configure, Attic/configure.in, doc/Makefile.am:
+	- docs are now in package
+
+	* .cvsignore: - one more entry
+
+	* doc/.cvsignore: - things that should be ignored....
+
+	* doc/Makefile.am: - add docs to package
+
+	* Makefile.am: - more docs from main directory
+
+	* Makefile.am: - docs and more clean-ups
+
+	* src/Attic/Makefile.in: - not needed - should be generated...
+
+	* src/.cvsignore: - ignored
+
+	* src/Makefile.am: - updated
+
+	* AUTHORS: - cosmetics
+
+	* .cvsignore: - ignore not needed in repo things
+
+2002-03-18  Artur Wójcik  <ventox@ds.pg.gda.pl>
+
+	* AUTHORS: i've changed my name... at last ;)
+
+2002-03-15  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Attic/Makefile.in, src/Makefile.am, src/main.c, src/main.h:
+	*** empty log message ***
+
+	* src/.deps/Attic/misc.Po: - bogus #2
+
+	* src/.deps/Attic/main.Po: - bogus
+
+	* src/.deps/.cvsignore: - added cvsignore for this dir
+
+2002-03-13  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h:
+	Now the server gives up its root priviliges after opening 411 port.
+	Since with 'ps' there are three threads and I don't know what the fuck is the
+	third one for, the nobody/nogroup is set only for the remaining two.
+
+2002-03-13  Micha³ Felski  <fela@ds.pg.gda.pl>
+
+	* AUTHORS: I've changed my name.
+	Fela
+
+2002-03-12  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/main.c, src/main.h, src/misc.c, src/net.c:
+	Small update.
+
+	* Attic/TODO, TODO: *** empty log message ***
+
+2002-03-08  sebo  <sebo@ds.pg.gda.pl>
+
+	* Attic/TODO, TODO:
+	More details and 1 new idea to make FTP/HTTP interface instead of writing a new
+	client.
+
+	* AUTHORS:
+	Fill it in.
+
+	* src/Attic/config.h, src/main.c, src/main.h, src/misc.c, src/misc.h, src/net.c, src/net.h:
+	Source split.
+
+2002-03-06  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/Makefile: - cosmetics
+
+2002-03-06  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/main.c:
+	Several bugfixes.
+
+	* src/main.c:
+	uint64 bugfix
+
+	* src/main.c:
+	Download should now work.
+
+	* src/main.c:
+	Public/Private Chat should work now.
+
+2002-03-06  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/config.status:
+	- with that making distclean and clean will be faster (not neccesary file -
+	  feel free to remove/update it...)
+
+	* Attic/Makefile.in: - very small cleanup
+
+2002-03-06  sebo  <sebo@ds.pg.gda.pl>
+
+	* Attic/TODO, TODO:
+	Obsolete entry removed.
+
+	* src/Attic/Makefile:
+	If not needed - die.
+
+	* src/main.c, src/misc.c:
+	More about protocol...
+
+	* AUTHORS:
+	Fill it with your names and nicks.
+
+	* Attic/TODO, TODO:
+	Just update.
+
+2002-03-05  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/Attic/config.h, src/main.c, src/misc.c, src/misc.h:
+	More protocol implementation & bugfixes.
+	Search should now work.
+
+2002-03-03  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/main.c:
+	Buffer Overflow bug (ups:)).
+
+	* src/main.c, src/misc.c, src/misc.h:
+	More protocol implementation.
+
+2002-03-01  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/main.c:
+	Minor cleanup & bugfix.
+
+2002-02-28  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/config.h, Attic/config.log, Attic/config.status, Attic/libtool, Attic/stamp-h1:
+	- this files are not neccesary - should be generated by ac/am stuff on
+	  each system.
+
+	* Attic/dc-hub-0.0.1.tar.gz: - its silly to keep it in cvs
+
+	* Attic/TODO, BUGS, TODO: - one more TODO
+	- added BUGS file
+
+	* doc/Attic/dc1.txt, doc/Attic/dc2.txt, doc/Attic/dc3.txt, doc/Attic/dc4.txt, doc/Attic/dc5.txt, doc/Attic/dc6.txt, doc/Attic/protocol.html, doc/protocol.html:
+	- propertly added documentation
+
+	* Attic/README: - cosmetics
+
+	* Attic/TODO, TODO: - one out, one in
+
+2002-02-27  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/misc.c:
+	Test
+
+	* src/Attic/config.h, src/main.c:
+	Minor cosmetix & bugs cleanup. More to go.
+
+2002-02-27  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/Makefile, Attic/configure, src/Attic/Makefile:
+	- fixes after import play :)
+
+	* Attic/config.h, Attic/config.log, Attic/config.status, Attic/dc-hub-0.0.1.tar.gz, Attic/libtool, Attic/stamp-h1, src/.deps/Attic/main.Po, src/.deps/Attic/misc.Po:
+	New file.
+
+2002-02-10  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in: - started working on 0.0.2
+
+	* Attic/Makefile, Attic/Makefile.in: - 0.0.1 - changes after make dist
+
+	* src/Attic/Makefile.in: - one more.
+
+	* Attic/Makefile.in, Attic/aclocal.m4, Attic/config.guess, Attic/config.sub, Attic/configure, Attic/ltmain.sh, Attic/missing, Attic/mkinstalldirs, config.h.in, depcomp, install-sh, stamp-h.in:
+	- added it to allow easy program generation....
+
+	* Attic/README: - empty README
+
+2002-02-02  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* src/Attic/Makefile: - added it... but try not to use it.
+
+	* src/Makefile.am, Attic/Makefile, Attic/configure.in:
+	- updated to splited sources.
+	- proper Makefile, but better use am/ac stuff
+
+2002-02-02  sebo  <sebo@ds.pg.gda.pl>
+
+	* src/Attic/config.h, src/main.c, src/misc.c, src/misc.h, src/net.c, Attic/Makefile:
+	- simple Makefile
+	- protocol documentation
+	- net.c splitted
+
+2002-01-10  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* COPYING: - oops - it was LGPL, not GPL :)
+
+	* COPYING: - I think we should make it on GPL v2 License.
+	PRZEDYSKUTOWAÆ! Albo... czy kto¶ ma co¶ przeciwko? :)
+
+2002-01-09  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/configure.in: -pthreads not foud -> critical
+
+	* src/Makefile.am, src/net.c, Attic/configure.in, Attic/net.c, Makefile.am:
+	- moved sources to src directory.
+
+	* Attic/configure.in: - it compiles now :)
+
+	* Attic/configure.in: - check for threads
+
+	* autogen.sh: - added autoheader call
+
+	* Attic/configure.in, Makefile.am, autogen.sh:
+	- started making ac/am/libtool support
+
+2002-01-08  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/net.c: - just a typo
+
+	* Attic/net.c: 23e283c7bbe3ecfa125b3b7188d688f0  net.c
+
+2002-01-07  Pawe³ Go³aszewski  <blues@ds.pg.gda.pl>
+
+	* Attic/TODO, TODO: initial
+
+	* NEWS: brand new
+

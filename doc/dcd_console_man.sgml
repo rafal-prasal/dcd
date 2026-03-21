@@ -1,0 +1,122 @@
+<!DOCTYPE RefEntry PUBLIC "-//OASIS//DTD DocBook V3.1//EN" []>
+
+<refentry lang="en">
+
+  <refmeta>
+    <refentrytitle>dcd.console</refentrytitle>
+    <manvolnum>2</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>dcd.console</refname>
+    <refpurpose>DConnectDaemon - administration console</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>telnet</command>
+      <arg>host name</arg>
+      <arg>port number</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+    <para>This file describes how to use administration console of DConnectDaemon.
+</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Logging in</title>
+    <para>
+You can connect to cosole using <command>telnet</command> command. The default port number is <envar>511</envar>. 
+The file <filename>console.allow</filename> contains list of hosts allowed to access the console.
+After a connect you must enter login and password. Logins and passwords are stored in file <filename>dcd.users</filename>.
+Default location for config files is <filename>/usr/local/etc/</filename>.
+</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Console commands</title>
+    <para>You can control the hub from console. The following commands are available:
+</para>
+    <variablelist>
+      <varlistentry>
+	<term>conf</term>
+	<listitem>
+	  <para>Show current configuration.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>rehash</term>
+	<listitem>
+	  <para>Reload configuration, ex. after config change. This command allows configuration change without server restart.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>quit</term>
+	<listitem>
+	  <para>Leave the console</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>stat</term>
+	<listitem>
+	  <para>Show hub statistics: number of users, amount of shared data, hub's uptime, etc.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>debug <option>[debug level]</option></term>
+	<listitem>
+	  <para>Set debug level. <envar>3</envar> is the default (DEBUG_SYS+DEBUG_STD).</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>whois <option><sgmltag><</sgmltag>nick<sgmltag>></sgmltag></option></term>
+	<listitem>
+	  <para>Show user description.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>who</term>
+	<listitem>
+	  <para>Show who is on the console. The command displays host address, idle time, etc.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>users</term>
+	<listitem>
+	  <para>Show all hub users.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>kick <option><sgmltag><</sgmltag>nick<sgmltag>></sgmltag></option> [<parameter>reason</parameter>]</term>
+	<listitem>
+	  <para>Disconnect a user <parameter><sgmltag><</sgmltag>nick<sgmltag>></sgmltag></parameter> from hub. Optional <parameter>reason</parameter> will be displayed on user's public chat window.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>jq</term>
+	<listitem>
+	  <para>Toggle dispaying of joins and quits traffic.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>boost</term>
+	<listitem>
+	  <para>Togle info-booster (experimental).</para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>See also</title>
+    <para>
+<citerefentry>
+	<refentrytitle>dcd</refentrytitle>
+	<manvolnum>2</manvolnum>
+      </citerefentry>
+</para>
+  </refsect1>
+</refentry>

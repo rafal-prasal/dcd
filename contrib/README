@@ -1,0 +1,9 @@
+In this directory you can find stuff for various distributions.
+If you can't find something for your distro(TM) - let us know or
+(best) mail to us the solution <dc-hub@ds.pg.gda.pl>
+
+MandrakeLinux/	- stuff for Mandrake Linux Distribution	http://www.mandrake-linux.com/
+PLD/		- stuff for PLD Linux Distribution	http://www.pld-linux.org/
+README		- this file
+dcd.sysconfig	- file with system configuration (usually in /etc/sysconfig)
+logrotate.dcd	- file for logrotate

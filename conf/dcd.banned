@@ -1,0 +1,18 @@
+# $Id: dcd.banned,v 1.3 2006/10/18 10:51:50 rav Exp $
+#
+# This file contains banned hosts. When a host from this list
+# attempts to connect with DC client, he will be disconnected
+# with optional reason message.
+#
+# Format of each line:
+# "IP:reason" or just "IP".
+#
+# You can specify IP addresses or IP wildcards (eg. 123.45.6?.*).
+# Empty lines or beginning with `#' are ignored.
+# 123.45.67.*:Abuse
+#
+# You can also include another file by inserting line
+# include:name_of_file
+#
+# The file you include must be in the same directory as this file
+# You cannot include another file in the file you are including

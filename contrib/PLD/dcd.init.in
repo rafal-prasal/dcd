@@ -1,0 +1,71 @@
+#!/bin/sh
+#
+# @PACKAGE_NAME@		This shell script takes care of starting and stopping DConnect Daemon
+#
+# chkconfig:	2345 91 35
+# description:	D****ct Connect Hub running in daemon mode
+# processname:	@PACKAGE_NAME@
+#
+# pidfile:	/var/run/@PACKAGE_NAME@.pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+if is_no "${NETWORKING}"; then
+	msg_network_down @PACKAGE_NAME@
+	exit 1
+fi
+
+# Try get config..
+[ -f /etc/sysconfig/@PACKAGE_NAME@ ] && . /etc/sysconfig/@PACKAGE_NAME@
+
+# See how we were called.
+case "$1" in
+	start)
+		# Start daemons.
+		if [ ! -f /var/lock/subsys/@PACKAGE_NAME@ ]; then
+			msg_starting @PACKAGE_NAME@
+			daemon @PACKAGE_NAME@ $OPTIONS 
+			RETVAL=$?
+			[ $RETVAL -eq 0 ] && touch /var/lock/subsys/@PACKAGE_NAME@
+		else
+			msg_already_running @PACKAGE_NAME@
+		fi
+		;;
+	stop)
+		# Stop daemons.
+		if [ -f /var/lock/subsys/@PACKAGE_NAME@ ]; then
+			msg_stopping @PACKAGE_NAME@
+			killproc @PACKAGE_NAME@
+			rm -f /var/lock/subsys/@PACKAGE_NAME@ >/dev/null 2>&1
+		else
+			msg_not_running @PACKAGE_NAME@
+			exit 1
+		fi
+		;;
+	restart)
+		$0 stop
+		$0 start
+		;;
+	reload)
+		if [ -f /var/lock/subsys/@PACKAGE_NAME@ ]; then
+			msg_reloading @PACKAGE_NAME@
+			busy
+			killproc @PACKAGE_NAME@ -HUP
+		else
+			msg_not_running @PACKAGE_NAME@
+			exit 1
+		fi
+		;;
+	status)
+		status @PACKAGE_NAME@
+		;;
+	*)
+		msg_usage "$0 {start|stop|restart|status}"
+		exit 1
+esac
+

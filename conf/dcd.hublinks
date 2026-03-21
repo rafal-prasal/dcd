@@ -1,0 +1,8 @@
+# $Id: dcd.hublinks,v 1.2 2006/10/18 10:51:51 rav Exp $
+# You can add hubs to which you are connected to.
+# Format of each line:
+# ip:port:pass_in:pass_out
+# pass_in passwords which must give hub which tries to connect to
+# pass_out password which we must give to hub which we try to connect to
+
+

@@ -1,0 +1,43 @@
+# $Id: dcd.users,v 1.9 2006/10/18 10:51:51 rav Exp $
+#
+# You can add an administration account here.
+# Format of each line:
+# "login:password:e-mail:description:permissions"
+# or just: "login:" if you only want to prevent users from using this nick.
+#
+# permissions:
+#	c - access to the telnet console
+#		- can be used with any other priviledge
+#
+#	s - superior user
+#		- mislots/minshare is not tested
+#		- ignores search_interval
+#		- can't be used with 'a' or 'n' priviledge
+#		- user can kick/redirect user but not 's' user 
+#
+#	a - administrator
+#		- can't be used with 's' or 'n' priviledge
+#		- user can kick/redirect 'n' users but not any of 's' or 'a' users 
+#		
+#	n - just reserving nick
+#		- can be used also with c priviledge
+#
+#   p - allows user to be in passive mode when allow_passive is set to 0
+#		- can be used with any other priviledge
+#
+#	m - checkout for minsshare is disabled for this user
+#		- can be used with any other priviledge
+#
+#	r - checkout for minslots is disabled for this user
+#		- can be used with any other priviledge
+#
+#	f - allows user to specify his IP in client. Used when user wants to be ACTIVE, 
+#       but he is behind NAT and wants to forward port. Used only when allow_forwarding 
+#		in dcd.conf is set to 0
+#		- can be used with any other priviledge
+#
+#	i - user can search without waiting search_interval
+#
+# Empty lines or beginning with `#' are ignored.
+
+admin:changeme:admin@localhost:DC Administrator:cs

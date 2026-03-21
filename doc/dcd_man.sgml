@@ -1,0 +1,199 @@
+<!DOCTYPE RefEntry PUBLIC "-//OASIS//DTD DocBook V3.1//EN" []>
+
+<refentry lang="en">
+
+  <refmeta>
+    <refentrytitle>dcd</refentrytitle>
+    <manvolnum>2</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>DConnectDaemon</refname>
+    <refname>dcd</refname>
+    <refpurpose>p2p network hub (Direct Connect from NeoModus Software <ulink url="http://www.neomodus.com"></ulink>)</refpurpose>
+  </refnamediv>
+  
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>dcd</command>
+      <arg>-h</arg>
+      <arg>-v</arg>
+      <arg>-c config_file</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+    <para>DConnectDeamon is a hub for Direct Connect p2p network, working under *nix system. DCD runs in background as system daemon.
+Alternate config file can be specified using 'c' option (default is <filename>/usr/local/etc/dcd.conf</filename>).
+'h' shows help screen and 'v' dumps version number.
+</para>
+  </refsect1>
+ 
+ <refsect1>
+    <title>Config file</title>
+    <para>   
+After installation, DCD would use <filename>/usr/local/etc/dcd.conf</filename> as a config file, if you haven't passed the --prefix option to the configure script.
+Notation in this file is as follows: <option>option = value</option>. Options in config file:
+</para>
+
+    <refsect2>
+      <title>Administrator options</title>
+
+    <variablelist>
+      <varlistentry>
+	<term>listen_port_main</term>
+	<listitem>
+<para>Daemon's listening port. Default is <envar>411</envar></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>listen_port_cons</term>
+	<listitem>
+	  <para>Remote console listening port. Set 0 to disable. Default is <envar>511</envar></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>user</term>
+	<listitem>
+	  <para>DCD's UID. Default is <envar>daemon</envar></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>group</term>
+	<listitem>
+	  <para>DCD's GID. Default is <envar>daemon</envar></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>conf_welcome</term>
+	<listitem>
+	  <para>A text file in dcd's config directory with welcome message. This file will be played to the public chat window when users connect. Set empty if you don't want it at all. Default is <filename>dcd.welcome</filename>.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>conf_motd</term>
+	<listitem>
+	  <para>A text file in dcd's config directory with anything you want to send to users after successful registration.  Set empty if you don't want it at all. Default is <filename>dcd.motd</filename>.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>conf_banned</term>
+	<listitem>
+	  <para>A text file in dcd's config directory with list of banned host. Default is  <filename>dcd.banned</filename></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>conf_cusers</term>
+	<listitem>
+	  <para>A text file in dcd's config directory with administration accounts. Default is <filename>dcd.users</filename>. Each line of this file contain one account <envar>login:password:e-mail:description:permissions</envar>, where permissions are: <option>c</option> - access to the telnet console; <option>a</option> - administration account.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>conf_callow</term>
+	<listitem>
+	  <para>A text file in dcd's config directory with list of hosts allowed to access the console. Default is <filename>console.allow</filename></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>conf_nallow</term>
+	<listitem>
+	  <para>A text file in dcd's config directory with list of allowed nicks. All nicks are allowed by default. Set empty if you don't want it at all. If you want to restrict allowed nicks use pattern ex. <emphasis/[ADSL]*/ - only allows nicks begining with '[ADSL]'. Default is <filename>nick.allow</filename>.</para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+</refsect2>
+
+  <refsect2>
+    <title>Logging</title>
+    <para>DConnectDaemon has two logging parameters:</para>
+    <variablelist>
+      <varlistentry>
+	<term>log_dir</term>
+	<listitem>
+	  <para>Log files location. Default is <filename>/var/log/dcd</filename></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>log_main</term>
+	<listitem>
+	  <para>Main log file name. Default is <filename>dcd.log</filename></para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect2>
+
+  <refsect2>
+    <title>Personal settings</title>
+
+<variablelist>
+	  <varlistentry>
+	    <term>hubname</term>
+	    <listitem>
+	      <para>Name of your hub. Default is <emphasis>DConnectDaemon v#.#.#</emphasis>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>user_limit</term>
+	    <listitem>
+	      <para>Max amount of users you allow. Default is <symbol>1000</symbol>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>allow_broken_key</term>
+	    <listitem>
+	      <para>We don't yet check for a valid key, so this is ignored.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>allow_chat</term>
+	    <listitem>
+	      <para>Allow public chat. On heavy loaded servers it may be a good idea to set it to "0". Default is "1" and most people will not change it.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>ping_timeout</term>
+	    <listitem>
+	      <para>Disconnect client after being idle for this time (in seconds). Normally, the protocol prevents client from being idle for more than 60 secs, so setting this to 120 is safe enough and protects from `zombie' sessions. Some client implementations do not follow the 60 secs antiidle mechanism, so this is disabled by default.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>register_timeout</term>
+	    <listitem>
+	      <para>Obligate client to complete its registration within this pediod (in seconds). Default is <emphasis>30</emphasis>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>min_share</term>
+	    <listitem>
+	      <para>Minimum shared data in megabytes. Default is <emphasis>300MB</emphasis>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>min_slots</term>
+	    <listitem>
+	      <para>Minimum number of slots.</para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+
+  </refsect2>
+  </refsect1>
+  <refsect1>
+    <title>BUGS</title>
+    <para>DCD is not building on RedHat, because there is only static libwrap library. We're looking someone to patch this bug.</para>
+  </refsect1>
+  <refsect1>
+    <title>See also</title>
+    <para>
+<citerefentry>
+	<refentrytitle>dcd.console</refentrytitle>
+	<manvolnum>1</manvolnum>
+      </citerefentry>
+</para>
+  </refsect1>
+  <refsect1>
+    <title>Availability</title>
+    <para>Newest version of DConnectDaemon is available on <ulink url="http://www.dc.ds.pg.gda.pl"></ulink></para>
+  </refsect1>
+</refentry>

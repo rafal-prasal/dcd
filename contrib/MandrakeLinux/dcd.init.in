@@ -1,0 +1,111 @@
+#!/bin/sh
+#
+# @PACKAGE_NAME@	This shell script takes care of starting and stopping DConnect Daemon
+#
+# chkconfig:	2345 91 35
+# description:	D****ct Connect Hub running in daemon mode
+# processname:	@PACKAGE_NAME@
+#
+# pidfile:	/var/run/@PACKAGE_NAME@.pid
+# lockfile: /var/lock/@PACKAGE_NAME@
+
+### BEGIN INIT INFO
+# Provides: 		@PACKAGE_NAME@
+# Required-Start:	$network $syslog
+# Required-Stop:	
+# Default-Start: 2 3 4 5
+# Short-Description: D****ct Connect Hub running in daemon mode
+# description:  DConnect Daemon is a hub software, 
+#				which utilizes threads. It is as safe and as simple
+#				to use as possible.
+### END INIT INFO
+
+LOCKFILE="/var/lock/subsys/@PACKAGE_NAME@"
+PIDFILE="/var/run/@PACKAGE_NAME@.pid"
+
+dcd_status()
+{
+	ps wt? | grep "$1" 2>&1 > /dev/null
+	if [ "x$?" = "x0" ]; then
+		RETVAL=0
+		echo "$1(`cat $PIDFILE`) is running"
+	else
+		RVAL=3
+		[ -f "$PIDFILE" ] && RETVAL=1
+		[ -f "$LOCKFILE" ] && RETVAL=2
+	
+		echo "$1 is not running"
+	fi
+}
+
+. /lib/lsb/init-functions
+	
+alias START_DAEMON=start_daemon
+alias STATUS=dcd_status
+alias LOG_SUCCESS=log_success_msg
+alias LOG_FAILURE=log_failure_msg
+alias LOG_WARNING=log_warning_msg
+
+# Get config.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ ${NETWORKING} = "no" ] &&	exit 0
+
+
+SERVICE_RUN_NICE_LEVEL=+0
+# Getting this script configuration file
+[ -f /etc/sysconfig/@PACKAGE_NAME@ ] && . /etc/sysconfig/@PACKAGE_NAME@
+
+# See how we were called.
+case "$1" in
+  start)  
+  	if [ ! -f "$LOCKFILE" ]; then
+  		START_DAEMON -n "$SERVICE_RUN_NICE_LEVEL" "@PACKAGE_NAME@"
+	fi
+	;;
+
+  stop)
+	gprintf "Stopping %s" "@PACKAGE_NAME@"
+	killproc "@PACKAGE_NAME@" -TERM
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && rm -f "$LOCKFILE"
+	echo
+	;;
+
+  status)
+	STATUS @PACKAGE_NAME@
+	RETVAL=$?
+	;;
+
+  restart)
+	$0 stop
+	$0 start
+	RETVAL=$?
+	;;
+
+  condrestart)
+  	if [ -f "$LOCKFILE" ]; then
+		$0 stop
+		$0 start
+		RETVAL=$?
+	fi
+	;;  	
+
+  reload)
+	gprintf "Reloading %s" "@PACKAGE_NAME@"
+	killproc @PACKAGE_NAME@ -HUP
+	RETVAL=$?
+	echo
+	;;
+  *)
+	gprintf "Usage: %s {start|stop|status|restart|condrestart|reload}\n" "$0"
+	exit 1
+esac
+
+if [ $# -gt 1 ]; then
+	shift
+	$0 $*
+fi
+
+exit $RETVAL

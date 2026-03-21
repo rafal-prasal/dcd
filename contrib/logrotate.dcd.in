@@ -1,0 +1,10 @@
+@LOG_DIR@/*.log {
+	olddir /var/log/archiv/dcd
+	daily
+	rotate 7
+	compress
+	create 660 @DEFAULT_USER@ @DEFAULT_GROUP@
+	postrotate
+		/bin/killall -s SIGHUP dcd
+	endscript
+}

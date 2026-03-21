@@ -1,0 +1,13 @@
+# $Id: console.allow,v 1.3 2006/10/18 10:51:50 rav Exp $
+#
+# Only hosts you place below will be allowed to log in to the remote console.
+# You can specify IP addresses or IP wildcards (eg. 123.45.6?.*).
+# Empty lines or beginning with `#' are ignored.
+#
+# You can include another file by inserting line
+# include:name_of_file
+# 
+# the file you include must be in the same directory as this file
+# you cannot include file in the file you are including
+#
+127.0.0.1

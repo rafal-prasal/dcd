@@ -1,0 +1,7 @@
+# $Id: nicks.allow,v 1.2 2006/10/18 10:51:51 rav Exp $
+#
+# Only nicknames you place below will be allowed to connect to DC.
+# You can specify wildcards (eg. *?*[*?*]).
+# Empty lines or beginning with `#' are ignored.
+
+*

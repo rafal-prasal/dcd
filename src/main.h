@@ -294,7 +294,9 @@ typedef struct
 	myinfo_t myinfo;
 
 	char userip[7+1+NICK_LEN+1+15+1+1];
-	
+
+	pthread_mutex_t send_mutex;
+
 }userrec_t;
 
 /* filled with config file data */

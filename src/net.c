@@ -60,9 +60,13 @@ void sendtcp(userrec_t *usr, char *msg)
 {
 	int ret, msglen=strlen(msg);
 	
+	pthread_mutex_lock(&usr->send_mutex);
+
 	ret=send(usr->sock, msg, msglen, MSG_DONTWAIT|MSG_NOSIGNAL);
 
 	if (ret==-1) sockerr("send", errno, usr);
+
+	pthread_mutex_unlock(&usr->send_mutex);
 
 	return;
 }
@@ -318,6 +322,8 @@ void disconnect(userrec_t *usr)
 {
 
 	log_write(FAC_ACCESS,PR_INFO,"'%s'@%s: disconnect: %s",(usr->nick)?usr->nick:"Unknown",usr->ip,(usr->reason)?usr->reason:"Connection closed.");
+	
+	pthread_mutex_destroy(&usr->send_mutex);
 	
 	my_free(usr->reason);	
 	my_free(usr->ip);

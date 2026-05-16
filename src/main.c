@@ -325,6 +325,13 @@ void adduser(int sock,char *remote,char *local)
 	tmp=(userrec_t *)my_malloc(sizeof(userrec_t));
 	memset(tmp,0,sizeof(userrec_t));
 
+	if (pthread_mutex_init(&tmp->send_mutex, NULL) != 0) {
+		log_write(FAC_DAEMON,PR_CRITICAL,"Failed to init send_mutex: %s", strerror(errno));
+		close(sock);
+		my_free(tmp);
+		goto leave;
+	}
+
 	user_set_state(tmp,STATE_WELCOME);
 
 	/* getting user's ip addresses */

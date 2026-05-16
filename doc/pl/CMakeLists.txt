@@ -1,0 +1,1 @@
+install(FILES dcd.1 dcd.console.1 DESTINATION ${CMAKE_INSTALL_FULL_MANDIR}/man1)

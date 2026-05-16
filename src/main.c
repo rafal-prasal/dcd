@@ -768,8 +768,8 @@ void init_var(char *argv0)
 
 	/* set up default config values */
 
-	conf.conf_main=(char *)my_malloc(strlen(CONFIGDIR)+strlen(CONF_MAIN)+2); /* one byte for '/' and one for '\0' */
-	sprintf(conf.conf_main, "%s%s%s", CONFIGDIR, (CONFIGDIR[strlen(CONFIGDIR)-1]=='/')?"":"/", CONF_MAIN);
+conf.conf_main=(char *)my_malloc(strlen(CONFIGDIR)+strlen(CONF_MAIN)+2); /* one byte for '/' and one for '\0' */
+snprintf(conf.conf_main, strlen(CONFIGDIR)+strlen(CONF_MAIN)+2, "%s%s%s", CONFIGDIR, (CONFIGDIR[strlen(CONFIGDIR)-1]=='/') ? "" : "/", CONF_MAIN);
 
 	conf.conf_welcome=strdup(CONF_WELCOME);
 	conf.conf_motd=strdup(CONF_MOTD);

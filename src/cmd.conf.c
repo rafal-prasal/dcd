@@ -64,12 +64,12 @@ void conf_admin_contact(conf_param_t *param)
 
 void conf_allow_broken_key(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if ((ival!=0) && ival!=1)
 	{
@@ -82,12 +82,12 @@ void conf_allow_broken_key(conf_param_t *param)
 
 void conf_allow_chat(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival!=0 && ival!=1)
 	{
@@ -100,12 +100,12 @@ void conf_allow_chat(conf_param_t *param)
 
 void conf_allow_downloads(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival!=0 && ival!=1)
 	{
@@ -119,12 +119,12 @@ void conf_allow_downloads(conf_param_t *param)
 
 void conf_allow_forwarding(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival!=0 && ival!=1)
 	{
@@ -137,12 +137,12 @@ void conf_allow_forwarding(conf_param_t *param)
 
 void conf_allow_search(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival!=0 && ival!=1)
 	{
@@ -156,12 +156,12 @@ void conf_allow_search(conf_param_t *param)
 
 void conf_registered_only(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival!=0 && ival!=1)
 	{
@@ -173,12 +173,12 @@ void conf_registered_only(conf_param_t *param)
 }
 void conf_allow_non_us_ascii_nicks(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival!=0 && ival!=1)
 	{
@@ -192,12 +192,12 @@ void conf_allow_non_us_ascii_nicks(conf_param_t *param)
 
 void conf_allow_passive(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival!=0 && ival!=1)
 	{
@@ -315,7 +315,7 @@ void conf_hubname(conf_param_t *param)
 
 void conf_listen_port_main(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
@@ -323,7 +323,7 @@ void conf_listen_port_main(conf_param_t *param)
 
 	if (!start) return;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival<=0 || ival>65535)
 	{
@@ -337,7 +337,7 @@ void conf_listen_port_main(conf_param_t *param)
 
 void conf_listen_port_cons(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
@@ -345,7 +345,7 @@ void conf_listen_port_cons(conf_param_t *param)
 
 	if (!start) return;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival<0 || ival>65535)
 	{
@@ -358,12 +358,12 @@ void conf_listen_port_cons(conf_param_t *param)
 
 void conf_log_facility(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival<0 || ival>65535)
 	{
@@ -376,12 +376,12 @@ void conf_log_facility(conf_param_t *param)
 
 void conf_idle_timeout(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival<0)
 	{
@@ -394,12 +394,12 @@ void conf_idle_timeout(conf_param_t *param)
 
 void conf_max_chat_length(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival<0 || ival>=MAX_USER_BUFFER)
 	{
@@ -412,11 +412,11 @@ void conf_max_chat_length(conf_param_t *param)
 
 void conf_max_receive_once(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if(ival<=0 || ival>MAX_RECEIVE_ONCE) ival = conf.max_receive_once=MAX_RECEIVE_ONCE;
 
@@ -426,12 +426,12 @@ void conf_max_receive_once(conf_param_t *param)
 
 void conf_max_chat_length_kick(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival!=0 && ival!=1)
 	{
@@ -444,12 +444,12 @@ void conf_max_chat_length_kick(conf_param_t *param)
 
 void conf_max_commands(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival<0)
 	{
@@ -462,12 +462,12 @@ void conf_max_commands(conf_param_t *param)
 
 void conf_minimal_sleep_time(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 	if (ival<0)
 	{
         log_write(FAC_DAEMON,PR_CRITICAL, "'%s' should be >=0",cmd);
@@ -480,22 +480,22 @@ void conf_minimal_sleep_time(conf_param_t *param)
 
 void conf_min_share(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (!ival || !sscanf(value,"%"SCNu64,&(conf.minshare))) conf.minshare=0;
 }
 
 void conf_min_slots(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *value=param->value;
 	
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival<0) ival=0;
 
@@ -504,7 +504,7 @@ void conf_min_slots(conf_param_t *param)
 
 void conf_n_listen_main(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *value=param->value;
 
@@ -512,7 +512,7 @@ void conf_n_listen_main(conf_param_t *param)
 
 	if(!start) return;
 	
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 	if (ival<1 || ival>MAX_N_LISTEN_MAIN) ival=N_LISTEN_MAIN;
 
 	conf.n_listen_main=ival;	
@@ -520,14 +520,14 @@ void conf_n_listen_main(conf_param_t *param)
 
 void conf_n_user_manager(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *value=param->value;
 	int start = param->start;
 
 	if(!start) return;
 	
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 	
 	if (ival<1 || ival>MAX_N_USER_MANAGER) ival=N_USER_MANAGER;
 
@@ -557,12 +557,12 @@ void conf_redirect_min_slots(conf_param_t *param)
 
 void conf_redirect_switch(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 	
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival<0 || ival>65535)
 	{
@@ -576,12 +576,12 @@ void conf_redirect_switch(conf_param_t *param)
 
 void conf_register_timeout(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival<0)
 	{
@@ -594,11 +594,11 @@ void conf_register_timeout(conf_param_t *param)
 
 void conf_penalties_update_interval(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *value=param->value;
 	
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 	if (ival<10) ival=10;
 	
 	conf.penalties_update_interval=ival;
@@ -606,11 +606,11 @@ void conf_penalties_update_interval(conf_param_t *param)
 
 void conf_search_interval(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *value=param->value;
 	
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 	if (ival<0) ival=2;
 	
 	conf.search_interval=ival;
@@ -618,11 +618,11 @@ void conf_search_interval(conf_param_t *param)
 
 void conf_std_penalty_duration(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *value=param->value;
 	
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 	if (ival<0) ival=10;
 	
 	conf.std_penalty_duration=ival;
@@ -637,7 +637,7 @@ void conf_socket_send_buffer(conf_param_t *param)
 
 	if(!start) return;
 
-	ival=atol(value);
+	ival=strtol(value, NULL, 10);
 	if (ival<0) ival=VAL_SO_SNDBUF;
 
 	listen_opts.so_sndbuf=ival;
@@ -654,7 +654,7 @@ void conf_socket_receive_buffer(conf_param_t *param)
 	int start = param->start;
 	if(!start) return;
 	
-	ival=atol(value);
+	ival=strtol(value, NULL, 10);
 	if (ival<0) ival=VAL_SO_RCVBUF;
 
 	listen_opts.so_rcvbuf=ival;
@@ -685,12 +685,12 @@ void conf_user(conf_param_t *param)
 
 void conf_user_limit(conf_param_t *param)
 {
-	int ival=0;
+	long ival=0;
 
 	char *cmd=param->cmd,
 		 *value=param->value;
 
-	ival=atoi(value);
+	ival=strtol(value, NULL, 10);
 
 	if (ival<=0 || ival>MAXUSERS)
 	{

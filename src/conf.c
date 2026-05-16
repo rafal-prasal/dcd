@@ -679,7 +679,7 @@ void parse_hublist()
 		hub[NHUBS]->UpToo_cache=my_sprintf("$UpToo %s %s:%d|", pass_out, conf.listen_interface, conf.listen_port_main);
 
 		hub[NHUBS]->udp.sin_addr.s_addr = inet_addr(ip);
-		hub[NHUBS]->udp.sin_port        = htons(atoi(port));
+		hub[NHUBS]->udp.sin_port        = htons((unsigned short)strtol(port, NULL, 10));
 		hub[NHUBS]->udp.sin_family      = AF_INET;	
 		
 		ret  = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);

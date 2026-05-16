@@ -163,11 +163,17 @@ void lock_key(userrec_t *usr, char *lock)
 	
 	for(i = 0; i<SALT_LEN-1; i++) 
 	{
-		if(protocol_char(tmp[i])) offset += sprintf(&key[offset], "/%%DCN%03i%%/", tmp[i]);
-		else key[offset++] = tmp[i];
+		if(protocol_char(tmp[i])) {
+			int written = snprintf(&key[offset], 16, "/%%DCN%03i%%/", tmp[i]);
+			if(written < 0 || offset + written >= 10*(SALT_LEN-1)) break;
+			offset += written;
+		} else {
+			if(offset >= 10*(SALT_LEN-1)) break;
+			key[offset++] = tmp[i];
+		}
 	}
 
-	key[offset] = 0;
+	key[offset] = '\0';
 	
 	usr->key=key;
 }
@@ -440,7 +446,7 @@ void make_path(char *dir,char **file)
 	p=strrchr(tmp,'/');
 	if (p) p++; else p=tmp;
 	*file=(char *)my_realloc(*file,strlen(dir)+strlen(p)+2);
-	sprintf(*file,"%s%s%s",dir,(dir[strlen(dir)-1]=='/')?"":"/",p);
+	snprintf(*file, strlen(dir)+strlen(p)+2, "%s%s%s", dir, (dir[strlen(dir)-1]=='/') ? "" : "/", p);
 	my_free(tmp);
 } /* }}} */
 

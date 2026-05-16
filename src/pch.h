@@ -67,7 +67,6 @@
 #include <sys/time.h>
 
 #include <syslog.h>
-#include <tcpd.h>
 
 #include <pwd.h>
 #include <grp.h>

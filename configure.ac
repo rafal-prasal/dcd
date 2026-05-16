@@ -64,42 +64,6 @@ else
 	AC_MSG_ERROR(****Library not found: pthread. You MUST to have libpthreads****);
 fi
 
-################
-### Libwrap:
-###
-## TODO:
-## - checks for static libraries
-
-dnl check for tcp wrapper support
-AC_ARG_WITH(libwrap-path,
-	    AC_HELP_STRING([--with-libwrap-path[=LIBPATH]],[Compile with libwrap (tcp_wrappers) support.]),
-	     [if test "$with_libwrap_path" != "no"; then
-		     if test "$with_libwrap_path" != "yes"; then
-			     CPPFLAGS="${CPPFLAGS} -I$with_libwrap_path/include"
-			     LDFLAGS="${LDFLAGS} -L$with_libwrap_path/lib"
-		     fi
-
-		     LDFLAGS="$LDFLAGS -lwrap"
-		    
-		     AC_CHECK_HEADER(tcpd.h, [],[ AC_MSG_ERROR(Asked to use libwrap but I couldn't find tcpd.h.) ])
-		     AC_MSG_CHECKING([for TCP wrappers library -lwrap])
-	     else
-		     AC_MSG_ERROR(****Asked to disable libwrap support but It's not possible in this version****);
-	     fi],
-	     [LDFLAGS="$LDFLAGS -lwrap"
-	      AC_CHECK_HEADER(tcpd.h, [],[ AC_MSG_ERROR(Asked to use libwrap but I couldn't find tcpd.h.) ])
-	      AC_MSG_CHECKING([for TCP wrappers library -lwrap])
-
-			AC_DEFINE(USE_LIBWRAP)
-	      AC_DEFINE(PROCESS_OPTIONS)
-	      ])
-AC_MSG_RESULT(yes)
-
-AC_CHECK_FUNC(yp_get_default_domain, [], 
-	AC_CHECK_LIB(wrap, yp_get_default_domain, [], 
-		AC_CHECK_LIB(nsl, yp_get_default_domain, [], 
-			[ AC_DEFINE(INCLUDED_YP_GET_DEFAULT_DOMAIN,"1") 
-			  AC_MSG_RESULT( using own yp_get_default_domain... yes )] )))
 
 dnl SCNu64 
 AC_MSG_CHECKING([SCNu64 definition])

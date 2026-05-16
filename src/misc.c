@@ -26,11 +26,7 @@ extern FILE* file_con;
 extern FILE* file_chat;
 extern char DAEMON;
 extern pthread_mutex_t mutex_inet_ntoa;
-extern pthread_mutex_t mutex_my_hosts_access;
 extern pthread_mutex_t mutex_myinfo;
-
-extern int allow_severity;
-extern int deny_severity;
 
 extern time_t last_penalties_update;
 
@@ -431,34 +427,6 @@ void check_timeout(userrec_t *usr) {
 
 } /* }}} */
 
-
-int my_hosts_access(int sock)
-{
-	int ec=1;
-	struct request_info req;
-	
-	pthread_mutex_lock(&mutex_my_hosts_access);
-
-	request_init(&req,RQ_DAEMON,__progname,RQ_FILE,sock,0);
-	fromhost(&req);
-		
-	ec=hosts_access(&req);
-			
-	pthread_mutex_unlock(&mutex_my_hosts_access);
-				
-	return ec;
-}
-					
-
-/* denied() - check if remote host is not allowed to connect {{{ */
-char denied(int sock)
-{
-	int ec=1;
-
-	if (my_hosts_access(sock)) ec=0;
-
-	return ec;
-} /* }}} */
 
 /* make_path() - compose direct path to file {{{ */
 void make_path(char *dir,char **file)

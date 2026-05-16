@@ -64,7 +64,6 @@ int signal_p=0;
 
 pthread_mutex_t mutex_userlist;		/* securing userlist */
 pthread_mutex_t mutex_inet_ntoa; // securing inet_ntoa
-pthread_mutex_t mutex_my_hosts_access; // securing my_hosts_access
 
 pthread_mutex_t mutex_user_manager[MAX_N_USER_MANAGER];
 
@@ -90,10 +89,6 @@ FILE* file_proto;
 FILE* file_wrng;
 FILE* file_con;
 FILE* file_chat;
-
-/* these are for tcpd */
-int allow_severity;
-int deny_severity;
 
 int hub_start;
 
@@ -277,17 +272,6 @@ void adduser(int sock,char *remote,char *local)
 {
 	char lock[SALT_LEN];
 	userrec_t *tmp=NULL,tmpik;
-
-	/* testing if user is listed in hosts.allow */
-	if (denied(sock))
-	{
-	    log_write(FAC_ACCESS,PR_ALERT,"'Unknown'@%s disconnect: not allowed to connect",remote);
-
-		my_free(remote);
-		my_free(local);
-		close(sock);
-		goto leave;
-	}
 
 	if (setsockopts(sock,&user_opts)) 
 	{
@@ -880,11 +864,6 @@ void init_var(char *argv0)
 	file_wrng=NULL;
 	file_chat=NULL;
 
-	/* tcpd syslog messages */
-	allow_severity=LOG_INFO;
-	deny_severity=LOG_WARNING;
-
-
 	/* socket options*/
 	listen_opts.so_debug=0;
 	listen_opts.so_broadcast=0;
@@ -1052,7 +1031,6 @@ void initialize_semaphores()
 		|| pthread_mutex_init(&mutex_penalties, 0)
 		|| pthread_mutex_init(&mutex_is_managed, 0)
 		|| pthread_mutex_init(&mutex_inet_ntoa, 0)
-		|| pthread_mutex_init(&mutex_my_hosts_access, 0)
 		|| pthread_mutex_init(&mutex_th_cleaner,0)
 		|| pthread_mutex_init(&mutex_th_udp,0)
 		|| pthread_mutex_init(&mutex_myinfo,0))

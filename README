@@ -89,7 +89,7 @@ Syntax:
 	hosts.deny
 		dcd: ALL						#nobody else is allowed to connect
 
-In directory ${prefix}/etc/dcd you have config files. Most of them have sufficient
+In directory /etc/dcd you have config files. Most of them have sufficient
 comments :)
 
 console.allow	- from which hosts you can login to telnet console. By default

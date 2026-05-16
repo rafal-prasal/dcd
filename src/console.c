@@ -35,7 +35,7 @@ void addcons(int sock,char *remote) {
 
 	tmp->myinfo.flag=1;
 
-	if (denied(sock) || !validhost(tmp, conf.conf_callow,1))
+	if (!validhost(tmp, conf.conf_callow,1))
 	{
 		disconnect(tmp);
 		return;

@@ -76,8 +76,8 @@ fi
 echo "Upgrading from version < 0.1.1"
 echo "Remember to review config - the options were changed!!!"
 if [ -e /etc/dcd/dchub.conf ]; then
-	cp ${prefix}/etc/dcd/dcd.conf ${prefix}/etc/dcd/dcd.conf.new
-	cp ${prefix}/etc/dcd/dchub.conf ${prefix}/etc/dcd/dcd.conf
+	cp /etc/dcd/dcd.conf /etc/dcd/dcd.conf.new
+	cp /etc/dcd/dchub.conf /etc/dcd/dcd.conf
 fi
 
 %triggerpostun -- dcd < 0.3.5

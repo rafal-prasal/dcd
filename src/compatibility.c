@@ -12,22 +12,6 @@
 
 #include "pch.h"
 
-#ifdef INCLUDED_YP_GET_DEFAULT_DOMAIN
-/* Buggy RH libwrap.a compilation has references to function
- yp_get_default_domain() in hosts_access(), but has no original
- function code linked. This is small own implemetation, that
- allows to compile and work properly on RedHat Linux */
-/* yp_get_default_domain() - workaround for buggy RH libwrap {{{ */
-int yp_get_default_domain(char **ptr)
-{
-#define MAXHOSTNAMELEN 256
-	static char mydomain[MAXHOSTNAMELEN];
-
-	*ptr=mydomain;
-	return (getdomainname(mydomain,MAXHOSTNAMELEN));
-} /* }}} */
-#endif
-
 #ifdef INCLUDED_STRSEP
 char *strsep(char **pp, const char *delim)
 {

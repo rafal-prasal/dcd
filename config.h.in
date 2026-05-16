@@ -183,9 +183,6 @@
 /* Define if you have the <nl_types.h> header file. */
 #undef HAVE_NL_TYPES_H
 
-/* Process all options of libwrap */
-#undef HAVE_PROCESS_OPTIONS
-
 /* Define if you have the `putenv' function. */
 #undef HAVE_PUTENV
 

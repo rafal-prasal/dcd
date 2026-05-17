@@ -728,6 +728,9 @@ void conf_obsolete(conf_param_t *param)
 /* conf_cmd_exec() - parse config line {{{ */
 void conf_cmd_exec(int start, char *line )
 {
+	void conf_listen_port_main_ssl(conf_param_t *param);
+	void conf_ssl_cert_file(conf_param_t *param);
+
 	cmd_t conf_set[] = 
 	{
 		{"admin_contact",				(funct_t)conf_admin_contact			},
@@ -793,6 +796,8 @@ void conf_cmd_exec(int start, char *line )
 		{"stealth_mode",			    (funct_t)conf_obsolete		        },
 		{"user",						(funct_t)conf_user					},
 		{"user_limit",					(funct_t)conf_user_limit			},
+		{"listen_port_main_ssl",			(funct_t)conf_listen_port_main_ssl 	},
+		{"ssl_cert_file",			(funct_t)conf_ssl_cert_file		},
 		{NULL,							(funct_t)conf_unknown				}
 	};
 
@@ -839,3 +844,31 @@ void conf_cmd_exec(int start, char *line )
  * vim600: sw=4 ts=4 sts=4 cindent fdm=marker
  * vim<600: sw=4 ts=4
  * }}} */
+
+void conf_listen_port_main_ssl(conf_param_t *param)
+{
+	long ival=0;
+
+	char *cmd=param->cmd,
+		 *value=param->value;
+	int start = param->start;
+
+	if (!start) return;
+
+	ival=strtol(value, NULL, 10);
+
+	if (ival<0 || ival>65535)
+	{
+        log_write(FAC_DAEMON,PR_CRITICAL,"'%s' should be in <0,65535>",cmd);
+		exit(1);
+	}
+
+	conf.listen_port_main_ssl=ival;
+}
+
+void conf_ssl_cert_file(conf_param_t *param)
+{
+	char *value=param->value;
+
+	my_duplicate(value,&conf.ssl_cert_file);
+}

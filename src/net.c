@@ -62,9 +62,13 @@ void sendtcp(userrec_t *usr, char *msg)
 	
 	pthread_mutex_lock(&usr->send_mutex);
 
-	ret=send(usr->sock, msg, msglen, MSG_DONTWAIT|MSG_NOSIGNAL);
+	if(usr->ssl && usr->ssl->ssl) {
+		ret = ssl_write(usr->ssl->ssl, msg, msglen);
+	} else {
+		ret=send(usr->sock, msg, msglen, MSG_DONTWAIT|MSG_NOSIGNAL);
+	}
 
-	if (ret==-1) sockerr("send", errno, usr);
+	if (ret<=0) sockerr("send", errno, usr);
 
 	pthread_mutex_unlock(&usr->send_mutex);
 
@@ -297,13 +301,15 @@ int my_recv(userrec_t *usr, int max_length, char *message)
 	int ret=0,
 		ec=0;
 
-
-
 	message[0]=0;
 
-	ret=recv(usr->sock, message, max_length, MSG_DONTWAIT);
+	if(usr->ssl && usr->ssl->ssl) {
+		ret = ssl_read(usr->ssl->ssl, message, max_length);
+	} else {
+		ret=recv(usr->sock, message, max_length, MSG_DONTWAIT);
+	}
 
-	if (ret==-1 && sockerr("recv", errno, usr)) goto leave;
+	if (ret<=0 && sockerr("recv", errno, usr)) goto leave;
 	
 	ec=1;
 	message[ret]=0;
@@ -336,6 +342,13 @@ void disconnect(userrec_t *usr)
 	my_free(usr->ver);
 
 	my_free(usr->perm);
+	
+	if(usr->ssl && usr->ssl->ssl) {
+		SSL_shutdown(usr->ssl->ssl);
+		SSL_free(usr->ssl->ssl);
+	}
+	if(usr->ssl) my_free(usr->ssl);
+	
 	close(usr->sock);
 	my_free(usr);
 
@@ -398,8 +411,48 @@ void strip_telnet(userrec_t *usr,char *buf,int *len)
 		}
 	}
 
-	*o = *p;
+ 	*o = *p;
 
+ } /* }}} */
+
+/* ssl_accept() - accept SSL connection {{{ */
+int ssl_accept(SSL *ssl)
+{
+	if(!ssl) return 0;
+	return SSL_accept(ssl);
+}
+/* }}} */
+
+/* ssl_read() - read from SSL connection {{{ */
+int ssl_read(SSL *ssl, char *buf, int len)
+{
+	if(!ssl) return 0;
+	return SSL_read(ssl, buf, len);
+}
+/* }}} */
+
+/* ssl_write() - write to SSL connection {{{ */
+int ssl_write(SSL *ssl, const char *buf, int len)
+{
+	if(!ssl) return 0;
+	return SSL_write(ssl, buf, len);
+}
+/* }}} */
+
+/* ssl_disconnect() - disconnect SSL user {{{ */
+void ssl_disconnect(userrec_t *usr)
+{
+	if(usr->ssl && usr->ssl->ssl) {
+		SSL_shutdown(usr->ssl->ssl);
+		SSL_free(usr->ssl->ssl);
+		usr->ssl->ssl = NULL;
+	}
+	if(usr->ssl) {
+		my_free(usr->ssl);
+		usr->ssl = NULL;
+	}
+	close(usr->sock);
+	usr->sock = -1;
 } /* }}} */
 
 /* VIM Settings {{{

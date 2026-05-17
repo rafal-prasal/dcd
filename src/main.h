@@ -76,6 +76,9 @@
 /* main service listening port number	*/
 #define LISTEN_PORT_MAIN 411
 
+/* main SSL service listening port number	*/
+#define LISTEN_PORT_MAIN_SSL 412
+
 /* remote console listening port	*/
 #define LISTEN_PORT_CONS 511
 
@@ -291,6 +294,8 @@ typedef struct
 
 	char *key;
 
+	ssl_t *ssl;
+
 	myinfo_t myinfo;
 
 	char userip[7+1+NICK_LEN+1+15+1+1];
@@ -330,12 +335,13 @@ typedef struct
 	char *log_daemon;
     char *log_network;
     
-    
+     
 	char *listen_interface;
 	char *admin_contact;
 	unsigned short int listen_port_main;
 	unsigned short int listen_port_cons;
 	unsigned short int listen_port_udp;
+	unsigned short int listen_port_main_ssl;
 	char *hubname;
 	unsigned int userlimit;
 	char allow_broken_key;
@@ -358,7 +364,9 @@ typedef struct
 	uint64_t minshare;
 	uint32_t minslots;
 
- 	unsigned int allow_non_us_ascii_nicks;
+	char *ssl_cert_file;
+
+  	unsigned int allow_non_us_ascii_nicks;
  	unsigned int allow_passive;
 	unsigned int allow_forwarding;
 	unsigned int allow_downloads;

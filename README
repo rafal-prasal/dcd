@@ -22,6 +22,7 @@ Features
 * nick pattern matching
 * simple administration throught telnet console
 * should work on every Unix system
+* SSL/TLS support for secure connections
 
 
 License
@@ -37,37 +38,19 @@ To compile DConnect Daemon, you will need:
 
 * libwrap(tcp_wrappers)
 * libpthread
-* automake (recommended min. 1.6)
-* autoconf >= 2.50
-* libtool
-* gettext
+* openssl-dev/libssl-dev (for SSL/TLS support)
 
-Instalation
------------
 
-In most cases this procedure should work:
+Installation
+------------
+This project uses CMake for building.
 
-$ cd dcd-1.1.1
-$ ./configure
-$ make
-$ make install
+1. Install dependencies:
+   sudo apt-get install libssl-dev libwrap0-dev libpthread-stubs0-dev
 
-You may propably use some traditional configure options.
-There are dcd-specific options, but you propably don't have to worry 
-about it.
+2. Build and install:
+   cd build && cmake .. && make && make install
 
-   --with-config-dir=PATH	- where to look for configuration file. 
-   				You can use --sysconfdir too - there is no 
-				difference.
-   --with-libwrap-path=LIBPATH	- Where to look for libwrap?
-   
-   --with-user=USER		- Set default user. We STRONGLY advise to make
-   				your own user and put it here. Default is daemon,
-				because it's present in every Unix system.
-
-   --with-group=GROUP		- Set default group. You should make your own group.
-   				Default is set to daemon, because this group is
-				present on every Unix system.
 
 Usage
 -----
@@ -131,6 +114,9 @@ dcd.banned	- users that are banned.
 				When user tries to enter he is disconnected after receiving reason.
 
 dcd.conf	- main configuration of daemon. Look in config comments for details.
+		SSL-related options:
+			listen_port_main_ssl = 412
+			ssl_cert_file = /path/to/certificate.pem
 
 dcd.motd	- message that user will see after logging in.
 
@@ -163,6 +149,7 @@ dcd.welcome	- message sent before login. Usefull to put rules.
 nicks.allow	- patterns that nicks must match. Every line is one rule.
 
 By default daemon binds to port 411(TCP/UDP) and telnet console to 511(TCP). 
+The SSL port defaults to 412 and can be configured with listen_port_main_ssl.
 
 You can login to console:
 $ telnet localhost 511
@@ -174,6 +161,24 @@ type #help to get command list.
 
 You can reconfigure dcd sending HUP signal to the process or rehash
 command from telnet console.
+
+SSL/TLS Support
+---------------
+DCD supports SSL/TLS encrypted connections on a separate port (default 412).
+
+To enable SSL:
+1. Generate a self-signed certificate (PEM format with both cert and key):
+   $ openssl req -x509 -newkey rsa:2048 -keyout dcd.pem -out dcd.pem \
+     -days 365 -nodes -subj "/CN=your-hub-hostname"
+
+2. Add to dcd.conf:
+   listen_port_main_ssl = 412
+   ssl_cert_file = /path/to/dcd.pem
+
+3. Restart dcd or send HUP signal
+
+Clients that support DC protocol with SSL (like ADCH++ clients) can now connect
+to the SSL port for encrypted communication.
 
 Bugs
 ----

@@ -54,6 +54,7 @@ pthread_t th_user_manager[MAX_N_USER_MANAGER] ;/* handles managing user's commun
 
 pthread_t listen_th_cons;	/* listen thread handle for remote console */
 pthread_t listen_th_udp;		/* listen thread handle for minslots checking */
+pthread_t listen_th_main_ssl[MAX_N_LISTEN_MAIN];	/* SSL listen threads */
 
 struct sockaddr_in local_main,local_udp, local_cons;
 
@@ -77,9 +78,12 @@ pthread_mutex_t mutex_myinfo;
 
 
 int listen_main;			/* main listening socket */
+int listen_main_ssl;		/* SSL listening socket */
 int listen_udp;				/* search result listening socket */
 int listen_cons;			/* console listening socket */
 time_t starttime;			/* start time in sec */
+
+SSL_CTX *ssl_ctx = NULL;
 
 /* logging */
 FILE* file_net;
@@ -200,13 +204,45 @@ void make_sockets()
 			exit(1);
 		}
 
-		if (listen(listen_cons,5)<0)
-		{
-           	log_write(FAC_DAEMON,PR_CRITICAL,"listen() failed - terminating: %s.", strerror(errno));
-			exit(1);
-		}
-	}
-}
+ 	if (listen(listen_cons,5)<0)
+ 		{
+            	log_write(FAC_DAEMON,PR_CRITICAL,"listen() failed - terminating: %s.", strerror(errno));
+ 			exit(1);
+ 		}
+ 	}
+
+ 	if (conf.ssl_cert_file) {
+ 		listen_main_ssl = socket(AF_INET,SOCK_STREAM,0);
+ 		if(listen_main_ssl==-1) {
+            	log_write(FAC_DAEMON,PR_CRITICAL,"socket() for SSL failed - terminating: %s.", strerror(errno));
+ 			exit(1);
+ 		}
+
+ 		if (setsockopts(listen_main_ssl,&listen_opts)) {
+            	log_write(FAC_DAEMON,PR_CRITICAL,"setsockopts() for SSL failed - terminating: %s.", strerror(errno));
+ 			exit(1);
+ 		}
+
+ 		memset(&local_main,0,sizeof(struct sockaddr_in));
+ 		local_main.sin_family=AF_INET;
+ 		local_main.sin_port=htons(conf.listen_port_main_ssl);
+ 		inet_aton(conf.listen_interface,&local_main.sin_addr);
+
+ 		if (bind(listen_main_ssl,(struct sockaddr *)&local_main,sizeof(struct sockaddr))<0) {
+            	log_write(FAC_DAEMON,PR_CRITICAL,"bind() for SSL failed - terminating: %s.", strerror(errno));
+ 			exit(1);
+ 		}
+
+ 		if (listen(listen_main_ssl,SOMAXCONN)<0) {
+            	log_write(FAC_DAEMON,PR_CRITICAL,"listen() for SSL failed - terminating: %s.", strerror(errno));
+ 			exit(1);
+  		}
+  	}
+
+  	if (conf.ssl_cert_file) {
+		log_write(FAC_DAEMON,PR_INFO,"SSL enabled - certificate and key in %s", conf.ssl_cert_file);
+  	}
+  }
 
 int user_set_state(userrec_t *usr, int state)
 {
@@ -372,6 +408,62 @@ void deluser(userrec_t *usr)
 	disconnect(usr);
 } /* }}} */
 
+/* listen_thread_main_ssl() - listen for new SSL connections {{{ */
+void listen_thread_main_ssl(void *voidp)
+{
+	unsigned int new_sock,remote_size,size_addr=sizeof(struct sockaddr_in);
+	struct sockaddr_in remote,addr;
+	int No;
+	int_voidp_t parameter;
+
+	char *remote_ip,*local_ip;
+	SSL *ssl = NULL;
+
+	parameter.voidp=voidp;
+	No=parameter.integer;
+
+	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,NULL);
+
+	remote_size=sizeof(struct sockaddr_in);
+	/* accept connections */
+	while(1)
+	{
+		usleep(5);
+		if ((new_sock=accept(listen_main_ssl,(struct sockaddr *)&remote,&remote_size))<0) {
+			if (errno!=EINTR)  log_write(FAC_NETWORK,PR_ERROR,"SSL accept() failed: %s.", strerror(errno));
+			continue;
+		}
+
+		ssl = SSL_new(ssl_ctx);
+		if(!ssl) {
+           	log_write(FAC_NETWORK,PR_ERROR,"SSL_new() failed");
+			close(new_sock);
+			continue;
+		}
+		SSL_set_fd(ssl, new_sock);
+
+		if(ssl_accept(ssl) <= 0) {
+           	log_write(FAC_NETWORK,PR_ERROR,"SSL_accept() failed");
+			SSL_free(ssl);
+			close(new_sock);
+			continue;
+		}
+
+		getsockname(new_sock,(struct sockaddr *)&addr,&size_addr);
+
+		log_write(FAC_ACCESS, PR_ALERT,"SSL Connection to DC from %s:%d to %s.",remote_ip=my_inet_ntoa(remote.sin_addr),
+															 ntohs(remote.sin_port),
+															 local_ip=my_inet_ntoa(addr.sin_addr));
+
+		adduser(new_sock,remote_ip, local_ip);
+		user[NUSERS-1]->ssl = my_malloc(sizeof(ssl_t));
+		user[NUSERS-1]->ssl->ssl = ssl;
+		user[NUSERS-1]->ssl->ctx = ssl_ctx;
+	}
+
+	pthread_exit(0); /* never reached */
+} /* }}} */
+
 /* listen_thread_main() - listen for new connections to main service {{{ */
 void listen_thread_main(void *voidp)
 {
@@ -482,19 +574,21 @@ void finish(int sig)
 					signal_p=0;
 					return;
 
-		case SIGSEGV:
-					close(listen_main);
-					if (conf.listen_port_cons) close(listen_cons);
-					if (conf.minslots)close(listen_udp);					
+ 		case SIGSEGV:
+ 					close(listen_main);
+					if (listen_main_ssl != -1) close(listen_main_ssl);
+ 					if (conf.listen_port_cons) close(listen_cons);
+ 					if (conf.minslots)close(listen_udp);					
 
-					log_close();
-					exit(SIGSEGV);
+ 					log_close();
+ 					exit(SIGSEGV);
 
-		case SIGKILL:
-					close(listen_main);
-					if (conf.listen_port_cons) close(listen_cons);
-					if (conf.minslots)close(listen_udp);					
-					exit(SIGKILL);
+ 		case SIGKILL:
+ 					close(listen_main);
+					if (listen_main_ssl != -1) close(listen_main_ssl);
+ 					if (conf.listen_port_cons) close(listen_cons);
+ 					if (conf.minslots)close(listen_udp);					
+ 					exit(SIGKILL);
 
 		case SIGTERM:
 		case SIGINT:
@@ -507,9 +601,12 @@ void finish(int sig)
 					pthread_cancel(listen_th_udp);
 					if (conf.listen_port_cons) pthread_cancel(listen_th_cons);
 
+					for(i=0;i<MAX_N_LISTEN_MAIN;i++) pthread_cancel(listen_th_main_ssl[i]);
+
 					for (i=0;i<NUSERS;i++) disconnect(user[i]);
 
 					close(listen_main);
+					if (listen_main_ssl != -1) close(listen_main_ssl);
 					if (conf.listen_port_cons) close(listen_cons);
 					if (conf.minslots)close(listen_udp);					
 
@@ -775,6 +872,9 @@ snprintf(conf.conf_main, strlen(CONFIGDIR)+strlen(CONF_MAIN)+2, "%s%s%s", CONFIG
 	conf.conf_usercommands=strdup(CONF_USERCOMMANDS);
 	conf.conf_rules=strdup(CONF_RULES);
 
+	conf.ssl_cert_file=strdup(CONFIGDIR"/dcd.pem");
+	//
+
 	conf.msg_welcome=NULL;
 	conf.msg_motd=NULL;
 	conf.msg_rules=NULL;
@@ -786,9 +886,10 @@ snprintf(conf.conf_main, strlen(CONFIGDIR)+strlen(CONF_MAIN)+2, "%s%s%s", CONFIG
 	conf.listen_interface=strdup(LISTEN_INTERFACE);
 	conf.admin_contact=strdup(ADMIN_CONTACT);
 	conf.listen_port_main=LISTEN_PORT_MAIN;
-	conf.listen_port_cons=LISTEN_PORT_CONS;
+ 	conf.listen_port_cons=LISTEN_PORT_CONS;
+ 	conf.listen_port_main_ssl=LISTEN_PORT_MAIN_SSL;
 
-	conf.redirect_switch=REDIRECT_SWITCH_OFF;
+ 	conf.redirect_switch=REDIRECT_SWITCH_OFF;
 	conf.redirect_hub_is_full=strdup(REDIRECT_HUB_IS_FULL);
 	conf.redirect_minshare=strdup(REDIRECT_MINSHARE);
 	conf.redirect_minslots=strdup(REDIRECT_MINSLOTS);
@@ -892,10 +993,33 @@ snprintf(conf.conf_main, strlen(CONFIGDIR)+strlen(CONF_MAIN)+2, "%s%s%s", CONFIG
 	user_opts.so_sndlowat=1;
 	user_opts.so_sndtimeo=0;
 
-	/* other */
-	__progname=get_progname(argv0);
-	randomize();
-	time(&starttime);
+ 	/* other */
+ 	__progname=get_progname(argv0);
+ 	randomize();
+ 	time(&starttime);
+
+ 	/* initialize SSL */
+  	SSL_library_init();
+  	SSL_load_error_strings();
+   	ssl_ctx = SSL_CTX_new(SSLv23_server_method());
+   	if(!ssl_ctx) {
+   		log_write(FAC_DAEMON,PR_CRITICAL,"SSL_CTX_new() failed");
+   		exit(1);
+   	}
+   	if(conf.ssl_cert_file) {
+   		if(SSL_CTX_use_certificate_chain_file(ssl_ctx, conf.ssl_cert_file) <= 0) {
+   			log_write(FAC_DAEMON,PR_CRITICAL,"Failed to load SSL certificate from %s", conf.ssl_cert_file);
+   			exit(1);
+   		}
+   		if(SSL_CTX_use_PrivateKey_file(ssl_ctx, conf.ssl_cert_file, SSL_FILETYPE_PEM) <= 0) {
+   			log_write(FAC_DAEMON,PR_CRITICAL,"Failed to load SSL private key from %s", conf.ssl_cert_file);
+   			exit(1);
+   		}
+   		if(!SSL_CTX_check_private_key(ssl_ctx)) {
+   			log_write(FAC_DAEMON,PR_CRITICAL,"SSL certificate and private key do not match");
+   			exit(1);
+   		}
+   	}
 } /* }}} */
 
 void make_threads()
@@ -933,11 +1057,17 @@ void make_threads()
 		}
 	}
 
-/* create minslots checking thread */
+	/* create minslots checking thread */
 	if (listen_udp==-1 || pthread_create( &listen_th_udp, NULL, (void *)listen_thread_udp, NULL)!=0)
 	{
 		log_write(FAC_DAEMON,PR_CRITICAL,"pthread_create() failed: %s", strerror(errno));
 		exit(1);
+	}
+
+	/* create SSL listening threads */
+	for(i.integer=0;i.integer<MAX_N_LISTEN_MAIN;i.integer++) {
+		if (listen_main_ssl==-1 || pthread_create( &listen_th_main_ssl[i.integer], NULL, (void *)listen_thread_main_ssl, i.voidp) )
+			break;
 	}
 
 	/* create listening thread for remote console */

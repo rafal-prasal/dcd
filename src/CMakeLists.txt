@@ -16,6 +16,8 @@ set(dcd_sources
     log.c
 )
 
+find_package(OpenSSL REQUIRED)
+
 add_executable(dcd ${dcd_sources})
 
 target_include_directories(dcd PRIVATE
@@ -35,7 +37,7 @@ target_compile_definitions(dcd PRIVATE
     BUILD_TIME="${BUILD_TIME}"
 )
 
-target_link_libraries(dcd PRIVATE Threads::Threads)
+target_link_libraries(dcd PRIVATE Threads::Threads OpenSSL::SSL OpenSSL::Crypto)
 
 # Install binary to sbin
 install(TARGETS dcd DESTINATION ${CMAKE_INSTALL_FULL_SBINDIR})

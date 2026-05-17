@@ -88,6 +88,7 @@
 /* include local header files		*/
 
 #include "config.h"
+#include "ssl.h"
 #include "main.h"
 #include "cmd.h"
 #include "cmd.dc.h"

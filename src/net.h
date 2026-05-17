@@ -36,6 +36,12 @@ void dc_myinfo(userrec_t *to, userrec_t *usr);
 /* receives data from a socket*/
 int my_recv(userrec_t *, int max_length, char *message);
 
+/* SSL functions */
+int ssl_accept(SSL *ssl);
+int ssl_read(SSL *ssl, char *buf, int len);
+int ssl_write(SSL *ssl, const char *buf, int len);
+void ssl_disconnect(userrec_t *usr);
+
 /* this is required, since after disconnect a socket is switched to a TIME_WAIT
  state and the listening port remains occupied for several minutes */
 int setsockopts(int sock, so_opts_t *option);

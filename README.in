@@ -22,6 +22,7 @@ Features
 * nick pattern matching
 * simple administration throught telnet console
 * should work on every Unix system
+* SSL/TLS support for secure connections
 
 
 License
@@ -37,6 +38,7 @@ To compile DConnect Daemon, you will need:
 
 * libwrap(tcp_wrappers)
 * libpthread
+* openssl-dev/libssl-dev (for SSL/TLS support)
 * automake (recommended min. 1.6)
 * autoconf >= 2.50
 * libtool
@@ -48,11 +50,15 @@ Instalation
 In most cases this procedure should work:
 
 $ cd @PACKAGE@-@VERSION@
-$ ./configure
+$ ./configure --with-openssl
 $ make
 $ make install
 
-You may propably use some traditional configure options.
+To compile with OpenSSL support, ensure you have libssl-dev installed:
+Ubuntu/Debian: sudo apt-get install libssl-dev
+RHEL/CentOS:   sudo yum install openssl-devel
+
+You may use some traditional configure options.
 There are @PACKAGE@-specific options, but you propably don't have to worry 
 about it.
 
@@ -162,7 +168,8 @@ dcd.welcome	- message sent before login. Usefull to put rules.
 
 nicks.allow	- patterns that nicks must match. Every line is one rule.
 
-By default daemon binds to port 411(TCP/UDP) and telnet console to 511(TCP). 
+By default daemon binds to port 411(TCP/UDP) and telnet console to 511(TCP).
+The SSL port defaults to 412 and can be configured with listen_port_main_ssl. 
 
 You can login to console:
 $ telnet localhost 511

@@ -22,8 +22,6 @@ extern hub_t *hub[];			/* hubs table */
 
 extern config_t conf;			/* configuration data */
 
-extern int rehash;
-
 extern pthread_mutex_t mutex_myinfo;
 
 /* $Search <ip>:<port> <sizerestricted>?<ismaxsize>?<size>?<datatype>?<searchpattern> */

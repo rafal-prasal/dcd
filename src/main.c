@@ -54,7 +54,6 @@ pthread_t th_user_manager[MAX_N_USER_MANAGER] ;/* handles managing user's commun
 
 pthread_t listen_th_cons;	/* listen thread handle for remote console */
 pthread_t listen_th_udp;		/* listen thread handle for minslots checking */
-pthread_t th_cleaner;
 
 struct sockaddr_in local_main,local_udp, local_cons;
 
@@ -70,7 +69,6 @@ pthread_mutex_t mutex_user_manager[MAX_N_USER_MANAGER];
 pthread_mutex_t mutex_is_managed; // secures that user is served only by one thread
 int managed[MAX_N_USER_MANAGER]; // sets which thread is working on which user
 
-pthread_mutex_t mutex_th_cleaner;
 pthread_mutex_t mutex_th_udp;
 
 pthread_mutex_t mutex_penalties;
@@ -105,7 +103,6 @@ void lock_threads()
 	int i;
 
 	pthread_mutex_lock(&mutex_th_udp);
-	pthread_mutex_lock(&mutex_th_cleaner);
 	for(i=0;i<MAX_N_USER_MANAGER;i++) pthread_mutex_lock(&mutex_user_manager[i]);
 }
 
@@ -114,7 +111,6 @@ void unlock_threads()
 	int i;
 	
 	for(i=0;i<MAX_N_USER_MANAGER;i++) pthread_mutex_unlock(&mutex_user_manager[i]);
-	pthread_mutex_unlock(&mutex_th_cleaner);
 	pthread_mutex_unlock(&mutex_th_udp);
 }
 
@@ -482,17 +478,8 @@ void finish(int sig)
 	{
 		/* rehash on SIGHUP */
 		case SIGHUP:
-					/* blocking working threads */
-
-					lock_threads();
-
-					parse_config(0,&conf);
-					make_paths(&conf);					
-					log_open();
-					parse_hublist();
-                    
+					rehash=1;
 					signal_p=0;
-					unlock_threads();
 					return;
 
 		case SIGSEGV:
@@ -519,7 +506,6 @@ void finish(int sig)
 
 					pthread_cancel(listen_th_udp);
 					if (conf.listen_port_cons) pthread_cancel(listen_th_cons);
-					pthread_cancel(th_cleaner);
 
 					for (i=0;i<NUSERS;i++) disconnect(user[i]);
 
@@ -912,67 +898,6 @@ snprintf(conf.conf_main, strlen(CONFIGDIR)+strlen(CONF_MAIN)+2, "%s%s%s", CONFIG
 	time(&starttime);
 } /* }}} */
 
-
-void cleaner()
-{
-	int i;
-
-	time_t time_;
-
-	/* main loop - finish only when error or killed with a signal */
-	while(1)
-	{
-		sleep(CLEANER_INTERVAL);
-		lock_threads();
-
-		parse_messages(1,&conf.msg_motd, conf.conf_motd);
-		parse_messages(1,&conf.msg_welcome, conf.conf_welcome);
-		parse_messages(1,&conf.msg_rules, conf.conf_rules);
-		parse_messages(0,&conf.msg_usercommands, conf.conf_usercommands);
-		
-		parse_logins();
-		parse_nick_patterns();
-		
-		time(&time_);
-		if (NPENAL 
-			&& conf.penalties_update_interval 
-			&& difftime(time_,last_penalties_update)>(double)conf.penalties_update_interval)
-		{
-			last_penalties_update=time_;
-			penalties_write();
-		}
-
-		disttcp(NULL,"$|");
-		
-		for(i=0;i<NUSERS;i++)
-			if (user[i])
-			{
-				check_timeout(user[i]);
-				
-				/* host is banned permanently*/
-				if (validhost(user[i],conf.conf_banned,1)) 
-				{
-					user[i]->reason=strdup("is permanently banned");
-					user_set_state(user[i],STATE_QUIT);
-				}
-
-				if (user_tst_state(user[i],STATE_QUIT)) deluser(user[i--]);
-			}
-
-		for(i=0; i<NHUBS; i++)		
-			if(difftime(time(NULL), hub[i]->timeout)>120.0
-				&& difftime(time(NULL), hub[i]->timeout_retry)>120.0)
-			{
-				log_write(FAC_ACCESS,PR_INFO,"HUBNET try to link with %s:%s", hub[i]->ip, hub[i]->port);
-				distudp(hub[i],hub[i]->Up_cache);
-				hub[i]->timeout_retry=time(NULL);
-			}
-
-		unlock_threads();
-
-	}
-}
-
 void make_threads()
 {
 	int_voidp_t i;
@@ -1008,14 +933,7 @@ void make_threads()
 		}
 	}
 
-	/* create cleaner thread */
-	if ((pthread_create( &th_cleaner, NULL, (void *)cleaner, NULL)!=0))
-	{
-		log_write(FAC_DAEMON,PR_CRITICAL,"pthread_create() failed: %s", strerror(errno));
-		exit(1);
-	}
-
-	/* create minslots checking thread */
+/* create minslots checking thread */
 	if (listen_udp==-1 || pthread_create( &listen_th_udp, NULL, (void *)listen_thread_udp, NULL)!=0)
 	{
 		log_write(FAC_DAEMON,PR_CRITICAL,"pthread_create() failed: %s", strerror(errno));
@@ -1038,7 +956,6 @@ void initialize_semaphores()
 		|| pthread_mutex_init(&mutex_penalties, 0)
 		|| pthread_mutex_init(&mutex_is_managed, 0)
 		|| pthread_mutex_init(&mutex_inet_ntoa, 0)
-		|| pthread_mutex_init(&mutex_th_cleaner,0)
 		|| pthread_mutex_init(&mutex_th_udp,0)
 		|| pthread_mutex_init(&mutex_myinfo,0))
 	{
@@ -1102,14 +1019,66 @@ int main(int argc,char *argv[])
 	penalties_read();
 	make_threads();
 
+	int i;
+	time_t time_;
+
 	while(1)
 	{
-		sleep(1);
+		sleep(CLEANER_INTERVAL);
+		lock_threads();
+
+		parse_messages(1,&conf.msg_motd, conf.conf_motd);
+		parse_messages(1,&conf.msg_welcome, conf.msg_welcome);
+		parse_messages(1,&conf.msg_rules, conf.msg_rules);
+		parse_messages(0,&conf.msg_usercommands, conf.conf_usercommands);
+		
+		parse_logins();
+		parse_nick_patterns();
+		
+		time(&time_);
+		if (NPENAL 
+			&& conf.penalties_update_interval 
+			&& difftime(time_,last_penalties_update)>(double)conf.penalties_update_interval)
+		{
+			last_penalties_update=time_;
+			penalties_write();
+		}
+
+		disttcp(NULL,"$|");
+		
 		if(rehash)
 		{
-			finish(SIGHUP);
 			rehash=0;
+			parse_config(0,&conf);
+			make_paths(&conf);					
+			log_open();
+			parse_hublist();
 		}
+		
+		for(i=0;i<NUSERS;i++)
+			if (user[i])
+			{
+				check_timeout(user[i]);
+				
+				if (validhost(user[i],conf.conf_banned,1)) 
+				{
+					user[i]->reason=strdup("is permanently banned");
+					user_set_state(user[i],STATE_QUIT);
+				}
+
+				if (user_tst_state(user[i],STATE_QUIT)) deluser(user[i--]);
+			}
+
+		for(i=0; i<NHUBS; i++)		
+			if(difftime(time(NULL), hub[i]->timeout)>120.0
+				&& difftime(time(NULL), hub[i]->timeout_retry)>120.0)
+			{
+				log_write(FAC_ACCESS,PR_INFO,"HUBNET try to link with %s:%s", hub[i]->ip, hub[i]->port);
+				distudp(hub[i],hub[i]->Up_cache);
+				hub[i]->timeout_retry=time(NULL);
+			}
+
+		unlock_threads();
 	}
 
 	exit(1); /* never reached */

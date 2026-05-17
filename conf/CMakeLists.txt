@@ -14,4 +14,4 @@ set(dcd_config_files
 
 install(FILES ${dcd_config_files} DESTINATION "${DCD_CONFIGDIR}")
 
-install(PROGRAMS ../src/dcd.adduser DESTINATION ${CMAKE_INSTALL_FULL_SBINDIR})
+install(PROGRAMS ${CMAKE_BINARY_DIR}/dcd.adduser DESTINATION ${CMAKE_INSTALL_FULL_SBINDIR})

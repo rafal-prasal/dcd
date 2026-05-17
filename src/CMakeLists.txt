@@ -39,3 +39,7 @@ target_link_libraries(dcd PRIVATE Threads::Threads)
 
 # Install binary to sbin
 install(TARGETS dcd DESTINATION ${CMAKE_INSTALL_FULL_SBINDIR})
+
+# Install adduser script
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dcd.adduser.in ${CMAKE_BINARY_DIR}/dcd.adduser @ONLY)
+install(PROGRAMS ${CMAKE_BINARY_DIR}/dcd.adduser DESTINATION ${CMAKE_INSTALL_FULL_SBINDIR})

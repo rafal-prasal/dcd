@@ -760,6 +760,7 @@ void conf_cmd_exec(int start, char *line )
 		{"listen_interface",			(funct_t)conf_obsolete				},
 		{"listen_port_cons",			(funct_t)conf_listen_port_cons 		},
 		{"listen_port_main",			(funct_t)conf_listen_port_main 		},
+		{"listen_port_main_ssl",		(funct_t)conf_listen_port_main_ssl	},
 		{"log_chat",					(funct_t)conf_obsolete				},
 		{"log_con",						(funct_t)conf_obsolete				},
 		{"log_dir",						(funct_t)conf_obsolete				},
@@ -792,12 +793,11 @@ void conf_cmd_exec(int start, char *line )
 		{"send_retries_time",			(funct_t)conf_obsolete				},
 		{"socket_receive_buffer",		(funct_t)conf_socket_receive_buffer	},
 		{"socket_send_buffer",			(funct_t)conf_socket_send_buffer	},
+		{"ssl_cert_file",				(funct_t)conf_ssl_cert_file			},
 		{"std_penalty_duration",		(funct_t)conf_std_penalty_duration	},
 		{"stealth_mode",			    (funct_t)conf_obsolete		        },
 		{"user",						(funct_t)conf_user					},
 		{"user_limit",					(funct_t)conf_user_limit			},
-		{"listen_port_main_ssl",			(funct_t)conf_listen_port_main_ssl 	},
-		{"ssl_cert_file",			(funct_t)conf_ssl_cert_file		},
 		{NULL,							(funct_t)conf_unknown				}
 	};
 

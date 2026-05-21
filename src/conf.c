@@ -100,7 +100,7 @@ char parse_config(int start, config_t *conf)
 
 
 /* parse_raw() - parses rawfile {{{ */
-void parse_messages(int raw, char **result, char *msgfile)
+void parse_messages(int raw, char **result, char *msgfile, const char *option_name)
 {
 	char *line,
 		 *tmp;
@@ -113,7 +113,7 @@ void parse_messages(int raw, char **result, char *msgfile)
 
 	if (!fp)
 	{
-		log_write(FAC_DAEMON,PR_ERROR,"Can't open message file (%s): %s.",msgfile,strerror(errno));
+		log_write(FAC_DAEMON,PR_ERROR,"Can't open message file for option '%s' (%s): %s.",option_name?option_name:"unknown",msgfile,strerror(errno));
 		return;
 	}
 

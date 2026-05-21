@@ -1126,10 +1126,10 @@ int main(int argc,char *argv[])
 
 	log_open();
 
-	parse_messages(1,&conf.msg_motd, conf.conf_motd);
-	parse_messages(1,&conf.msg_welcome, conf.conf_welcome);
-	parse_messages(1,&conf.msg_rules, conf.conf_rules);
-	parse_messages(0,&conf.msg_usercommands, conf.conf_usercommands);
+	parse_messages(1,&conf.msg_motd, conf.conf_motd, "msg_motd");
+	parse_messages(1,&conf.msg_welcome, conf.conf_welcome, "msg_welcome");
+	parse_messages(1,&conf.msg_rules, conf.conf_rules, "msg_rules");
+	parse_messages(0,&conf.msg_usercommands, conf.conf_usercommands, "msg_usercommands");
 
 	parse_logins();
 	parse_nick_patterns();
@@ -1157,10 +1157,10 @@ int main(int argc,char *argv[])
 		sleep(CLEANER_INTERVAL);
 		lock_threads();
 
-		parse_messages(1,&conf.msg_motd, conf.conf_motd);
-		parse_messages(1,&conf.msg_welcome, conf.msg_welcome);
-		parse_messages(1,&conf.msg_rules, conf.msg_rules);
-		parse_messages(0,&conf.msg_usercommands, conf.conf_usercommands);
+		parse_messages(1,&conf.msg_motd, conf.conf_motd, "msg_motd");
+		parse_messages(1,&conf.msg_welcome, conf.msg_welcome, "msg_welcome");
+		parse_messages(1,&conf.msg_rules, conf.msg_rules, "msg_rules");
+		parse_messages(0,&conf.msg_usercommands, conf.conf_usercommands, "msg_usercommands");
 		
 		parse_logins();
 		parse_nick_patterns();

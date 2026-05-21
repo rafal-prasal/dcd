@@ -20,7 +20,7 @@ char *read_whole_line(FILE *fp, int line_style);
 char parse_config(int start, config_t *conf);
 
 /* parse text file and play to public chat window */
-void parse_messages(int raw, char **result, char *msgfile);
+void parse_messages(int raw, char **result, char *msgfile, const char *option_name);
 
 /* parse logins and fill login table */
 void parse_logins();

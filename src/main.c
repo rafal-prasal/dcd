@@ -762,14 +762,23 @@ void init_var(char *argv0)
 	NLOGINS=0;
 	NPATTERNS=0;
 
-	/* install signal handler */
-	signal(SIGPIPE,finish);
-	signal(SIGHUP,finish);
-	signal(SIGINT,finish);
-	signal(SIGQUIT,finish);
-	signal(SIGTERM,finish);
-	signal(SIGSEGV,finish);
-	signal(SIGKILL,finish);
+	/* install signal handlers (sigaction() with SA_RESTART keeps the
+	   portable, glibc-signal()-style semantics we rely on) */
+	{
+		struct sigaction sa;
+
+		memset(&sa,0,sizeof(sa));
+		sa.sa_handler=finish;
+		sa.sa_flags=SA_RESTART;
+		sigemptyset(&sa.sa_mask);
+
+		sigaction(SIGPIPE,&sa,NULL);
+		sigaction(SIGHUP,&sa,NULL);
+		sigaction(SIGINT,&sa,NULL);
+		sigaction(SIGQUIT,&sa,NULL);
+		sigaction(SIGTERM,&sa,NULL);
+		sigaction(SIGSEGV,&sa,NULL);
+	}
 
 	memset(penalties,0,MAXPENALTIES*sizeof(Tpenalty *));
 	memset(user,0,MAXUSERS*sizeof(userrec_t *));
@@ -1063,7 +1072,8 @@ int main(int argc,char *argv[])
 
 	/* init variables */
 	init_var(argv[0]);
-	maxfd=getdtablesize();
+	maxfd=(int)sysconf(_SC_OPEN_MAX);
+	if (maxfd<0) maxfd=FD_SETSIZE;
 
 	if(maxfd>FD_SETSIZE) maxfd=FD_SETSIZE;
 

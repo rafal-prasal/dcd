@@ -26,43 +26,23 @@
 
 #include <stdlib.h>
 
-#include <memory.h>
 #include <ctype.h>
 
+#include <time.h>
+
 #include <inttypes.h>
-
-/* -- system dependencies -- */
-
-#if defined( WIN32 )
-/* prevent inclusion of winsock.h */
-#define _WINSOCKAPI_
-#endif /* WIN32 */
 
 /* include POSIX threads header files */
 #include <pthread.h>
 
-#if defined( WIN32 )
-#define WIN32_LEAN_AND_MEAN
-
-/* include Windows base header files */
-#pragma pack( 4 )
-#include <process.h>
-#include <windows.h>
-
-/* include Windows sockets header files	*/
-#include <winsock2.h>
-
-/* include Windows TCP/IP header files	*/
-#include <ws2tcpip.h>
-
-#else /* WIN32 */
-
-/* include Unix base header files	*/
+/* include POSIX base header files	*/
 #include <sys/ioctl.h>
 #include <fcntl.h>
 
-#include <sys/signal.h>
+#include <signal.h>
 #include <unistd.h>
+
+#include <sys/select.h>
 
 #include <sys/time.h>
 
@@ -71,19 +51,17 @@
 #include <pwd.h>
 #include <grp.h>
 
-/* include Unix sockets header files	*/
+/* include POSIX sockets header files	*/
 #include <sys/types.h>
 #include <sys/socket.h>
 
 #include <netdb.h>
 #include <net/if.h>
 
-/* include Unix TCP/IP header files	*/
+/* include POSIX TCP/IP header files	*/
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
-
-#endif /* !WIN32 */
 
 /* include local header files		*/
 

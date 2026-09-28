@@ -678,7 +678,11 @@ void parse_hublist()
 		hub[NHUBS]->Up_cache=my_sprintf("$Up %s %s:%d|", pass_out, conf.listen_interface, conf.listen_port_main);
 		hub[NHUBS]->UpToo_cache=my_sprintf("$UpToo %s %s:%d|", pass_out, conf.listen_interface, conf.listen_port_main);
 
-		hub[NHUBS]->udp.sin_addr.s_addr = inet_addr(ip);
+		if (inet_pton(AF_INET,ip,&hub[NHUBS]->udp.sin_addr)!=1)
+		{
+			log_write(FAC_DAEMON,PR_WARNING,"Invalid hub address '%s' in %s.",ip,conf.conf_hublinks);
+			hub[NHUBS]->udp.sin_addr.s_addr=INADDR_NONE;
+		}
 		hub[NHUBS]->udp.sin_port        = htons(atoi(port));
 		hub[NHUBS]->udp.sin_family      = AF_INET;	
 		

@@ -166,7 +166,7 @@ void lock_key(userrec_t *usr, char *lock)
 	
 	for(i = 0; i<SALT_LEN-1; i++) 
 	{
-		if(protocol_char(tmp[i])) offset += sprintf(&key[offset], "/%%DCN%03i%%/", tmp[i]);
+		if(protocol_char(tmp[i])) offset += snprintf(&key[offset],11,"/%%DCN%03i%%/", tmp[i]);
 		else key[offset++] = tmp[i];
 	}
 

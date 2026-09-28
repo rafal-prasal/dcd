@@ -89,7 +89,7 @@ void dc_ValidateNick(dc_param_t *param)
 			if (penalty_welcome(usr)) return;
 
 			user_set_state(usr,STATE_PASSWORD);
-			if (!usr->userip[0]) sprintf(usr->userip,"$UserIP %s %s|",usr->nick, usr->ip);
+			if (!usr->userip[0]) snprintf(usr->userip,sizeof(usr->userip),"$UserIP %s %s|",usr->nick, usr->ip);
 			disttcp(usr,"$GetPass|");
 	break;
 
@@ -131,7 +131,7 @@ void dc_ValidateNick(dc_param_t *param)
 
 			user_set_state(usr,STATE_LOGGEDIN);
 			disttcpf(usr,"$Hello %s|",usr->nick);
-			if (!usr->userip[0]) sprintf(usr->userip,"$UserIP %s %s|",usr->nick, usr->ip);
+			if (!usr->userip[0]) snprintf(usr->userip,sizeof(usr->userip),"$UserIP %s %s|",usr->nick, usr->ip);
 	break;
 	
 	case NICK_IS_WITH_INVALID_CHARACTERS:
@@ -356,7 +356,7 @@ void dc_MyINFO(dc_param_t *param)
 
 	dc_myinfo(NULL,usr);
 	
-	if (!usr->userip[0]) sprintf(usr->userip,"$UserIP %s %s|",usr->nick, usr->ip);
+	if (!usr->userip[0]) snprintf(usr->userip,sizeof(usr->userip),"$UserIP %s %s|",usr->nick, usr->ip);
 	if (user_tst_state(usr,STATE_REGISTERED)) disttcp_userip(usr);
 }
 

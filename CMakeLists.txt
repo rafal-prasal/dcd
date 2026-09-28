@@ -1,8 +1,12 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 project(dcd
 	VERSION 1.1.1
 	LANGUAGES C)
+
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS ON)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
@@ -71,7 +75,7 @@ configure_file(contrib/PLD/${PACKAGE_NAME}.init.in ${CMAKE_BINARY_DIR}/contrib/P
 configure_file(contrib/MandrakeLinux/${PACKAGE_NAME}.spec.in ${CMAKE_BINARY_DIR}/contrib/MandrakeLinux/${PACKAGE_NAME}.spec @ONLY)
 configure_file(contrib/MandrakeLinux/${PACKAGE_NAME}.init.in ${CMAKE_BINARY_DIR}/contrib/MandrakeLinux/${PACKAGE_NAME}.init @ONLY)
 
-install(TARGETS dcd DESTINATION sbin)
+install(TARGETS dcd RUNTIME DESTINATION sbin)
 
 install(PROGRAMS ${CMAKE_BINARY_DIR}/src/${PACKAGE_NAME}.adduser DESTINATION sbin)
 

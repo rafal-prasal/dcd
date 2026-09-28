@@ -153,6 +153,37 @@ Method: GCC `-Wall -Wextra -Wformat=2 -Wshadow`, `-O2` (`-Wstringop-*`, `warn_un
 - SIGHUP confirmed to be *rehash* (config reload — daemon stays up), SIGTERM clean shutdown; live `$Connect` smoke test passes after all changes
 - Clean `-Wall -Wextra` build, no new warnings
 
+## 7. Command dispatch: bsearch → hash dictionary (2026-09-28)
+
+Replaced the `bsearch`-based command dispatch (`bin_cmd_exec`/`case_bin_cmd_exec`, plus the unused linear `cmd_exec`) in `src/cmd.c`/`cmd.h` with a small open-hash dictionary:
+
+### New API (`cmd.h` / `cmd.c`)
+
+- `cmd_dict_t`: 128 buckets (power of two), per-entry chaining via fixed `short next[]` arrays — **no malloc**, index built once
+- `cmd_dict_build(dict, set, case_insensitive)` — indexes a command table (terminator entry = default handler)
+- `cmd_dict_exec(dict, cmd, param)` — FNV-1a hash lookup, O(1) average; falls back to the default entry's handler on miss; NULL-`cmd` safe
+- Case-insensitive mode folds ASCII in hash+compare — locale-independent (replaces `tolower()`/`strcasecmp` dependence) and **no longer mutates the caller's command string** (old `case_bin_cmd_exec` lowercased it in place)
+
+### Converted tables (`cmd_set` data + call sites)
+
+All five tables converted from per-call stack-initialized arrays to `static const` data indexed once:
+
+| Table | Module | Mode | Init |
+|---|---|---|---|
+| `dc_set` (DC protocol) | cmd.dc.c | case-sensitive | `pthread_once` (called from user_manager threads) |
+| `chat_set` (`#commands`) | cmd.user.c | **case-insensitive** | `pthread_once` |
+| `udp_set` (hub UDP cmds) | cmd.udp.c | case-sensitive | `pthread_once` |
+| `conf_set` (~65 config directives — the hottest table, parsed per config line) | cmd.conf.c | case-sensitive | `pthread_once` (rehash can fire from any thread) |
+| `opt_set` (CLI options) | cmd.opt_line.c | case-sensitive | built directly (pre-threads, single-shot) |
+
+Removed: `cmd_exec`, `bin_cmd_exec`, `case_bin_cmd_exec`, `cmdcmp`, `string_tolower` and all `n_*_set` locals. (The unrelated `bsearch` over sorted logins in conf.c:177 was left as-is — different structure, not command dispatch.)
+
+Old design costs eliminated: every call re-initialized the pointer table on the stack; bsearch required manually-sorted arrays (silent breakage if someone appended an unsorted entry); lookup was O(log n) with strcmp comparisons vs O(1) now.
+
+Capacity note: `CMD_DICT_MAXENTRIES` set to 96 after counting `conf_set` (~65 entries) — a too-small value silently truncates the index, so it is sized above all tables.
+
+Verified: clean build; live hub test — `$Connect` answered via dictionary hit, unknown `$BogusCommand` routed to default handler without crashing, config (conf_dict) parsed at startup, SIGTERM shutdown clean.
+
 ## Status
 
 All changes are **uncommitted** in the working tree (`git status`: modified sources/docs, deleted autotools files, new `CMakeLists.txt`).

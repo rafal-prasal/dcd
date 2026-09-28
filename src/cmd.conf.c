@@ -728,9 +728,13 @@ void conf_obsolete(conf_param_t *param)
 }
 
 /* conf_cmd_exec() - parse config line {{{ */
-void conf_cmd_exec(int start, char *line )
+
+static cmd_dict_t conf_dict;
+static pthread_once_t conf_dict_once = PTHREAD_ONCE_INIT;
+
+static void conf_cmd_dict_init(void)
 {
-	cmd_t conf_set[] = 
+	static const cmd_t conf_set[] = 
 	{
 		{"admin_contact",				(funct_t)conf_admin_contact			},
 		{"allow_broken_key",			(funct_t)conf_allow_broken_key		},
@@ -798,8 +802,11 @@ void conf_cmd_exec(int start, char *line )
 		{NULL,							(funct_t)conf_unknown				}
 	};
 
-	int n_conf_set = sizeof(conf_set)/sizeof(cmd_t);
+	cmd_dict_build(&conf_dict, conf_set, 0);
+}
 
+void conf_cmd_exec(int start, char *line )
+{
 	char *cmd=NULL,
 		 *value=NULL,
 		 *line_copy=NULL;
@@ -807,7 +814,8 @@ void conf_cmd_exec(int start, char *line )
 	conf_param_t param;
 	int ret=0;
 
-		
+	if (pthread_once(&conf_dict_once, conf_cmd_dict_init)) return;
+
 	line_copy=strdup(line);
 					 
 	ret=parse_config_line(line_copy,&cmd,&value);
@@ -823,7 +831,7 @@ void conf_cmd_exec(int start, char *line )
 				param.cmd=cmd;
 				param.value=value;
 				param.start=start;
-				bin_cmd_exec(conf_set, n_conf_set, cmd, &param);	
+				cmd_dict_exec(&conf_dict, cmd, &param);	
 		break;
 	}
 		

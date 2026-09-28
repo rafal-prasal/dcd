@@ -1,4 +1,4 @@
-/* $Id: cmd.c,v 1.10 2006/04/19 16:12:42 rav Exp $ */
+/* $Id: cmd.c,v 1.10 2006-04-19 16:12:42 rav Exp $ */
 
 /* Intro {{{
  * ----------------------------------------------------------------
@@ -12,55 +12,87 @@
 
 #include "pch.h"
 
-void cmd_exec(cmd_t *cmd_set, char *cmd, void *param)
+/* ASCII-only helpers: command names are pure ASCII and must not depend
+   on the current locale (the old code used tolower()/strcasecmp()) */
+
+static unsigned char cmd_lower(unsigned char c)
 {
-	int i=0;
-	
-	while(cmd_set[i].cmd && cmd_set[i].cmd[0])
+	return (c>='A' && c<='Z') ? (unsigned char)(c+('a'-'A')) : c;
+}
+
+static int cmd_str_eq(const char *a, const char *b, int ci)
+{
+	if (!ci) return !strcmp(a,b);
+
+	while (*a && *b)
 	{
-		if(!strcmp(cmd_set[i].cmd,cmd)) break;
-		i++;
+		if (cmd_lower((unsigned char)*a) != cmd_lower((unsigned char)*b)) return 0;
+		a++;
+		b++;
 	}
-	
-	if (cmd_set[i].funct) (cmd_set[i].funct)(param);
+
+	return !*a && !*b;
 }
 
-int cmdcmp(const void *_cmd, const void *_cmd_e)
+/* FNV-1a over the command name */
+static unsigned cmd_hash(const char *s, int ci)
 {
-	cmd_t *cmd_e= (cmd_t *)_cmd_e;
-	char *cmd = (char *)_cmd;
-		
-	return strcmp(cmd, cmd_e->cmd);
-}
+	unsigned h = 2166136261u;
 
-void string_tolower(char *cmd)
-{
-	int i=0;
-	
-	while(cmd[i])
+	while (*s)
 	{
-		cmd[i] = tolower(cmd[i]);
-		i++;
-	}		
+		unsigned char c = (unsigned char)*s++;
+		if (ci) c = cmd_lower(c);
+		h = (h ^ c) * 16777619u;
+	}
+
+	return h;
 }
 
-void bin_cmd_exec(cmd_t *cmd_set, int n_cmd_set, char *cmd, void *param)
+void cmd_dict_build(cmd_dict_t *dict, const cmd_t *set, int case_insensitive)
 {
-	size_t n = n_cmd_set;	
-	size_t size = sizeof(cmd_t);
-	cmd_t *found=NULL;
-						
-	found = (cmd_t *)bsearch((void *)cmd, (void *)cmd_set, n-1, size, cmdcmp);
-	
-	if (!found) found = (cmd_t *)&cmd_set[n-1];
-	
+	unsigned b;
+
+	dict->set=set;
+	dict->ci=case_insensitive;
+	dict->n=0;
+
+	for (b=0;b<CMD_DICT_BUCKETS;b++) dict->head[b]=-1;
+
+	while (dict->n < CMD_DICT_MAXENTRIES && set[dict->n].cmd && set[dict->n].cmd[0])
+	{
+		unsigned i=dict->n;
+		b = cmd_hash(set[i].cmd, case_insensitive) & (CMD_DICT_BUCKETS-1);
+
+		dict->next[i]=dict->head[b];
+		dict->head[b]=(short)i;
+
+		dict->n++;
+	}
+}
+
+void cmd_dict_exec(cmd_dict_t *dict, const char *cmd, void *param)
+{
+	const cmd_t *found=NULL;
+
+	if (cmd && dict->n)
+	{
+		short i = dict->head[cmd_hash(cmd,dict->ci) & (CMD_DICT_BUCKETS-1)];
+
+		while (i>=0)
+		{
+			if (cmd_str_eq(dict->set[i].cmd,cmd,dict->ci))
+			{
+				found=&dict->set[i];
+				break;
+			}
+			i=dict->next[i];
+		}
+	}
+
+	if (!found) found=&dict->set[dict->n]; /* default handler (terminator entry) */
+
 	if (found->funct) (found->funct)(param);
-}
-
-void case_bin_cmd_exec(cmd_t *cmd_set, int n_cmd_set, char *cmd, void *param)
-{
-	string_tolower(cmd);
-	bin_cmd_exec(cmd_set, n_cmd_set, cmd, param);
 }
 
 /* VIM Settings {{{

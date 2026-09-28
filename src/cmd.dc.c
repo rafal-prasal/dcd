@@ -1025,13 +1025,17 @@ void dc_cmd_exec(*usr,*line)
 .description:
  runs the DC given command
 
-.args:
+.	args:
 	userrec_t *usr - userrec of the user, who gives the command
 	char *line - the line following the command
 {{{*/
-void dc_cmd_exec( userrec_t *usr, char *line)
+
+static cmd_dict_t dc_dict;
+static pthread_once_t dc_dict_once = PTHREAD_ONCE_INIT;
+
+static void dc_cmd_dict_init(void)
 {
-	cmd_t dc_set[]=
+	static const cmd_t dc_set[]=
 	{
 		{ "ConnectToMe", 		(funct_t)dc_ConnectToMe			},
 		{ "GetINFO", 			(funct_t)dc_GetINFO				},
@@ -1054,15 +1058,20 @@ void dc_cmd_exec( userrec_t *usr, char *line)
 		{ "Version", 			(funct_t)dc_Version				},
 		{ "",					(funct_t)dc_not_implemented		}
 	};
-	
-	int n_dc_set=sizeof(dc_set)/sizeof(cmd_t);
 
+	cmd_dict_build(&dc_dict, dc_set, 0);
+}
+
+void dc_cmd_exec( userrec_t *usr, char *line)
+{
 	dc_param_t dc_param;
 
 	char *cmd=NULL, //stores the command
 		 *par=NULL, //stores the parameter
 		 *line_copy=NULL, //stores the copy of line
 		 *temp=NULL;
+
+	if (pthread_once(&dc_dict_once, dc_cmd_dict_init)) goto leave;
 
 	my_duplicate(line,&line_copy);
 	temp=line_copy;
@@ -1086,7 +1095,7 @@ void dc_cmd_exec( userrec_t *usr, char *line)
 		//dc
 		case '$':	
 					cmd++;
-					bin_cmd_exec(dc_set, n_dc_set, cmd, &dc_param);
+					cmd_dict_exec(&dc_dict, cmd, &dc_param);
 					break;		
 		//garbage
 		default:

@@ -1485,11 +1485,14 @@ void cmd_chat_exec(*usr,*line)
 	userrec_t *usr - userrec of the user, who gives the command
 	char *line - the line following the command
 
-{{{*/
+ {{{*/
 
-void chat_cmd_exec(userrec_t *usr, char *line, char *line_copy)
+static cmd_dict_t chat_dict;
+static pthread_once_t chat_dict_once = PTHREAD_ONCE_INIT;
+
+static void chat_cmd_dict_init(void)
 {
-	cmd_t chat_set[]=
+	static const cmd_t chat_set[]=
 	{
 		{ "amnesty",		(funct_t)chat_amnesty				},
 		{ "amnesty_all",	(funct_t)chat_amnesty_all 			},
@@ -1523,12 +1526,14 @@ void chat_cmd_exec(userrec_t *usr, char *line, char *line_copy)
 		{ "",				(funct_t)chat_not_found				}
 	};
 
+	cmd_dict_build(&chat_dict, chat_set, 1);
+}
+
+void chat_cmd_exec(userrec_t *usr, char *line, char *line_copy)
+{
 	char *delim_[]={" \n", " |"},
 		 *delim__[]={"\n",	"|"};
-		 
 
-	int n_chat = sizeof(chat_set)/sizeof(cmd_t);
-	
 	chat_param_t chat_param;
 
 	char *cmd=NULL,
@@ -1536,6 +1541,8 @@ void chat_cmd_exec(userrec_t *usr, char *line, char *line_copy)
 		 *temp=line,
 		 *delim=delim_[1],
 		 *delimp=delim__[1];
+
+	if (pthread_once(&chat_dict_once, chat_cmd_dict_init)) return;
 
 	if(usr->cons)
 	{
@@ -1556,7 +1563,7 @@ void chat_cmd_exec(userrec_t *usr, char *line, char *line_copy)
 	if ((cmd && cmd[0]=='#') || usr->cons) 
 	{	
 		if (!usr->cons && cmd && cmd[0]=='#') cmd++;
-		case_bin_cmd_exec(chat_set, n_chat, cmd, &chat_param);
+		cmd_dict_exec(&chat_dict, cmd, &chat_param);
 	}
 	else chat_not_found(&chat_param);
 	

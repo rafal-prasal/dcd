@@ -54,10 +54,7 @@ void opt_unknown(opt_param_t *param)
 /* opt_line() - parse command-line options {{{ */
 void opt_line(int argc, char *argv[] )
 {
-	int i;
-	opt_param_t param;
-
-	cmd_t opt_set[] = {
+	static const cmd_t opt_set[] = {
 		{"--config", 	(funct_t)opt_config		},
 		{"--help", 		(funct_t)opt_help		},
 		{"--version", 	(funct_t)opt_version	},
@@ -66,9 +63,13 @@ void opt_line(int argc, char *argv[] )
 		{"-v", 			(funct_t)opt_version	},
 	 	{NULL,			(funct_t)opt_unknown	}
 	};
-	
-	int n_opt_set=sizeof(opt_set)/sizeof(cmd_t);
-					 
+
+	cmd_dict_t opt_dict;
+	int i;
+	opt_param_t param;
+
+	cmd_dict_build(&opt_dict, opt_set, 0);
+
 	for ( i = 1; i < argc; i++ )
 	{
 		//if this was parameter for previous option
@@ -80,7 +81,7 @@ void opt_line(int argc, char *argv[] )
 		param.value=NULL;
 		if (i+1<argc) param.value=argv[i+1];
 		
-		bin_cmd_exec(opt_set,n_opt_set,argv[i],&param);
+		cmd_dict_exec(&opt_dict,argv[i],&param);
 	}
 } /* }}} */
 

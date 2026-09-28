@@ -216,10 +216,14 @@ void udp_cmd_exec(*usr,*line)
 .args:
 	int sock, socket
 	char *line - the line following the command
-{{{*/
-void udp_cmd_exec(char *ip, char *line)
+ {{{*/
+
+static cmd_dict_t udp_dict;
+static pthread_once_t udp_dict_once = PTHREAD_ONCE_INIT;
+
+static void udp_cmd_dict_init(void)
 {
-	cmd_t udp_set[]=
+	static const cmd_t udp_set[]=
 	{
 		{ "ConnectToMe", 		(funct_t)udp_ConnectToMe		},
 		{ "SR", 				(funct_t)udp_SR					},
@@ -228,14 +232,19 @@ void udp_cmd_exec(char *ip, char *line)
 		{ "UpToo",	 			(funct_t)udp_UpToo				},
 		{ "",					(funct_t)udp_not_implemented	}
 	};
-	
-	int n_udp_set=sizeof(udp_set)/sizeof(cmd_t);
 
+	cmd_dict_build(&udp_dict, udp_set, 0);
+}
+
+void udp_cmd_exec(char *ip, char *line)
+{
 	udp_param_t udp_param;
 
 	char *cmd=NULL, //stores the command
 		 line_copy[MAX_RECEIVE_ONCE], //stores the copy of line
 		 *tmp=line_copy;
+
+	if (pthread_once(&udp_dict_once, udp_cmd_dict_init)) return;
 
 	if(NHUBS)
 	{
@@ -258,7 +267,7 @@ void udp_cmd_exec(char *ip, char *line)
 					udp_param.line=line;
 					udp_param.cmd=cmd;
 					
-					bin_cmd_exec(udp_set, n_udp_set, cmd, &udp_param);
+					cmd_dict_exec(&udp_dict, cmd, &udp_param);
 					break;		
 		//garbage
 		default:

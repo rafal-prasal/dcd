@@ -66,6 +66,39 @@ cmake --build build
 - `./build/dcd -h`: usage screen prints, version banner `DConnect Daemon v1.1.1` OK
 - Staged install (`DESTDIR=/tmp/dcd-stage cmake --install build`) produced the expected tree: `usr/local/sbin/{dcd,dcd.adduser}`, `usr/local/etc/dcd/*` (11 config files), man pages in `man2/` and `pl/man1/`
 
+## 4. Code analysis & defect fixes (2026-09-28, follow-up)
+
+Method: GCC `-Wall -Wextra -Wformat=2 -Wshadow`, `-O2` (`-Wstringop-*`, `warn_unused_result`), and GCC static analyzer (`-fanalyzer`). All findings triaged manually; false positives (e.g. the ~25 `leak of *usr.reason` reports in cmd.dc.c — freed later in `disconnect()` via net.c:322) were not touched.
+
+### Real defects fixed
+
+| Location | Defect | Fix |
+|---|---|---|
+| `src/main.c`, `src/console.c` accept loops | `new_sock` declared `unsigned int` → `accept()<0` check always false; on error, fd `-1` (as 4294967295) passed to `adduser()`/`addcons()` | `int new_sock`, `socklen_t remote_size/size_addr` |
+| `src/main.c` (main) | `setuid()`/`setgid()` return values ignored — daemon could keep running as root after failed privilege drop | check both, log + `exit(1)` on failure (setgid before setuid) |
+| `src/conf.c` (`parse_hublist`) | file handle from `fopen(conf_hublinks)` never `fclose()`d → fd leak on every config reload | added `fclose(fp)` after the loop |
+| `src/cmd.dc.c:232` (`dc_GetNickList`) | stray `;` after `if(!user_tst_supports(...));` made the nick-append block unconditional (dead guard) | removed the semicolon |
+| `src/misc.c` `my_duplicate()` | error check tested `!duplicate` (pointer arg, never NULL) instead of `!*duplicate` → strdup OOM undetected, caller later derefs NULL | check `!*duplicate` |
+| `src/misc.c` `make_path()` | `if (!**file)` deref before NULL check; unchecked `my_realloc()` failure (which frees the original) left dangling `*file` + `sprintf(NULL,...)` | NULL guard, realloc-failure handling (`*file=NULL`, free temp, return), `tmp` guard after `my_duplicate` |
+| `src/misc.c` `my_free1()` | `*ptr=NULL` executed even when `ptr==NULL` → segfault path | moved inside the `if (ptr && *ptr)` guard |
+| `src/misc.c` `flag_myinfo()` | `flags[myinfo->flag]` — flag is a raw client-supplied char from MyINFO; negative/≥12 value = out-of-bounds static read (network-triggered) | unsigned index + range check, fallback to `flags[0]` |
+| `src/cmd.udp.c` (`cmd_udp`) | `strncpy(tmp,line,MAX_RECEIVE_ONCE)` into same-size buffer → missing NUL terminator on long input; `strsep`/`strlen` then run off the end | copy `MAX_RECEIVE_ONCE-1`, force NUL terminator |
+| `src/cmd.conf.c` `parse_config_line()` | possible NULL `line` deref (`strlen(line)`) | early `return -1` guard (caller already handles -1) |
+| `src/cmd.opt_line.c` `opt_version()` | `dcd -v` exited with status 1 after successful run | `exit(0)` |
+| `src/net.c:48` | implicit switch fallthrough into `default:` in socket-error handler (intended: log + set ec=1) | explicit "fall through" comment, behavior unchanged |
+
+### Reviewed and intentionally left as-is
+
+- Remaining `-Wextra` noise: unused callback params (`param`, `args`), set-but-unused locals (`No`, `ret`, `write_result`), benign sign-comparisons against always-non-negative values, intentional shadowing of `conf`/`starttime` in helper functions
+- `buf2cmd()` dead `&& !cmd` check (my_malloc aborts on OOM; removing risks changing console semantics for no gain)
+- Historical ChangeLog/NEWS/spec-changelog entries mentioning tcp_wrappers
+
+### Verification after fixes
+
+- Clean builds: `-Wall -Wextra` and `-O2 -Wall` — zero new warnings, all previously flagged defect classes gone (only benign noise remains)
+- `-fanalyzer`: remaining reports are OOM-modeling false positives around the `my_free1`/`my_duplicate` wrapper macros
+- Smoke test: `build/dcd -v` prints version, exit=0; `dcd -h` OK
+
 ## Status
 
 All changes are **uncommitted** in the working tree (`git status`: modified sources/docs, deleted autotools files, new `CMakeLists.txt`).

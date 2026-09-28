@@ -34,8 +34,11 @@ extern time_t last_penalties_update;
 void my_free1(void *p)
 {
 	void **ptr=(void**) p;
-	if (ptr&&*ptr) free(*ptr);
-	*ptr=NULL;
+	if (ptr && *ptr)
+	{
+		free(*ptr);
+		*ptr=NULL;
+	}
 } /* }}} */
 
 /* controlled realloc() {{{ */
@@ -83,7 +86,7 @@ void my_duplicate(char *str, char **duplicate)
 	my_free(*duplicate);
 	*duplicate=strdup(str);
 
-	if (!duplicate) log_write(FAC_DAEMON,PR_ALERT,"my_duplicate() failed: %s",strerror(errno));
+	if (!*duplicate) log_write(FAC_DAEMON,PR_ALERT,"my_duplicate() failed: %s",strerror(errno));
 }
 
 /* get_progname() - from openssh {{{ */
@@ -247,7 +250,7 @@ char validnick(userrec_t *usr,char *nick)
 	/* if nick contains not valid characters */
 	if (strlen(nick)>0 && nick[0]=='#') return NICK_IS_WITH_INVALID_CHARACTERS;
 	
-	for(n=0;n<strlen(nick);n++)
+	for(n=0;n<(int)strlen(nick);n++)
 		if ( (!conf.allow_non_us_ascii_nicks && !isprint(nick[n]))
 			 || isspace(nick[n]) 
 			 || nick[n]=='$' 
@@ -321,8 +324,12 @@ char *flag_myinfo(myinfo_t *myinfo)
 						  "Fireball Away; upload > 100 kB/s",	//10
 						  "Fireball Away; upload > 100 kB/s"	//11
 						  };
-						  
-	return flags[myinfo->flag];
+
+	unsigned char f=(unsigned char)myinfo->flag;
+
+	if (f>=sizeof(flags)/sizeof(*flags)) return flags[0];
+
+	return flags[f];
 }
 
 void move_myinfo(myinfo_t *from, myinfo_t *to)
@@ -431,15 +438,24 @@ void check_timeout(userrec_t *usr) {
 /* make_path() - compose direct path to file {{{ */
 void make_path(char *dir,char **file)
 {
-	char *tmp=NULL,*p;
+	char *tmp=NULL,*p,*newp;
 
-	if (!**file) return;
+	if (!*file || !**file) return;
 
 	my_duplicate(*file,&tmp);
 
+	if (!tmp) return;
+
 	p=strrchr(tmp,'/');
 	if (p) p++; else p=tmp;
-	*file=(char *)my_realloc(*file,strlen(dir)+strlen(p)+2);
+	newp=(char *)my_realloc(*file,strlen(dir)+strlen(p)+2);
+	if (!newp)
+	{
+		*file=NULL; /* my_realloc() has already freed it */
+		my_free(tmp);
+		return;
+	}
+	*file=newp;
 	sprintf(*file,"%s%s%s",dir,(dir[strlen(dir)-1]=='/')?"":"/",p);
 	my_free(tmp);
 } /* }}} */

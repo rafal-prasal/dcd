@@ -372,7 +372,8 @@ void deluser(userrec_t *usr)
 /* listen_thread_main() - listen for new connections to main service {{{ */
 void listen_thread_main(void *voidp)
 {
-	unsigned int new_sock,remote_size,size_addr=sizeof(struct sockaddr_in);
+	int new_sock;
+	socklen_t remote_size,size_addr=sizeof(struct sockaddr_in);
 	struct sockaddr_in remote,addr;
 	int No;
 	int_voidp_t parameter;
@@ -1068,8 +1069,16 @@ int main(int argc,char *argv[])
 	make_sockets();
 
 	/* set uid/gid to proper user/group */
-	setuid(conf.uid);
-	setgid(conf.gid);
+	if (setgid(conf.gid))
+	{
+		log_write(FAC_DAEMON,PR_CRITICAL,"setgid(%d) failed: %s.",conf.gid,strerror(errno));
+		exit(1);
+	}
+	if (setuid(conf.uid))
+	{
+		log_write(FAC_DAEMON,PR_CRITICAL,"setuid(%d) failed: %s.",conf.uid,strerror(errno));
+		exit(1);
+	}
 
 	log_open();
 

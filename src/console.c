@@ -67,7 +67,8 @@ void addcons(int sock,char *remote) {
 
 /* listen_thread_cons() - listen for new connections to remote console {{{ */
 void listen_thread_cons(void *args) {
-	unsigned int new_sock,remote_size;
+	int new_sock;
+	socklen_t remote_size;
 	struct sockaddr_in remote;
 	char *ip;
 	fd_set fdset;

@@ -229,7 +229,7 @@ void dc_GetNickList(dc_param_t *param)
 
 	if (!user_tst_state(usr,STATE_REGISTERED))
 	{
-		if(!user_tst_supports(usr,SUPPORTS_NoHello_NoGetINFO));
+		if(!user_tst_supports(usr,SUPPORTS_NoHello_NoGetINFO))
 		{ 
 			strcat(nicks,usr->nick);
 			strcat(nicks,"$$");

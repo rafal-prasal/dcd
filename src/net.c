@@ -46,6 +46,7 @@ int sockerr(char *operation, int error, userrec_t *usr)
 #endif
 				usr->reason=strdup("problem with socket");
    			    user_set_state(usr,STATE_QUIT);
+				/* fall through - log the error and set ec=1 as well */
 		default:
 		
 			log_write(FAC_NETWORK,PR_ERROR,"%s() failed %s@%s : %s",operation,usr->nick?usr->nick:"Unknown",usr->ip,strerror(error));

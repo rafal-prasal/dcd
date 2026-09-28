@@ -237,7 +237,11 @@ void udp_cmd_exec(char *ip, char *line)
 		 line_copy[MAX_RECEIVE_ONCE], //stores the copy of line
 		 *tmp=line_copy;
 
-	if(NHUBS) strncpy(tmp,line,MAX_RECEIVE_ONCE);
+	if(NHUBS)
+	{
+		strncpy(tmp,line,MAX_RECEIVE_ONCE-1);
+		tmp[MAX_RECEIVE_ONCE-1]='\0';
+	}
 	else tmp=line;
 
 	cmd=strsep(&tmp," ");

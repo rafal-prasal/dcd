@@ -31,7 +31,7 @@ void opt_help(opt_param_t *param)
 void opt_version(opt_param_t *param)
 {
 	printf("%s\r\n",PACKAGE_VERSION);
-	exit(1);
+	exit(0);
 } /* }}} */
 
 /* opt_config() - change default config file path {{{ */

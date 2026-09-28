@@ -30,6 +30,8 @@ int parse_config_line(char *line,char **cmd,char **val)
 	char *p=line;
 	int i=0;
 
+	if (!line) return -1;
+
 	i=strlen(line)-1;
 
 	while(i>0 && (p[i]=='\n' || p[i]=='\r' || isspace(p[i]))) p[i--]='\000';

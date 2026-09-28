@@ -691,6 +691,8 @@ void parse_hublist()
 		my_free(line);
 	}	
 
+	fclose(fp);
+
 }
 
 

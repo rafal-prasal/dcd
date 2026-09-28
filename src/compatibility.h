@@ -13,11 +13,6 @@
 #if !defined( __vXhz__COMPATIBILITY_H__INCLUDED__ )
 #define __vXhz__COMPATIBILITY_H__INCLUDED__
 
-#ifdef INCLUDED_YP_GET_DEFAULT_DOMAIN
-// workaround for broken libwrap from RH
-int yp_get_default_domain(char **ptr);
-#endif
-
 #ifdef INCLUDED_STRSEP
 /* fall into background */
 int strsep(char **, char *sep);

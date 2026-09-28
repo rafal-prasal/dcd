@@ -176,10 +176,6 @@ Po zainstalowaniu, DConnectDaemon uruchamiany jest przy starcie systemu jako dem
   </refsect2>
   </refsect1>
   <refsect1>
-    <title>BUGS</title>
-    <para>DCD nie buduje siê na RedHat poniewa¿ jest tam tylko statyczna wersja biblioteki libwrap. Szukamy kogo¶ kto pomo¿e w rozwi±zaniu tego problemu</para>
-  </refsect1>
-  <refsect1>
     <title>Zobacz tak¯e</title>
     <para>
 <citerefentry>

@@ -25,7 +25,6 @@ You can find newest version of DConnect Deamon on website <url url="http://www.d
 	<p>
         <list>
 	    <item> fast, pure C implementation</item>
-	    <item> libwrap support (hosts.allow, hosts.deny)</item>
 	    <item> low memory per user consumption</item>
 	    <item> uses threads (no forking)</item>
 	    <item> nick pattern matching</item>
@@ -435,12 +434,8 @@ POSSIBILITY OF SUCH DAMAGES.
 To compile DConnect Daemon, you need:
 
 <list>
-	    <item>libwrap</item>
 	    <item>libpthread</item>
-	    <item>automake</item>
-	    <item>autoconf</item>
-	    <item>libtool</item>
-	    <item>gettext (not used now...)</item>
+	    <item>CMake</item>
 	  </list>
 </p>
       </sect1>

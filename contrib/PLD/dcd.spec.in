@@ -9,10 +9,7 @@ Group:		Networking/Daemons
 Vendor:		DConnect Team <dc-hub@ds.pg.gda.pl>
 Source0:	ftp://pollux.ds.pg.gda.pl/Linux/DConnect/sources/stable/%{name}-%{version}.tar.gz
 URL:		http://www.dc.ds.pg.gda.pl/
-BuildRequires:	autoconf
-BuildRequires:	automake
-BuildRequires:	libtool
-BuildRequires:	libwrap-devel
+BuildRequires:	cmake
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -27,17 +24,14 @@ pracuje jako demon i u¿ywa w±tków.
 %setup -q
 
 %build
-export NOCONFIGURE=1
-./autogen.sh
-unset NOCONFIGURE
+%{__cmake} \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DDCD_CONFIG_DIR=%{_sysconfdir}/@PACKAGE_NAME@ \
+	-DDEFAULT_GROUP=daemon \
+	-DDEFAULT_USER=daemon \
+	.
 
-%configure \
-	--with-config-dir=%{_sysconfdir}/@PACKAGE_NAME@ \
-	--sbindir=%{_sbindir} \
-	--with-group=daemon \
-	--with-user=daemon
-
-make
+%{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT

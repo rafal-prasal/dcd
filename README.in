@@ -16,7 +16,6 @@ Features
 --------
 
 * fast, pure C implementation
-* libwrap support (hosts.allow, hosts.deny)
 * low memory per user consumption
 * uses threads (no forking)
 * nick pattern matching
@@ -35,12 +34,9 @@ Requirements
 
 To compile DConnect Daemon, you will need:
 
-* libwrap(tcp_wrappers)
 * libpthread
-* automake (recommended min. 1.6)
-* autoconf >= 2.50
-* libtool
-* gettext
+* CMake (min. 3.10)
+* a C compiler
 
 Instalation
 -----------
@@ -48,46 +44,27 @@ Instalation
 In most cases this procedure should work:
 
 $ cd @PACKAGE@-@VERSION@
-$ ./configure
-$ make
-$ make install
+$ cmake -B build -S .
+$ cmake --build build
+$ sudo cmake --install build
 
-You may propably use some traditional configure options.
+You may propably use some standard CMake options.
 There are @PACKAGE@-specific options, but you propably don't have to worry 
 about it.
 
-   --with-config-dir=PATH	- where to look for configuration file. 
-   				You can use --sysconfdir too - there is no 
-				difference.
-   --with-libwrap-path=LIBPATH	- Where to look for libwrap?
-   
-   --with-user=USER		- Set default user. We STRONGLY advise to make
+   -DDCD_CONFIG_DIR=PATH	- where to look for configuration files
+   				(default: <prefix>/etc/dcd).
+
+   -DDEFAULT_USER=USER		- Set default user. We STRONGLY advise to make
    				your own user and put it here. Default is daemon,
 				because it's present in every Unix system.
 
-   --with-group=GROUP		- Set default group. You should make your own group.
+   -DDEFAULT_GROUP=GROUP	- Set default group. You should make your own group.
    				Default is set to daemon, because this group is
 				present on every Unix system.
 
 Usage
 -----
-In directory /etc or /etc/tcpd  you will find hosts.allow and hosts.deny, where you specify, 
-who can connect to your hub and who can't.
-
-NOTE: 
-	This is only sample configuration. We do not provide any help with it. 
-	If you want to know more about it, please read about libwrap/tcp_wrappers.
-
-Syntax:
-	hosts.allow
-		ALL EXCEPT dcd:ALL
-		dcd: host.domain.com			#host.domain.com is allowed
-		dcd: .domain.com				#hosts which match mask *.domain.com are allowed
-		dcd: 10.0.0.2					#ip 10.0.0.2 is allowed
-		dcd: 10.0.0.0/255.255.255.0		#ips from 10.0.0.0 to 10.0.0.255 are allowed
-
-	hosts.deny
-		dcd: ALL						#nobody else is allowed to connect
 
 In directory @CONFIGDIR@ you have config files. Most of them have sufficient
 comments :)

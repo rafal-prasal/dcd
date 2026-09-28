@@ -51,9 +51,6 @@ void move_myinfo( myinfo_t *from, myinfo_t *to);
 // check clients' idle time
 void check_timeout(userrec_t *usr );
 
-// check if remote host is not allowed to connect
-char denied( int sock );
-
 // from openssh
 char *get_progname( char *argv0 );
 

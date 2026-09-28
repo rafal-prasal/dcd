@@ -29,8 +29,6 @@ TODO list:
 - passwd file:
      - password encryption methods: crypt, MD5, SHA1 (from config)
      - password crypt() script
-- ac/am:
-     - finish libwrap conditional - work with static too
 [/EN]
 
 [PL]
@@ -59,6 +57,4 @@ TODO list:
 - plik passwd:
      - metody szyfrowania hase³: crypt, MD5, SHA1 (okre¶lane z configa)
      - skrypt robi±cy crypt() hase³
-- ac/am:
-     - dokoñczyæ warunek na libwrap - wykrywanie statycznej biblioteki
 [/PL]

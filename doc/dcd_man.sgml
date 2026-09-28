@@ -180,10 +180,6 @@ Notation in this file is as follows: <option>option = value</option>. Options in
   </refsect2>
   </refsect1>
   <refsect1>
-    <title>BUGS</title>
-    <para>DCD is not building on RedHat, because there is only static libwrap library. We're looking someone to patch this bug.</para>
-  </refsect1>
-  <refsect1>
     <title>See also</title>
     <para>
 <citerefentry>

@@ -22,7 +22,6 @@ Najnowsz± wersjê programu DConnect Deamon mo¿esz znale¼æ na stronie <url url="ht
 	<p>
         <list>
 	    <item> implementacja programu w szybkim, czystym C</item>
-	    <item> obs³uga libwrap (hosts.allow, hosts.deny)</item>
 	    <item> niewielkie zu¿ycie pamiêci przez u¿ytkownika</item>
 	    <item> wykorzystanie w±tków (bez rozwidleñ)</item>
 	    <item> obs³uga wymaganych wzorców nick'ów</item>
@@ -266,12 +265,8 @@ O ILE OBOWI¡ZUJ¡CE PRAWO NIE STANOWI INACZEJ ALBO CZEGO¦ INNEGO NIE UZGODNIONO W
 	<p>
 Aby skompilowaæ DConnect Daemon, musisz mieæ zainstalowane:
 <list>
-	    <item>libwrap</item>
 	    <item>libpthread</item>
-	    <item>automake</item>
-	    <item>autoconf</item>
-	    <item>libtool</item>
-	    <item>gettext (not used now...)</item>
+	    <item>CMake</item>
 	  </list>
 </p>
       </sect1>

@@ -184,6 +184,14 @@ Capacity note: `CMD_DICT_MAXENTRIES` set to 96 after counting `conf_set` (~65 en
 
 Verified: clean build; live hub test — `$Connect` answered via dictionary hit, unknown `$BogusCommand` routed to default handler without crashing, config (conf_dict) parsed at startup, SIGTERM shutdown clean.
 
+## 8. select() → poll() migration; latent FD_SETSIZE landmine fixed (2026-09-28)
+
+**Finding:** `pch.h` defines `FD_SETSIZE MAXUSERS+30` (=5030), but glibc's `<sys/select.h>` redefines it unconditionally to 1024 *after* that — verified empirically against the pristine git tree too (pre-existing, not introduced by our modernization). Consequence: with >1023 open descriptors, `FD_SET()` in `user_manager()` writes past the stack `fd_set` → memory corruption. The original "handled 2k users" claim was plausible only on era-distros that shipped glibc with a raised `__FD_SETSIZE` (PLD/Gentoo-style tuning); on stock modern glibc it is a landmine.
+
+**Fix:** converted the `user_manager()` poll loop to **`poll()`** (`struct pollfd pfds[MAXUSERS]`, `POLLIN|POLLHUP|POLLERR`, 5 ms timeout preserved, readiness mapped back via parallel `puser[]` + `poll_ready()` helper). No fd ceiling up to MAXUSERS=5000, no fd_set bit-array copies; measured `sizeof(userrec_t)` = 1080 B → ~2.1 MB for 2000 users (the low-memory-per-user claim holds — buffers are allocated on demand).
+
+Verified: clean build; live hub test passes (`$Connect` answered, unknown command default-handled, SIGTERM clean).
+
 ## Status
 
 All changes are **uncommitted** in the working tree (`git status`: modified sources/docs, deleted autotools files, new `CMakeLists.txt`).

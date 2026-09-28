@@ -676,20 +676,30 @@ void test_slots( userrec_t *usr)
 }
 
 
+/* poll_ready() - was user slot i reported readable by poll()? {{{ */
+static int poll_ready(const struct pollfd *pfds, const int *puser, int nfds, int i)
+{
+	int k;
+
+	for (k=0;k<nfds;k++)
+		if (puser[k]==i && (pfds[k].revents & (POLLIN|POLLHUP|POLLERR))) return 1;
+
+	return 0;
+} /* }}} */
+
 void user_manager(void *voidp)
 {
-	int i,No,maxsock;
+	int i,No,nfds;
 	int_voidp_t parameter;
-	struct timeval timeout;
 	char message[MAX_RECEIVE_ONCE];
 
-	fd_set _sockfdset;
-	fd_set *sockfdset=&_sockfdset;
+	/* poll() instead of select(): no FD_SETSIZE limit, so the loop is
+	   correct up to MAXUSERS connections (glibc caps fd_set at 1024) */
+	struct pollfd pfds[MAXUSERS];
+	int puser[MAXUSERS];
 
 	parameter.voidp=voidp;
 	No=parameter.integer;
-
-	FD_ZERO(sockfdset);
 
 	while(1)
 	{
@@ -703,19 +713,18 @@ void user_manager(void *voidp)
 
 		pthread_mutex_lock( &mutex_user_manager[No]);
 
-       	timeout.tv_sec=0;
-		timeout.tv_usec=5000;
-
-		maxsock=-1;
-		FD_ZERO(sockfdset);
-		for(i=0;i<NUSERS;i++) 
+		nfds=0;
+		for(i=0;i<NUSERS && nfds<MAXUSERS;i++) 
 			if (user[i] && !user_tst_state(user[i],STATE_QUIT))
 			{
-				FD_SET(user[i]->sock,sockfdset);
-				if(user[i]->sock>maxsock) maxsock=user[i]->sock;
+				pfds[nfds].fd=user[i]->sock;
+				pfds[nfds].events=POLLIN;
+				pfds[nfds].revents=0;
+				puser[nfds]=i;
+				nfds++;
 			}
 
-		select(maxsock+1,sockfdset,NULL,NULL,&timeout);
+		poll(pfds,nfds,5);
 
 		for(i=0;i<NUSERS;i++)
 		{
@@ -734,11 +743,11 @@ void user_manager(void *voidp)
 				    user_set_state(user[i],STATE_CONNECTED);
 				}
 
-				if( FD_ISSET(user[i]->sock,sockfdset) 
+				if( poll_ready(pfds,puser,nfds,i)
 					&& my_recv(user[i], conf.max_receive_once, message)) user_msg2buf(user[i],message);
 
 				if (user[i]->buf) manage_sock(user[i]);
-			    
+		    
 				is_managed(No,-1);
 			}
 		}

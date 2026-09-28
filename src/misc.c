@@ -522,26 +522,27 @@ inline void toggle_flag(config_t *conf,userrec_t *usr,unsigned char flag)
 	if (conf->flags&flag) conf->flags&=~flag; else conf->flags|=flag;
 	disttcpf(usr,"Option has been turned %s.\r\n",(conf->flags&flag)?"on":"off");
 } /* }}} */
-
 int add2buf(char **buf, char *string)
 {
 	char *tmp;
-	int len=1;
+	int blen=0,len;
 
 	if (!string || !*string) return 0;
 
-	if (*buf) len+=strlen(*buf);
+	if (*buf) blen=strlen(*buf);
 
-	len+=strlen(string);
-	tmp=my_malloc(len);
+	len=blen+1+strlen(string);
 
-	if(!tmp) return 0;
-	tmp[0]=0;
+	/* grow in place when possible: avoids a full copy of *buf on every append */
+	tmp=(char *)my_realloc(*buf,len);
 
-	if (*buf) strcat(tmp,*buf);
-	strcat(tmp,string);
+	if(!tmp)
+	{
+		*buf=NULL; /* my_realloc() has already freed it */
+		return 0;
+	}
 
-	my_free(*buf);
+	memcpy(tmp+blen,string,strlen(string)+1);
 
 	*buf=tmp;
 

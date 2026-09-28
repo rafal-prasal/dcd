@@ -4,6 +4,13 @@ project(dcd
 	VERSION 1.1.1
 	LANGUAGES C)
 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
+
+set(DCD_ENABLE_LTO OFF CACHE BOOL "Enable link-time optimization")
+
 set(PACKAGE_NAME "${PROJECT_NAME}")
 set(PACKAGE_VERSION "${PROJECT_VERSION}")
 set(PACKAGE "${PROJECT_NAME}")
@@ -47,7 +54,12 @@ target_compile_definitions(dcd PRIVATE
 	"-DDEFAULT_GROUP=\"${DEFAULT_GROUP}\""
 	"-DBUILD_TIME=\"${BUILD_TIME}\"")
 
-target_compile_options(dcd PRIVATE -Wall)
+target_compile_options(dcd PRIVATE -Wall -fno-strict-aliasing)
+
+if(DCD_ENABLE_LTO)
+	target_link_options(dcd PRIVATE -flto)
+	target_compile_options(dcd PRIVATE -flto)
+endif()
 target_link_libraries(dcd PRIVATE Threads::Threads)
 
 configure_file(README.in ${CMAKE_BINARY_DIR}/README @ONLY)

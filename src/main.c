@@ -389,7 +389,6 @@ void listen_thread_main(void *voidp)
 	/* accept connections */
 	while(1)
 	{
-		usleep(5);//ONLY for testing purposes
 		if ((new_sock=accept(listen_main,(struct sockaddr *)&remote,&remote_size))<0)
 		{
 			if (errno!=EINTR)  log_write(FAC_NETWORK,PR_ERROR,"accept() failed: %s.", strerror(errno));
@@ -679,7 +678,7 @@ void test_slots( userrec_t *usr)
 
 void user_manager(void *voidp)
 {
-	int i,No;
+	int i,No,maxsock;
 	int_voidp_t parameter;
 	struct timeval timeout;
 	char message[MAX_RECEIVE_ONCE];
@@ -694,20 +693,29 @@ void user_manager(void *voidp)
 
 	while(1)
 	{
-		usleep(2000);
 		if (conf.minimal_sleep_time) usleep(conf.minimal_sleep_time);		
 
-		if(!NUSERS) continue;
+		if(!NUSERS)
+		{
+			usleep(5000);
+			continue;
+		}
 
 		pthread_mutex_lock( &mutex_user_manager[No]);
 
        	timeout.tv_sec=0;
-		timeout.tv_usec=1000;
+		timeout.tv_usec=5000;
 
+		maxsock=-1;
+		FD_ZERO(sockfdset);
 		for(i=0;i<NUSERS;i++) 
-			if (user[i] && !user_tst_state(user[i],STATE_QUIT)) FD_SET(user[i]->sock,sockfdset);
+			if (user[i] && !user_tst_state(user[i],STATE_QUIT))
+			{
+				FD_SET(user[i]->sock,sockfdset);
+				if(user[i]->sock>maxsock) maxsock=user[i]->sock;
+			}
 
-		select(maxfd,sockfdset,NULL,NULL,&timeout);
+		select(maxsock+1,sockfdset,NULL,NULL,&timeout);
 
 		for(i=0;i<NUSERS;i++)
 		{
@@ -1069,12 +1077,12 @@ int main(int argc,char *argv[])
 	make_sockets();
 
 	/* set uid/gid to proper user/group */
-	if (setgid(conf.gid))
+	if (setgid(conf.gid) && !geteuid())
 	{
 		log_write(FAC_DAEMON,PR_CRITICAL,"setgid(%d) failed: %s.",conf.gid,strerror(errno));
 		exit(1);
 	}
-	if (setuid(conf.uid))
+	if (setuid(conf.uid) && !geteuid())
 	{
 		log_write(FAC_DAEMON,PR_CRITICAL,"setuid(%d) failed: %s.",conf.uid,strerror(errno));
 		exit(1);

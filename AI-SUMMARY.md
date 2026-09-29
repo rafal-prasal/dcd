@@ -257,3 +257,39 @@ Method: full rebuild with `-Wall -Wextra`, review of the last five commits (poll
 ## Status
 
 Earlier work is committed (`master` is 7 commits ahead of `origin/master`). The §10 fixes are **uncommitted** in the working tree.
+
+## 11. NMDC protocol analysis + Python client + end-to-end suite (2026-09-29)
+
+### Protocol analysis (NMDC as implemented by DCD)
+
+Wire format: one line per frame, terminated by `|`; public chat is `<nick> text|`.
+
+Connection lifecycle (TCP `listen_port_main`, UDP port = same number):
+
+1. Hub sends `$Lock EXTENDEDPROTOCOL<99 chars> Pk=DCONNECT..DAEMON|` + `$HubName <name>|` (adduser, accept thread).
+2. Client must answer `$Key <derived>|` — the key is **not** the lock echoed back: `lock_key()` (misc.c) XORs the salt with a rolling seed, swaps nibbles, and escapes protocol chars as `/%DCN%03i%/`. The client must run the same algorithm (`compute_key()` in the Python client).
+3. Hub's user_manager sends the welcome file (`<HUB> ...|`) on its first cycle for the user, then moves it `WELCOME→CONNECTED`.
+4. `$ValidateNick` (requires KEY state) → `validnick()`: length ≤31, no `#$:<>?`/space/leading `#`, not in use, not in `reserved_nicks[]` (Hub, Hub-Security, …), matches `nicks.allow`; registered nicks (dcd.users) → `$GetPass|` → `$MyPass` (wrong → `$BadPass|` + quit; ops also get `$LogedIn`). Success sends `$Hello` **only to the joiner** (not a broadcast).
+5. `$MyINFO $ALL <nick> <desc>$ $<ctype><flag>$<email>$<share>$` → `fill_myinfo()`; on success the user becomes REGISTERED and the raw line is broadcast to all registered users (`dc_myinfo(NULL,usr)`). min_share/min_slots enforcement (redirect/quit) happens here.
+6. `$Supports` (only NoHello/UserIP2/NoGetINFO/UserCommand echoed), `$GetNickList` (`$NickList`+`$OpList`, `$UserIP` per user with UserIP2), `$Search`/`$SR`/`$MultiSearch` (forwarded to all registered / UDP to linked hubs), `$ConnectToMe`/`$RevConnectToMe` (relayed verbatim to target), `$To:` private chat, `$Kick`/`$OpForceMove` (op perms s>a), `<nick> msg|` public chat (re-broadcast via `disttcp(NULL,...)` — **sender included**).
+7. Quit/kick/rejection only take visible effect after the cleaner thread (5 s `CLEANER_INTERVAL`) reaps the QUIT-state user: `$Quit` broadcast + socket close.
+
+Remote console (TCP `listen_port_cons`): banner → `login:` → nick → `password:` (needs `c` perm in dcd.users) → `> ` prompt; the same `#`-command set without the `#` (users, kick, stat, version, rehash, punish, …).
+
+### Findings from the E2E suite
+
+- **`dc_To()` comment vs. reality**: the documented `$To: x From: y $<<y>> msg` form does **not** parse — the strtok chain yields `nick2="<y"` → "Fake nick is not allowed". The working form is single-bracket `$<y>` (which is also what `privmsg()` itself emits). Left code as-is (comment-only discrepancy); client uses the working form.
+- **`$Hello`/`$LogedIn` are unicast** to the joining client; other users learn of a new user only via the `$MyINFO` broadcast. (Standard NMDC clients treat `$Hello` as broadcast; DCD does not broadcast it.)
+- **Rare message loss under load** (~1/25 connections in full-suite runs): hub protocol log shows `send()` returning full length with errno=0, yet the frames after the banner never reach the client; the subsequent cleaner-driven disconnect still occurs. Not reproduced in isolation (0/50 targeted stress runs). Tests accept message-or-disconnect as proof of rejection and the finding is documented in the client docstring.
+- Hub never notices a silently-closed registered socket unless `idle_timeout`/`register_timeout` is configured (`my_recv` treats EOF as an empty message; POLLHUP is not acted on). Test config sets `idle_timeout = 10`.
+
+### Added files
+
+- `tests/e2e/nmdc.py` — dependency-free NMDC client: frame parser (`$cmd`, `<nick>`, `<HUB>`), inbox for out-of-order frames, `compute_key()` (lock→key derivation), full protocol helpers, `ConsoleClient` for the remote console.
+- `tests/e2e/test_e2e.py` — 25 unittest E2E tests: banner/lock, invalid key, ValidateNick-before-Key, login+MyINFO echo, MyINFO broadcast, duplicate/reserved/invalid-char/too-long nick rejection, registered password flow (`$GetPass`/`$BadPass`/`$LogedIn`), `$GetNickList`/`$OpList`, `$Supports` echo filtering, public chat relay, fake-nick chat kick, private chat, `$Search` forwarding, `$ConnectToMe`/`$RevConnectToMe` relay, op kick via DC protocol, non-op kick rejection, `$Quit` broadcast, console login/`users`/`version`/`kick`, console wrong password.
+- `tests/e2e/run_e2e.sh` — harness: configures+builds+installs dcd into a writable prefix (`/tmp/dcd-e2e`, so `CONFIGDIR` is writable), writes a test config (ports 41111/41511, `search_interval=0`, `idle_timeout=10`, op account `testop/secret` perms `sc`), starts the daemon, runs the suite, stops it (SIGTERM, SIGKILL fallback).
+
+### Verification
+
+- `bash tests/e2e/run_e2e.sh`: **25/25 pass**, stable across 3 consecutive full runs.
+- `ctest --test-dir build`: 7/7 unit/perf tests still pass; clean build, no new warnings (temporary `sendtcp` instrumentation used during diagnosis was reverted).

@@ -186,7 +186,13 @@ char *my_vsprintf(const char *fmt, va_list ap)
 
 	while (1)
 	{
-		n=vsnprintf(p,(size_t)size,fmt,ap);
+		va_list ap2;
+
+		/* each vsnprintf() call consumes ap: re-arm it per attempt,
+		   otherwise the growth loop reads freed/garbage stack args */
+		va_copy(ap2, ap);
+		n=vsnprintf(p,(size_t)size,fmt,ap2);
+		va_end(ap2);
 
 		if (n!=-1 && n<size) break;
 

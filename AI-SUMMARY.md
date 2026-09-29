@@ -192,6 +192,31 @@ Verified: clean build; live hub test — `$Connect` answered via dictionary hit,
 
 Verified: clean build; live hub test passes (`$Connect` answered, unknown command default-handled, SIGTERM clean).
 
+## 9. Unit + performance test suite (2026-09-28)
+
+### Infrastructure (`tests/`, `CMakeLists.txt`)
+
+- `dcd` target refactored to link an OBJECT library `dcd_obj` (all sources except `main.c`), shared with the tests; single compile, identical compile definitions
+- `option(DCD_BUILD_TESTS ON)` + `enable_testing()`; `ctest --test-dir build` runs everything
+- `tests/test.h`: dependency-free harness (`CHECK`/`CHECK_INT`/`CHECK_STR`, monotonic timer)
+- `tests/globals.c` + `tests/stubs.c`: the main.c-owned globals (`conf`, `user[]`, `login[]`, `pattern[]`, `penalties[]`, mutexes, sockets…) and faithful copies of the four tiny `user_*_state/supports` helpers, so test binaries link without `main()`
+- Unit tests: `test_cmd_dict` (hash dict: hits/miss/default, CI mode + no caller-string mutation, NULL cmd/handler, capacity truncation at 96, bucket chains), `test_match` (wildcards `* ?`, quoting, case-insensitivity, legacy `%` behavior pinned), `test_misc` (`add2buf` incl. MAXBLOCK dangling-pointer path, `my_duplicate/my_free`, `make_path`, `uptime`, `flag_myinfo` OOB bounds, `lock_gen`, `get_progname`, `my_sprintf` growth loop), `test_myinfo` (`fill_myinfo` full-field success + all 7 error codes; `validnick` length/charset/reserved/in-use paths)
+- Perf tests (ctest label `perf`): `bench_cmd_dict` (asserts ≥2x the replaced linear scan; measured ~10x), `bench_add2buf` (in-place realloc vs old full-copy path; measured ~8x), `bench_match` (throughput floor guard)
+
+### Defect found & fixed by the tests
+
+- `src/misc.c` `my_vsprintf()`: the growth loop called `vsnprintf(p,size,fmt,ap)` repeatedly with the **same consumed `va_list`** — for any output exceeding the initial 8 KiB buffer the second attempt read garbage/freed stack (crash reproduced by the test). Fixed with per-iteration `va_copy()`/`va_end()`.
+
+### Finding left as-is
+
+- `add2buf()` is still effectively quadratic in aggregate: each call runs `strlen(*buf)` to find the append offset. The §5 optimization removed the extra copies (measured ~8x faster than the pre-optimization path) but not this scan; fixing it needs per-buffer length tracking (API change), out of scope for a test-only pass.
+
+### Verification
+
+- `ctest --test-dir build`: 7/7 pass (4 unit + 3 perf), repeated runs stable
+- Clean `-Wall` build: zero warnings from any new file (only the two pre-existing net.c set-but-unused remain)
+- `dcd -v` still exits 0 after the object-library refactor and the va_copy fix
+
 ## Status
 
 All changes are **uncommitted** in the working tree (`git status`: modified sources/docs, deleted autotools files, new `CMakeLists.txt`).

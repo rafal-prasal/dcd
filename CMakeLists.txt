@@ -31,10 +31,10 @@ string(TIMESTAMP BUILD_TIME "%a %b %d %H:%M:%S UTC %Y" UTC)
 
 find_package(Threads REQUIRED)
 
-add_executable(dcd
+# daemon sources without main(), shared between the dcd binary and the tests
+set(DCD_CORE_SOURCES
 	src/conf.c
 	src/console.c
-	src/main.c
 	src/match.c
 	src/misc.c
 	src/net.c
@@ -48,21 +48,29 @@ add_executable(dcd
 	src/cmd.udp.c
 		src/log.c)
 
-target_include_directories(dcd PRIVATE ${CMAKE_SOURCE_DIR} src)
+add_library(dcd_obj OBJECT ${DCD_CORE_SOURCES})
 
-target_compile_definitions(dcd PRIVATE
+target_include_directories(dcd_obj PUBLIC ${CMAKE_SOURCE_DIR} src)
+
+target_compile_definitions(dcd_obj PUBLIC
 	"-DPACKAGE_NAME=\"${PACKAGE_NAME}\""
-	"-DPACKAGE_VERSION=\"${PACKAGE_VERSION}\""
+	"-DPACKAGE_VERSION=\"${PROJECT_VERSION}\""
 	"-DCONFIGDIR=\"${DCD_CONFIG_DIR}\""
 	"-DDEFAULT_USER=\"${DEFAULT_USER}\""
 	"-DDEFAULT_GROUP=\"${DEFAULT_GROUP}\""
 	"-DBUILD_TIME=\"${BUILD_TIME}\"")
 
-target_compile_options(dcd PRIVATE -Wall -fno-strict-aliasing)
+target_compile_options(dcd_obj PRIVATE -Wall -fno-strict-aliasing)
+
+if(DCD_ENABLE_LTO)
+	target_compile_options(dcd_obj PRIVATE -flto)
+endif()
+
+add_executable(dcd src/main.c)
+target_link_libraries(dcd PRIVATE dcd_obj)
 
 if(DCD_ENABLE_LTO)
 	target_link_options(dcd PRIVATE -flto)
-	target_compile_options(dcd PRIVATE -flto)
 endif()
 target_link_libraries(dcd PRIVATE Threads::Threads)
 
@@ -102,3 +110,38 @@ endforeach()
 
 install(FILES doc/dcd.2 doc/dcd.console.2 DESTINATION share/man/man2)
 install(FILES doc/pl/dcd.1 doc/pl/dcd.console.1 DESTINATION share/man/pl/man1)
+
+option(DCD_BUILD_TESTS "Build unit and performance tests" ON)
+
+if(DCD_BUILD_TESTS)
+	enable_testing()
+
+	# globals/stubs are compiled into each test binary directly: they provide
+	# the src/main.c-owned symbols that dcd_obj references, and plain objects
+	# avoid static-library link-order issues.
+	set(DCD_TEST_HELPERS tests/globals.c tests/stubs.c)
+
+	set(DCD_UNIT_TESTS
+		test_cmd_dict
+		test_match
+		test_misc
+		test_myinfo)
+
+	foreach(tst ${DCD_UNIT_TESTS})
+		add_executable(${tst} tests/${tst}.c ${DCD_TEST_HELPERS})
+		target_link_libraries(${tst} PRIVATE dcd_obj Threads::Threads)
+		add_test(NAME ${tst} COMMAND ${tst})
+	endforeach()
+
+	set(DCD_PERF_TESTS
+		bench_cmd_dict
+		bench_add2buf
+		bench_match)
+
+	foreach(tst ${DCD_PERF_TESTS})
+		add_executable(${tst} tests/${tst}.c ${DCD_TEST_HELPERS})
+		target_link_libraries(${tst} PRIVATE dcd_obj Threads::Threads)
+		add_test(NAME ${tst} COMMAND ${tst})
+		set_tests_properties(${tst} PROPERTIES LABELS "perf" TIMEOUT 180)
+	endforeach()
+endif()

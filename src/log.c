@@ -69,7 +69,7 @@ void log_write(int facility, int priority, const char * fmt, ...)
 
 
     
-    if(priority>conf.log_priority) return;
+    if((unsigned int)priority>conf.log_priority) return;
 
     va_start(args, fmt);
             

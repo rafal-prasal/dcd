@@ -31,9 +31,6 @@
 void user_penalty(userrec_t *usr);
 
 /**/
-int penalties_ip2itemnumber(char *ip);
-
-/**/
 void addpenalty(Tpenalty *penrec);
 
 /**/

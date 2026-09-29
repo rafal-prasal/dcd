@@ -123,14 +123,12 @@ void disttcp_userip(userrec_t *usr)
 
 void sendudp(hub_t *_hub, char *msg)
 {
-	int ret, 
-		msglen=strlen(msg);
+	int msglen=strlen(msg);
 
 	size_t addr=sizeof(struct sockaddr_in);
 		
-	ret=sendto(_hub->sock, msg, msglen, 0, (struct sockaddr *)&_hub->udp ,addr );
-				
-//	if (ret<0) sockerr(errno,sock,"sendudp");
+	/* return value intentionally ignored: UDP hub heartbeats are fire-and-forget */
+	sendto(_hub->sock, msg, msglen, 0, (struct sockaddr *)&_hub->udp ,addr );
 }
 
 void distudp(hub_t *_hub, char *str)
@@ -337,11 +335,15 @@ void disconnect(userrec_t *usr)
 } /* }}} */
 
 /* strip_telnet() - strip telnet codes - from eggdrop {{{ */
+static void tln_reply(int sock, const void *bytes, size_t len)
+{
+	if (write(sock,bytes,len)<0) return; /* telnet negotiation is best-effort */
+}
+
 void strip_telnet(userrec_t *usr,char *buf,int *len)
 {
 	unsigned char *p = (unsigned char *) buf, *o = (unsigned char *) buf;
 	int mark;
-	int write_result;
 
 	while (*p != 0)
 	{
@@ -364,8 +366,8 @@ void strip_telnet(userrec_t *usr,char *buf,int *len)
 				/* except WILL ECHO which we just smile and ignore */
 				if (*(p + 1) != TLN_ECHO)
 				{
-					write_result=write(usr->sock, TLN_IAC_C TLN_DONT_C, 2);
-					write_result=write(usr->sock, p + 1, 1);
+					tln_reply(usr->sock, TLN_IAC_C TLN_DONT_C, 2);
+					tln_reply(usr->sock, p + 1, 1);
 				}
 			}
 
@@ -375,8 +377,8 @@ void strip_telnet(userrec_t *usr,char *buf,int *len)
 				/* except DO ECHO which we just smile and ignore */
 				if (*(p + 1) != TLN_ECHO)
 				{
-					write_result=write(usr->sock, TLN_IAC_C TLN_WONT_C, 2);
-					write_result=write(usr->sock, p + 1, 1);
+					tln_reply(usr->sock, TLN_IAC_C TLN_WONT_C, 2);
+					tln_reply(usr->sock, p + 1, 1);
 				}
 			}
 
@@ -384,7 +386,7 @@ void strip_telnet(userrec_t *usr,char *buf,int *len)
 			{
 				/* "are you there?" */
 				/* response is: "hell yes!" */
-				write_result=write(usr->sock, "\r\nHell, yes!\r\n", 14);
+				tln_reply(usr->sock, "\r\nHell, yes!\r\n", 14);
 			}
 
 			/* Anything else can probably be ignored */

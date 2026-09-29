@@ -217,6 +217,43 @@ Verified: clean build; live hub test passes (`$Connect` answered, unknown comman
 - Clean `-Wall` build: zero warnings from any new file (only the two pre-existing net.c set-but-unused remain)
 - `dcd -v` still exits 0 after the object-library refactor and the va_copy fix
 
+## 10. Error-check pass (2026-09-29)
+
+Method: full rebuild with `-Wall -Wextra`, review of the last five commits (poll migration, hash dict, modernisation, performance fixes), and a read-through of `penalties.c/h`, `net.c`, `log.c`, `main.c`. All four unit suites re-run after each change.
+
+### Real defects fixed
+
+| Location | Defect | Fix |
+|---|---|---|
+| `src/main.c` `finish()` | `if ((sig!=SIGKILL \|\| sig!=SIGSEGV) && signal_p)` — the disjunction is a tautology, so the re-entrancy guard was active for **every** signal; a `SIGSEGV` during an in-progress handler was silently dropped instead of crashing out | `\|\|` → `&&` so KILL/SEGV bypass the guard |
+| `src/main.c` `test_slots()` | `pubmsg("...is %d.", conf.minslots)` — `%d` against `uint32_t` | `%u` |
+| `src/main.c` `listen_thread_udp()` | `remote_size` declared `unsigned int`, passed to `recvfrom()` expecting `socklen_t *` | `socklen_t` |
+| `src/net.c` `strip_telnet()` | `write()` results assigned to a dead `write_result` variable; telnet replies unchecked | dedicated `tln_reply()` helper that checks `write()` and ignores errors deliberately |
+| `src/net.c` `sendudp()` | dead `ret` variable swallowing `sendto()` result | call without assignment, intent documented |
+| `src/penalties.h` | stale declaration `penalties_ip2itemnumber()` — function neither defined nor called anywhere | removed |
+| `src/main.c` / `src/penalties.c` | dead global `test_penalty_counter` (defined + extern'd, never used) | removed both |
+| `tests/test.h` | `now_sec()` `static` but unused in non-bench test binaries → `-Wunused-function` | `__attribute__((unused))` |
+
+### Warning-only fixes (behaviour-preserving casts)
+
+- `src/main.c:298` `NUSERS>=conf.userlimit` (`int` vs `unsigned int`) → explicit `(unsigned int)` cast; `NUSERS` is never negative.
+- `src/main.c` `test_slots()` `usr->slots>=conf.minslots` — safe because negative slots are rejected earlier in the same function; cast added to silence `-Wsign-compare`.
+- `src/log.c` `priority>conf.log_priority` (`int` vs `unsigned int`) → cast; `PR_*` priorities are 0–7.
+- `src/main.c` `listen_thread_main()` — removed unused `No`/`parameter` (thread index is meaningless for the accept loop).
+
+### Checked, left as-is
+
+- `penalties.c` `user_set_penalty()` overwrite path: no leak — `my_duplicate()` frees the destination first (`misc.c:86`).
+- `addpenalty()` bound `NPENAL+1>MAXPENALTIES`: correct, last valid index is `MAXPENALTIES-1`.
+- `cmd_dict_*`: all five command sets ≤ 63 entries, well under `CMD_DICT_MAXENTRIES=96`; dictionaries built once via `pthread_once()`.
+- `buf2cmd()` `... && !cmd` guard (main.c:567): dead condition inherited from upstream 1.1.0 — `cmd` is always non-NULL there; semantics of the intended check are ambiguous, so behaviour was not changed.
+- `disconnect()` double `my_free(usr->ip)`: safe, `my_free` is the macro over `my_free1()` which NULLs the pointer.
+
+### Verification
+
+- `cmake --build build` with `-Wall -Wextra`: **zero warnings**.
+- All four unit suites: 225 checks, 0 failures.
+
 ## Status
 
-All changes are **uncommitted** in the working tree (`git status`: modified sources/docs, deleted autotools files, new `CMakeLists.txt`).
+Earlier work is committed (`master` is 7 commits ahead of `origin/master`). The §10 fixes are **uncommitted** in the working tree.

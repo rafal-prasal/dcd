@@ -92,8 +92,6 @@ FILE* file_chat;
 
 int hub_start;
 
-int test_penalty_counter=0;
-
 #ifdef HAVE___PROGNAME
 extern char *__progname;
 #else
@@ -295,7 +293,7 @@ void adduser(int sock,char *remote,char *local)
 
 
 
-	if((NUSERS>=conf.userlimit)||(NUSERS+1>=MAXUSERS)) /* '+1' reserves 1 slot for admin console */
+	if(((unsigned int)NUSERS>=conf.userlimit)||(NUSERS+1>=MAXUSERS)) /* '+1' reserves 1 slot for admin console */
 	{
 		tmpik.sock=sock;
 		tmpik.cons=0;
@@ -375,13 +373,10 @@ void listen_thread_main(void *voidp)
 	int new_sock;
 	socklen_t remote_size,size_addr=sizeof(struct sockaddr_in);
 	struct sockaddr_in remote,addr;
-	int No;
-	int_voidp_t parameter;
 
 	char *remote_ip,*local_ip;
 
-	parameter.voidp=voidp;
-	No=parameter.integer;
+	(void)voidp;
 
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,NULL);
 
@@ -409,7 +404,7 @@ void listen_thread_main(void *voidp)
 // this function is used to chect the minslots
 void listen_thread_udp(void *args)
 {
-	unsigned int remote_size;
+	socklen_t remote_size;
 
 	int	n;
 	struct sockaddr_in remote;
@@ -455,7 +450,7 @@ void finish(int sig)
 {
 	int i;
 
-	if ((sig!=SIGKILL || sig!=SIGSEGV) && signal_p) return;
+	if ((sig!=SIGKILL && sig!=SIGSEGV) && signal_p) return;
 	signal_p=1;
 
 	if (sig!=SIGPIPE) log_write(FAC_DAEMON,PR_ALERT,"SIG%s%s%s%s%s%s received - %s%s%s%s",	
@@ -635,7 +630,7 @@ void test_slots( userrec_t *usr)
 		return;
 	}
 
-	if(usr->slots>=conf.minslots)
+	if((unsigned int)usr->slots>=conf.minslots)
 	{
 		user_set_state(usr,STATE_REGISTERED);
 		dc_myinfo(NULL,usr);
@@ -662,7 +657,7 @@ void test_slots( userrec_t *usr)
 		return;
 	}
 
-	pubmsg(usr,"The minimum number of upload slots is %d.",conf.minslots);
+	pubmsg(usr,"The minimum number of upload slots is %u.",conf.minslots);
 
 	if (conf.redirect_switch&REDIRECT_SWITCH_MINSLOTS)
 	{

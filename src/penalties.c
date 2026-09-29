@@ -19,7 +19,6 @@ extern Tpenalty *penalties[MAXPENALTIES]; /* table of penalties */
 extern userrec_t *user[MAXUSERS];	/* users table */
 
 extern pthread_mutex_t mutex_penalties;	/* provides synchronization between threads */
-extern int test_penalty_counter;
 
 /*
 penalties_find_id( crit, *str )

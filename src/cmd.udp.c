@@ -22,7 +22,7 @@ extern hub_t *hub[];			/* hubs table */
 
 extern config_t conf;			/* configuration data */
 
-extern int rehash;
+extern volatile sig_atomic_t rehash;
 
 extern pthread_mutex_t mutex_myinfo;
 

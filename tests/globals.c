@@ -9,7 +9,7 @@ int NLOGINS = 0;
 int NPATTERNS = 0;
 int NPENAL = 0;
 int maxfd = 0;
-int rehash = 0;
+volatile sig_atomic_t rehash = 0;
 
 int listen_main = -1;
 int listen_udp = -1;
@@ -27,12 +27,8 @@ so_opts_t listen_opts, user_opts;
 time_t starttime = 0;
 time_t last_penalties_update = 0;
 
-pthread_mutex_t mutex_userlist;
+pthread_mutex_t mutex_users;
 pthread_mutex_t mutex_inet_ntoa;
-pthread_mutex_t mutex_user_manager[MAX_N_USER_MANAGER];
-pthread_mutex_t mutex_is_managed;
-pthread_mutex_t mutex_th_cleaner;
-pthread_mutex_t mutex_th_udp;
 pthread_mutex_t mutex_penalties;
 pthread_mutex_t mutex_myinfo;
 

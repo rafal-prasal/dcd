@@ -6,7 +6,7 @@
 
 extern userrec_t *user[];
 extern int NUSERS;
-extern pthread_mutex_t mutex_userlist;
+extern pthread_mutex_t mutex_users;
 
 int user_tst_state(userrec_t *usr, int state)
 {
@@ -40,21 +40,21 @@ int user_tst_supports(userrec_t *usr, int supports)
 
 void userlist_add(userrec_t *usr)
 {
-	pthread_mutex_lock( &mutex_userlist );
+	pthread_mutex_lock( &mutex_users );
 	user[NUSERS]=usr;
 	user[NUSERS]->id=NUSERS;
 	NUSERS++;
-	pthread_mutex_unlock( &mutex_userlist );
+	pthread_mutex_unlock( &mutex_users );
 }
 
 void userlist_del(userrec_t *usr)
 {
 	int id;
 
-	pthread_mutex_lock( &mutex_userlist );
+	pthread_mutex_lock( &mutex_users );
 	id=usr->id;
 	user[id]=user[--NUSERS];
 	user[id]->id=id;
 	user[NUSERS]=NULL;
-	pthread_mutex_unlock( &mutex_userlist );
+	pthread_mutex_unlock( &mutex_users );
 }

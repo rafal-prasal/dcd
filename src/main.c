@@ -37,7 +37,7 @@ int NHUBS; /* amount of hubs */
 
 int maxfd;
 
-int rehash=0; // determines if #rehash command was used
+volatile sig_atomic_t rehash=0; // set by SIGHUP or #rehash; consumed by the main loop
 
 Tpenalty *penalties[MAXPENALTIES]; /* table of penalties */
 
@@ -60,22 +60,24 @@ struct sockaddr_in local_main,local_udp, local_cons;
 
 so_opts_t listen_opts,user_opts;
 
-int signal_p=0;
+/* Single lock guarding the user table (user[], NUSERS) and every userrec_t
+ * field, plus the config/pattern/login tables that the cleaner and rehash
+ * rebuild. Recursive so a thread that already holds it (adduser, addcons,
+ * cleaner) can call userlist_add/del without self-deadlock. Replaces the
+ * previously inconsistent set (mutex_userlist + per-thread mutex_user_manager
+ * + mutex_th_udp + mutex_th_cleaner + mutex_is_managed), which left the
+ * accept, console and UDP paths able to race with the worker. */
+pthread_mutex_t mutex_users;
 
-pthread_mutex_t mutex_userlist;		/* securing userlist */
 pthread_mutex_t mutex_inet_ntoa; // securing inet_ntoa
-
-pthread_mutex_t mutex_user_manager[MAX_N_USER_MANAGER];
-
-pthread_mutex_t mutex_is_managed; // secures that user is served only by one thread
-int managed[MAX_N_USER_MANAGER]; // sets which thread is working on which user
-
-pthread_mutex_t mutex_th_cleaner;
-pthread_mutex_t mutex_th_udp;
 
 pthread_mutex_t mutex_penalties;
 
 pthread_mutex_t mutex_myinfo;
+
+/* async-signal-safe flags set by the signal handler and consumed by the
+ * main loop (the handler must not lock, log, cancel threads or exit). */
+static volatile sig_atomic_t term_sig=0;
 
 
 int listen_main;			/* main listening socket */
@@ -100,20 +102,12 @@ char *__progname;
 
 void lock_threads()
 {
-	int i;
-
-	pthread_mutex_lock(&mutex_th_udp);
-	pthread_mutex_lock(&mutex_th_cleaner);
-	for(i=0;i<MAX_N_USER_MANAGER;i++) pthread_mutex_lock(&mutex_user_manager[i]);
+	pthread_mutex_lock(&mutex_users);
 }
 
 void unlock_threads()
 {
-	int i;
-	
-	for(i=0;i<MAX_N_USER_MANAGER;i++) pthread_mutex_unlock(&mutex_user_manager[i]);
-	pthread_mutex_unlock(&mutex_th_cleaner);
-	pthread_mutex_unlock(&mutex_th_udp);
+	pthread_mutex_unlock(&mutex_users);
 }
 
 void make_sockets()
@@ -246,23 +240,23 @@ int user_tst_supports(userrec_t *usr, int supports)
 
 void userlist_add(userrec_t *usr)
 {
-	pthread_mutex_lock( &mutex_userlist );
+	pthread_mutex_lock( &mutex_users );
 	user[NUSERS]=usr;
 	user[NUSERS]->id=NUSERS;
 	NUSERS++;	
-	pthread_mutex_unlock( &mutex_userlist );
+	pthread_mutex_unlock( &mutex_users );
 }
 
 void userlist_del(userrec_t *usr)
 {
 	int id;
 
-	pthread_mutex_lock( &mutex_userlist );
+	pthread_mutex_lock( &mutex_users );
 	id=usr->id;
 	user[id]=user[--NUSERS];
 	user[id]->id=id;
 	user[NUSERS]=NULL;
-	pthread_mutex_unlock( &mutex_userlist );
+	pthread_mutex_unlock( &mutex_users );
 }
 
 /* adduser() - allocate and initialize new DC user {{{ */
@@ -293,6 +287,11 @@ void adduser(int sock,char *remote,char *local)
 
 
 
+	/* The user-limit check and the insertion into the user table must be
+	   atomic with respect to the worker/cleaner, so hold the user lock across
+	   both. userlist_add() re-locks the recursive mutex harmlessly. */
+	pthread_mutex_lock(&mutex_users);
+
 	if(((unsigned int)NUSERS>=conf.userlimit)||(NUSERS+1>=MAXUSERS)) /* '+1' reserves 1 slot for admin console */
 	{
 		tmpik.sock=sock;
@@ -316,6 +315,7 @@ void adduser(int sock,char *remote,char *local)
 		my_free(remote);
 		my_free(local);
 		close(sock);
+		pthread_mutex_unlock(&mutex_users);
 		goto leave;
 	}
 
@@ -349,6 +349,7 @@ void adduser(int sock,char *remote,char *local)
 	tmp->password=NULL;
 
 	userlist_add(tmp);
+	pthread_mutex_unlock(&mutex_users);
 
 leave:
 	return;
@@ -429,7 +430,7 @@ void listen_thread_udp(void *args)
 
 		buffer[n]='\000';
 	
-		pthread_mutex_lock(&mutex_th_udp);
+		pthread_mutex_lock(&mutex_users);
 
 		ip=my_inet_ntoa(remote.sin_addr);
         log_write(FAC_PROTOCOL,PR_INFO,"[UDP] RECV %s '%s'",ip, buffer);
@@ -438,90 +439,82 @@ void listen_thread_udp(void *args)
 
 		my_free(ip);
 
-		pthread_mutex_unlock(&mutex_th_udp);
+		pthread_mutex_unlock(&mutex_users);
 
 	}
 
 	pthread_exit(0); /* never reached */
 } /* }}} */
 
-/* finish() - signal handler and program termination {{{ */
+/* finish() - async-signal-safe signal handler {{{ */
 void finish(int sig)
 {
-	int i;
-
-	if ((sig!=SIGKILL && sig!=SIGSEGV) && signal_p) return;
-	signal_p=1;
-
-	if (sig!=SIGPIPE) log_write(FAC_DAEMON,PR_ALERT,"SIG%s%s%s%s%s%s received - %s%s%s%s",	
-																		sig==SIGHUP?"HUP":"",
-																		sig==SIGKILL?"KILL":"",
-																		sig==SIGTERM?"TERM":"",
-																		sig==SIGQUIT?"QUIT":"",
-																		sig==SIGSEGV?"SEGV":"",
-																		sig==SIGINT?"INT":"",
-																		
-																		sig==SIGHUP?"reconfiguring":"",
-																		sig==SIGSEGV?"crashing":"",
-																		sig==SIGKILL?"fast terminating":"",
-																		(sig==SIGTERM||sig==SIGQUIT||sig==SIGINT)?"cleaning and terminating":"");
-																		
+	/* Only record the request here: locking, logging, pthread_cancel() and
+	   exit() are not async-signal-safe. The main loop performs the work. */
 	switch(sig)
 	{
-		/* rehash on SIGHUP */
 		case SIGHUP:
-					/* blocking working threads */
-
-					lock_threads();
-
-					parse_config(0,&conf);
-					make_paths(&conf);					
-					log_open();
-					parse_hublist();
-                    
-					signal_p=0;
-					unlock_threads();
-					return;
-
-		case SIGSEGV:
-					close(listen_main);
-					if (conf.listen_port_cons) close(listen_cons);
-					if (conf.minslots)close(listen_udp);					
-
-					log_close();
-					exit(SIGSEGV);
-
-		case SIGKILL:
-					close(listen_main);
-					if (conf.listen_port_cons) close(listen_cons);
-					if (conf.minslots)close(listen_udp);					
-					exit(SIGKILL);
-
+			rehash=1;
+			break;
 		case SIGTERM:
 		case SIGINT:
 		case SIGQUIT:
-					lock_threads();
-
-					for(i=0;i<conf.n_listen_main;i++) pthread_cancel(listen_th_main[i]);
-					for(i=0;i<conf.n_user_manager;i++) pthread_cancel(th_user_manager[i]);
-
-					pthread_cancel(listen_th_udp);
-					if (conf.listen_port_cons) pthread_cancel(listen_th_cons);
-					pthread_cancel(th_cleaner);
-
-					for (i=0;i<NUSERS;i++) disconnect(user[i]);
-
-					close(listen_main);
-					if (conf.listen_port_cons) close(listen_cons);
-					if (conf.minslots)close(listen_udp);					
-
-					exit(sig);
-
-		/* ignore any other signal */
+		case SIGSEGV:
+			if (!term_sig) term_sig=sig;
+			break;
 		default:
-				signal_p=0;
-				return;
+			break;
 	}
+} /* }}} */
+
+/* do_rehash() - reload configuration (main-loop context, not a handler) {{{ */
+static void do_rehash(void)
+{
+	log_write(FAC_DAEMON,PR_ALERT,"SIGHUP received - reconfiguring");
+
+	/* blocking working threads */
+	lock_threads();
+
+	parse_config(0,&conf);
+	make_paths(&conf);
+	log_open();
+	parse_hublist();
+
+	unlock_threads();
+} /* }}} */
+
+/* do_shutdown() - cancel threads, drop users and exit (main-loop context) {{{ */
+static void do_shutdown(int sig)
+{
+	int i;
+
+	if (sig==SIGSEGV)
+	{
+		log_write(FAC_DAEMON,PR_ALERT,"SIGSEGV received - crashing");
+		close(listen_main);
+		if (conf.listen_port_cons) close(listen_cons);
+		if (conf.minslots) close(listen_udp);
+		log_close();
+		exit(SIGSEGV);
+	}
+
+	log_write(FAC_DAEMON,PR_ALERT,"SIGTERM received - cleaning and terminating");
+
+	lock_threads();
+
+	for(i=0;i<conf.n_listen_main;i++) pthread_cancel(listen_th_main[i]);
+	pthread_cancel(th_user_manager[0]);
+	pthread_cancel(listen_th_udp);
+	if (conf.listen_port_cons) pthread_cancel(listen_th_cons);
+	pthread_cancel(th_cleaner);
+
+	for (i=0;i<NUSERS;i++) disconnect(user[i]);
+
+	close(listen_main);
+	if (conf.listen_port_cons) close(listen_cons);
+	if (conf.minslots) close(listen_udp);
+
+	exit(sig);
 } /* }}} */
 
 /* buf2line() - extract single request line from buf {{{ */
@@ -600,26 +593,6 @@ void manage_sock( userrec_t *usr)
 
 } /* }}} */
 
-int is_managed(int No,int usr_no)
-{
-	int RC=0, i;
-
-	pthread_mutex_lock(&mutex_is_managed);
-
-	if (usr_no>=0)
-	{
-		for (i=0;!RC && i<MAX_N_USER_MANAGER; i++)
-			if (managed[i]==usr_no) RC=1;
-
-		if (!RC && No>=0) managed[No]=usr_no;
-		
-	} else managed[No]=-1;
-		
-	pthread_mutex_unlock(&mutex_is_managed);
-	return RC;
-}
-
-
 void test_slots( userrec_t *usr)
 {	
 	if (usr->slots>999 || usr->slots<0)
@@ -684,8 +657,7 @@ static int poll_ready(const struct pollfd *pfds, const int *puser, int nfds, int
 
 void user_manager(void *voidp)
 {
-	int i,No,nfds;
-	int_voidp_t parameter;
+	int i,nfds;
 	char message[MAX_RECEIVE_ONCE];
 
 	/* poll() instead of select(): no FD_SETSIZE limit, so the loop is
@@ -693,20 +665,23 @@ void user_manager(void *voidp)
 	struct pollfd pfds[MAXUSERS];
 	int puser[MAXUSERS];
 
-	parameter.voidp=voidp;
-	No=parameter.integer;
+	(void)voidp;
 
 	while(1)
 	{
 		if (conf.minimal_sleep_time) usleep(conf.minimal_sleep_time);		
 
+		/* Single user lock: the NUSERS check, the table snapshot, poll() and
+		   the per-user processing all run under mutex_users, so the cleaner,
+		   rehash, accept, console and UDP paths cannot race with this loop. */
+		pthread_mutex_lock( &mutex_users );
+
 		if(!NUSERS)
 		{
+			pthread_mutex_unlock( &mutex_users );
 			usleep(5000);
 			continue;
 		}
-
-		pthread_mutex_lock( &mutex_user_manager[No]);
 
 		nfds=0;
 		for(i=0;i<NUSERS && nfds<MAXUSERS;i++) 
@@ -723,7 +698,7 @@ void user_manager(void *voidp)
 
 		for(i=0;i<NUSERS;i++)
 		{
-			if (user[i]  && !user_tst_state(user[i],STATE_QUIT) && !is_managed(No,i))
+			if (user[i]  && !user_tst_state(user[i],STATE_QUIT))
 			{
 				if (conf.minslots && user_tst_state(user[i],STATE_SLOTS_TESTED)) test_slots(user[i]);
 
@@ -742,11 +717,9 @@ void user_manager(void *voidp)
 					&& my_recv(user[i], conf.max_receive_once, message)) user_msg2buf(user[i],message);
 
 				if (user[i]->buf) manage_sock(user[i]);
-		    
-				is_managed(No,-1);
 			}
 		}
-		pthread_mutex_unlock( &mutex_user_manager[No] );
+		pthread_mutex_unlock( &mutex_users );
 	}
 
 	exit(1); /* never reached */
@@ -776,7 +749,12 @@ void init_var(char *argv0)
 		sa.sa_flags=SA_RESTART;
 		sigemptyset(&sa.sa_mask);
 
+		/* SIGPIPE: ignore it, send()/write() return EPIPE which we already
+		   handle; routing it through finish() would be pointless. */
+		sa.sa_handler=SIG_IGN;
 		sigaction(SIGPIPE,&sa,NULL);
+
+		sa.sa_handler=finish;
 		sigaction(SIGHUP,&sa,NULL);
 		sigaction(SIGINT,&sa,NULL);
 		sigaction(SIGQUIT,&sa,NULL);
@@ -1005,23 +983,15 @@ void make_threads()
 		}
 	}
 
-	/* create users managers threads */
-	for(i.integer=0;i.integer<MAX_N_USER_MANAGER;i.integer++)
+	/* One protocol worker. All user-table access is serialized under
+	   mutex_users, so additional workers would only duplicate the same work
+	   rather than parallelize it; the old per-thread claim (managed[]) is
+	   gone. conf.n_user_manager is therefore not used for thread creation. */
+	i.integer=0;
+	if (pthread_create( &th_user_manager[0], NULL, (void *)user_manager, i.voidp) )
 	{
-		managed[i.integer]=-1;
-
-		if (pthread_mutex_init(&mutex_user_manager[i.integer],0))
-		{
-			 log_write(FAC_DAEMON,PR_CRITICAL,"pthread_mutex_init() failed: %s", strerror(errno));
-			exit(1);
-		}
-
-		if (i.integer<conf.n_user_manager &&
-			(pthread_create( &th_user_manager[i.integer], NULL, (void *)user_manager, i.voidp) ))
-		{
-			 log_write(FAC_DAEMON,PR_CRITICAL,"pthread_create() failed: %s", strerror(errno));
-			exit(1);
-		}
+		 log_write(FAC_DAEMON,PR_CRITICAL,"pthread_create() failed: %s", strerror(errno));
+		exit(1);
 	}
 
 	/* create cleaner thread */
@@ -1049,13 +1019,16 @@ void make_threads()
 
 void initialize_semaphores()
 {
+	pthread_mutexattr_t attr;
 
-	if (pthread_mutex_init(&mutex_userlist, 0)
+	/* mutex_users is recursive: adduser/addcons/cleaner hold it and then call
+	   userlist_add/del, which lock it again on the same thread. */
+	if (pthread_mutexattr_init(&attr)
+		|| pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE)
+		|| pthread_mutex_init(&mutex_users, &attr)
+		|| pthread_mutexattr_destroy(&attr)
 		|| pthread_mutex_init(&mutex_penalties, 0)
-		|| pthread_mutex_init(&mutex_is_managed, 0)
 		|| pthread_mutex_init(&mutex_inet_ntoa, 0)
-		|| pthread_mutex_init(&mutex_th_cleaner,0)
-		|| pthread_mutex_init(&mutex_th_udp,0)
 		|| pthread_mutex_init(&mutex_myinfo,0))
 	{
 		log_write(FAC_DAEMON,PR_CRITICAL,"pthread_mutex_init() failed: %s", strerror(errno));
@@ -1130,11 +1103,15 @@ int main(int argc,char *argv[])
 	while(1)
 	{
 		sleep(1);
+
 		if(rehash)
 		{
-			finish(SIGHUP);
 			rehash=0;
+			do_rehash();
 		}
+
+		if(term_sig)
+			do_shutdown(term_sig);
 	}
 
 	exit(1); /* never reached */

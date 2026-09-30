@@ -19,7 +19,7 @@ extern Tpenalty *penalties[MAXPENALTIES]; /* table of penalties */
 extern userrec_t *user[MAXUSERS];	/* users table */
 extern config_t conf;		/* configuration data */
 
-extern int rehash;
+extern volatile sig_atomic_t rehash;
 
 extern pthread_mutex_t mutex_myinfo;
 

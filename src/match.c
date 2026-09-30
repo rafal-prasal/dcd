@@ -36,6 +36,11 @@ int match(char *m, char *n) {
 	n--;
 
 	while (n >= na) {
+		/* The wildcard-zap below can move m one before the pattern start
+		   (e.g. a pattern that is just "*"); reading *m there is out of
+		   bounds. The pattern is then fully consumed -- fall through to the
+		   tail, which returns a match. */
+		if (m < ma) break;
 		if ((m <= ma) || (m[-1] != QUOTE)) {	/* Only look if no quote */
 			switch (*m) {
 				case WILDS:		/* Matches anything */

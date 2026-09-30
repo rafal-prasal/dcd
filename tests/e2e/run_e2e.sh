@@ -4,7 +4,13 @@
 set -u
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-E2E_DIR="${DCD_E2E_DIR:-/tmp/dcd-e2e}"
+# DCD_SANITIZER=thread|address builds dcd under that sanitizer.
+SAN="${DCD_SANITIZER:-}"
+case "$SAN" in
+  thread)  E2E_DIR="${DCD_E2E_DIR:-/tmp/dcd-e2e-tsan}" ;;
+  address) E2E_DIR="${DCD_E2E_DIR:-/tmp/dcd-e2e-asan}" ;;
+  *)       E2E_DIR="${DCD_E2E_DIR:-/tmp/dcd-e2e}" ;;
+esac
 PORT="${DCD_E2E_PORT:-41111}"
 CONS_PORT=$((PORT + 400))
 PREFIX="$E2E_DIR/prefix"
@@ -13,9 +19,16 @@ CONF="$PREFIX/etc/dcd"
 fail() { echo "E2E SETUP FAILURE: $*" >&2; exit 2; }
 
 echo "== building test hub (CONFIGDIR=$CONF) =="
+SAN_FLAG=""
+case "$SAN" in
+  thread)  SAN_FLAG="-DDCD_ENABLE_TSAN=ON -DDCD_BUILD_TESTS=OFF" ;;
+  address) SAN_FLAG="-DDCD_ENABLE_ASAN=ON -DDCD_BUILD_TESTS=OFF" ;;
+esac
+# dcd_obj is shared with the CMake unit tests, which don't link the sanitizer
+# runtime; skip them in a sanitizer build (the E2E suite is Python and needs none).
 cmake -S "$ROOT" -B "$E2E_DIR/build" \
       -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-      -DCMAKE_BUILD_TYPE=Release > "$E2E_DIR-cmake.log" 2>&1 \
+      -DCMAKE_BUILD_TYPE=Release $SAN_FLAG > "$E2E_DIR-cmake.log" 2>&1 \
   || fail "cmake configure failed (see $E2E_DIR-cmake.log)"
 cmake --build "$E2E_DIR/build" >> "$E2E_DIR-cmake.log" 2>&1 \
   || fail "build failed (see $E2E_DIR-cmake.log)"
@@ -71,7 +84,17 @@ EOF
 echo "== starting hub on port $PORT (console $CONS_PORT) =="
 pkill -f "$PREFIX/sbin/dcd" 2>/dev/null
 sleep 0.2
-"$PREFIX/sbin/dcd" || fail "dcd exited immediately"
+if [ -n "$SAN" ]; then
+  rm -f "$E2E_DIR"/san.* 2>/dev/null
+  # dcd daemonizes and redirects stderr to /dev/null, so sanitizer reports go
+  # to per-pid log files via log_path instead of the terminal.
+  case "$SAN" in
+    thread)  TSAN_OPTIONS="halt_on_error=0 log_path=$E2E_DIR/san" "$PREFIX/sbin/dcd" || fail "dcd exited immediately" ;;
+    address) ASAN_OPTIONS="log_path=$E2E_DIR/san" "$PREFIX/sbin/dcd" || fail "dcd exited immediately" ;;
+  esac
+else
+  "$PREFIX/sbin/dcd" || fail "dcd exited immediately"
+fi
 
 HUB_PID=""
 for i in $(seq 1 50); do
@@ -98,6 +121,13 @@ echo "== stopping hub =="
 kill -TERM "$HUB_PID" 2>/dev/null
 for i in $(seq 1 30); do kill -0 "$HUB_PID" 2>/dev/null || break; sleep 0.1; done
 kill -0 "$HUB_PID" 2>/dev/null && { echo "hub did not stop on SIGTERM"; kill -KILL "$HUB_PID"; }
+
+if [ -n "$SAN" ]; then
+  echo "== $SAN sanitizer report =="
+  N=$(cat "$E2E_DIR"/san.* 2>/dev/null | grep -cE "WARNING: ThreadSanitizer|ERROR: AddressSanitizer")
+  echo "sanitizer findings: $N (full logs: $E2E_DIR/san.*)"
+  cat "$E2E_DIR"/san.* 2>/dev/null
+fi
 
 if [ $RC -eq 0 ]; then echo "E2E: PASS"; else echo "E2E: FAIL (rc=$RC)"; fi
 exit $RC

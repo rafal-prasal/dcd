@@ -14,12 +14,8 @@
 
 extern userrec_t *user[MAXUSERS];	/* users table */
 extern config_t conf;		/* configuration data */
-extern pthread_t listen_th_cons;	/* listen thread handle for remote console */
-extern pthread_mutex_t mutex;		/* provides synchronization between threads */
-extern pthread_mutex_t mutex_listen_cons;
-extern fd_set sockfdset;		/* descriptors */
 extern int listen_cons;			/* console listening socket */
-extern pthread_mutex_t mutex_inet_ntoa; // securing inet_ntoa
+extern pthread_mutex_t mutex_users;	/* guards the user table and records */
 
 /* addcons() - allocate and initialize new console user {{{ */
 void addcons(int sock,char *remote) {
@@ -46,10 +42,14 @@ void addcons(int sock,char *remote) {
 	/* we use select() anyway, but let's care for blocking send() */
 	if (fcntl(sock,F_SETFL,O_NONBLOCK)<0) log_write(FAC_NETWORK,PR_ERROR,"fcntl() failed: %s.", strerror(errno));
 
+	/* user-limit check + insertion must be atomic w.r.t. the worker/cleaner */
+	pthread_mutex_lock(&mutex_users);
+
 	if (NUSERS>=MAXUSERS)
 	{
 		pubmsg(tmp,"UsersLimit already reached");
 		disconnect(tmp);
+		pthread_mutex_unlock(&mutex_users);
 		return;
 	}
 
@@ -63,6 +63,7 @@ void addcons(int sock,char *remote) {
 	user_set_state(tmp,STATE_KEY);
 
 	userlist_add(tmp);
+	pthread_mutex_unlock(&mutex_users);
 } /* }}} */
 
 /* listen_thread_cons() - listen for new connections to remote console {{{ */

@@ -14,6 +14,8 @@ endif()
 set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
 
 set(DCD_ENABLE_LTO OFF CACHE BOOL "Enable link-time optimization")
+set(DCD_ENABLE_TSAN OFF CACHE BOOL "Instrument the dcd binary with ThreadSanitizer")
+set(DCD_ENABLE_ASAN OFF CACHE BOOL "Instrument the dcd binary with AddressSanitizer")
 
 set(PACKAGE_NAME "${PROJECT_NAME}")
 set(PACKAGE_VERSION "${PROJECT_VERSION}")
@@ -73,6 +75,22 @@ if(DCD_ENABLE_LTO)
 	target_link_options(dcd PRIVATE -flto)
 endif()
 target_link_libraries(dcd PRIVATE Threads::Threads)
+
+if(DCD_ENABLE_TSAN)
+	# ThreadSanitizer: -O1 keeps reports readable; -g gives source lines.
+	# drop the Release -O2 so the sanitizer's -O1 is not overridden.
+	set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG")
+	target_compile_options(dcd_obj PRIVATE -fsanitize=thread -g -O1)
+	target_compile_options(dcd PRIVATE -fsanitize=thread -g -O1)
+	target_link_options(dcd PRIVATE -fsanitize=thread)
+endif()
+
+if(DCD_ENABLE_ASAN)
+	set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG")
+	target_compile_options(dcd_obj PRIVATE -fsanitize=address -g -O1 -fno-omit-frame-pointer)
+	target_compile_options(dcd PRIVATE -fsanitize=address -g -O1 -fno-omit-frame-pointer)
+	target_link_options(dcd PRIVATE -fsanitize=address)
+endif()
 
 configure_file(README.in ${CMAKE_BINARY_DIR}/README @ONLY)
 configure_file(conf/dcd.conf.in ${CMAKE_BINARY_DIR}/conf/dcd.conf @ONLY)

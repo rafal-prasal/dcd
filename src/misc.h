@@ -29,6 +29,16 @@ void randomize( void );
 // convert user's nick to table index
 int nick2id( char *nick );
 
+// set/clear a user's nick, keeping the nick->id hash in sync
+// (frees the old nick string; caller must hold mutex_users)
+void user_set_nick( userrec_t *usr, char *nick );
+
+// drop a user's nick key before its string is freed (disconnect path)
+void nick_hash_forget( userrec_t *usr );
+
+// re-home a nick key after userlist_del() moved the user to a new index
+void nick_hash_rehome( char *nick, int id );
+
 // convert hub's ip to table index
 int ip2hub( char *ip );
 

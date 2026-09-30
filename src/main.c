@@ -252,9 +252,17 @@ void userlist_del(userrec_t *usr)
 	int id;
 
 	pthread_mutex_lock( &mutex_users );
+	/* the user leaves the table now: drop its nick key so nick2id()
+	   never resolves a removed user (disconnect() re-forgets harmlessly) */
+	nick_hash_forget(usr);
 	id=usr->id;
 	user[id]=user[--NUSERS];
-	user[id]->id=id;
+	if (id<NUSERS)
+	{
+		user[id]->id=id;
+		/* the moved user now lives at a new index: re-home its nick key */
+		nick_hash_rehome(user[id]->nick,id);
+	}
 	user[NUSERS]=NULL;
 	pthread_mutex_unlock( &mutex_users );
 }

@@ -154,7 +154,8 @@ if(DCD_BUILD_TESTS)
 	set(DCD_PERF_TESTS
 		bench_cmd_dict
 		bench_add2buf
-		bench_match)
+		bench_match
+		bench_nick2id)
 
 	foreach(tst ${DCD_PERF_TESTS})
 		add_executable(${tst} tests/${tst}.c ${DCD_TEST_HELPERS})

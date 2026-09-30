@@ -335,6 +335,44 @@ The TSan "UAF" (read in `match.c:40` ← `nick_allowed` ← `validnick` ← `$Va
 - **ASan E2E: 25/25 pass, 0 findings** (confirms the `match()` fix).
 - Signal smoke test: daemon survives SIGHUP (rehash), exits cleanly on SIGTERM.
 
+## 13. `nick2id()` linear scan → nick→index hash (2026-09-30)
+
+Every nick-addressed operation — `$To:`, `$Kick`, `$GetINFO`, `$ConnectToMe`, `$RevConnectToMe`, `$OpForceMove`, `$SR` (TCP + UDP), the `#`-chat commands via `chat_nick2id()`, and the "nick already used" check in `validnick()` — resolved a nick to a `user[]` index by scanning the whole table with `strcasecmp`: O(N) per call, up to 5000 comparisons at `MAXUSERS`. Replaced with an open-addressing hash mirroring the §7 `cmd.c` style.
+
+### New machinery (`src/misc.c`, declared in `misc.h`)
+
+- Static open-addressing table: 16384 power-of-two slots (`NICK_HASH_BITS=14`), load ≤ 0.5 at `MAXUSERS=5000` so a probe always terminates; parallel `nick_hash_key[]` (aliases the owning `userrec_t.nick`) + `nick_hash_id[]`.
+- FNV-1a hash, ASCII-case-folded — same constants as `cmd.c`. Equality still uses `strcasecmp`, so non-ASCII nicks keep their existing locale semantics (a fold mismatch only costs a probe hop).
+- Linear probing; **backward-shift deletion** (no tombstones) — on remove, following entries are shifted back toward their home slot, keeping every probe chain intact.
+- `user_set_nick(usr, nick)` — the single nick setter: drops the old key, `my_duplicate`s the new one, inserts the key at `usr->id`. Replaces the five raw `my_duplicate(nick,&usr->nick)` sites (4 in `cmd.dc.c` `dc_ValidateNick`, 1 in `console.c` `manage_cons`).
+- `nick_hash_forget(usr)` / `nick_hash_rehome(nick,id)` — key removal and index re-homing for the table-maintenance paths.
+- `nick2id()` is now a hash lookup (NULL-safe).
+
+### Invariant maintenance (the hash mirrors `user[]`)
+
+| Location | Change |
+|---|---|
+| `main.c` `userlist_del()` | Drops the removed user's key **before** the swap-remove (so `nick2id()` never resolves a removed user), then re-homes the index of the user swapped into the freed slot. The last-slot self-assignment case is guarded (`if (id<NUSERS)`) so the just-removed key is not re-added. |
+| `net.c` `disconnect()` | `nick_hash_forget(usr)` before `my_free(usr->nick)` — the key aliases that string. Harmless double-forget after `userlist_del`. |
+| `cmd.dc.c` / `console.c` | All nick assignments routed through `user_set_nick()`. |
+| `tests/stubs.c` | `userlist_del` stub kept faithful to the new `main.c` (forget + guarded re-home). |
+
+The hash is guarded by the same recursive `mutex_users` as the user table; every `nick2id()`/`user_set_nick()` caller already holds it (worker loop, UDP handler, console, cleaner) — no new lock.
+
+### Tests
+
+- `tests/test_misc.c`: new nick-hash suite — basic + case-insensitive lookup, NULL/empty, re-nick (old key dropped), swap-remove re-homing (middle and last slot), `validnick()` in-use rejection, and a 500-key churn test that deletes every other user (exercises probe-chain shifts + backward-shift delete) and verifies survivors against each record's own `id` (swap-remove permutes the table, so absolute indices are not stable).
+- `tests/test_myinfo.c`: `test_validnick_in_use` updated to set the existing user's nick through `user_set_nick()` (the hash, not the raw `user[]` scan, is now the source of truth).
+- `tests/bench_nick2id.c` (ctest label `perf`): hash vs the replaced linear scan at 1000 users — **~110 Mops/s vs ~1.1 Mops/s (~100×)**; asserts ≥2× plus an absolute floor.
+
+### Verification
+
+- `ctest --test-dir build`: all unit + perf suites pass (was 7, now 8 with `bench_nick2id`).
+- E2E (`tests/e2e/run_e2e.sh`): 25/25 pass.
+- **TSan E2E**: no data races (only the documented benign thread-leaks) — confirms the hash is correctly confined to `mutex_users`.
+- **ASan E2E**: only the pre-existing `sockerr` 20-byte leak (unrelated, present before this change).
+- Clean `-Wall` build, zero new warnings.
+
 ## Status
 
-§1–§11 are committed (`master` ahead of `origin/master`). The §12 changes are **uncommitted** in the working tree.
+§1–§11 are committed (`master` ahead of `origin/master`). The §12 and §13 changes are **uncommitted** in the working tree.

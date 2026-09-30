@@ -52,9 +52,14 @@ void userlist_del(userrec_t *usr)
 	int id;
 
 	pthread_mutex_lock( &mutex_users );
+	nick_hash_forget(usr);
 	id=usr->id;
 	user[id]=user[--NUSERS];
-	user[id]->id=id;
+	if (id<NUSERS)
+	{
+		user[id]->id=id;
+		if (user[id]) nick_hash_rehome(user[id]->nick,id);
+	}
 	user[NUSERS]=NULL;
 	pthread_mutex_unlock( &mutex_users );
 }

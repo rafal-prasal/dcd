@@ -218,14 +218,138 @@ char *my_sprintf(const char *fmt, ...)
 	return p;
 } /* }}} */
 
+/* nick -> user[] index hash {{{
+ *
+ * Open addressing with linear probing and backward-shift deletion (no
+ * tombstones), mirroring the FNV-1a style of cmd.c. The table is sized
+ * to the next power of two >= 2*MAXUSERS, so with at most MAXUSERS
+ * entries the load factor stays <= 0.5 and a probe always hits an empty
+ * slot. Entries hold the user[] index; userlist_del() re-homes the
+ * index of the user it moves into the freed slot.
+ *
+ * The hash mirrors the user table and is guarded by the same
+ * mutex_users; every nick2id()/user_set_nick() caller already holds it
+ * (worker loop, UDP handler, console, cleaner).
+ */
+
+#define NICK_HASH_BITS 14
+#define NICK_HASH_SIZE (1u << NICK_HASH_BITS)
+
+static char *nick_hash_key[NICK_HASH_SIZE];	/* NULL = empty slot */
+static int nick_hash_id[NICK_HASH_SIZE];
+
+/* ASCII case-folded FNV-1a; the equality test below still uses
+   strcasecmp, so non-ASCII nicks keep their existing (locale)
+   semantics - a fold mismatch only costs a probe hop */
+static unsigned nick_hash(const char *s)
+{
+	unsigned h=2166136261u;
+
+	while (*s)
+	{
+		unsigned char c=(unsigned char)*s++;
+		if (c>='A' && c<='Z') c=(unsigned char)(c+('a'-'A'));
+		h=(h^c)*16777619u;
+	}
+
+	return h;
+}
+
+/* insert or update; nick must be a live string (the key aliases it) */
+static void nick_hash_add(char *nick, int id)
+{
+	unsigned i=nick_hash(nick)&(NICK_HASH_SIZE-1);
+
+	while (nick_hash_key[i])
+	{
+		if (!strcasecmp(nick_hash_key[i],nick))
+		{
+			nick_hash_id[i]=id;
+			return;
+		}
+		i=(i+1)&(NICK_HASH_SIZE-1);
+	}
+
+	nick_hash_key[i]=nick;
+	nick_hash_id[i]=id;
+}
+
+/* remove by nick; no-op when absent */
+static void nick_hash_del(char *nick)
+{
+	unsigned hole,j,i=nick_hash(nick)&(NICK_HASH_SIZE-1);
+
+	while (nick_hash_key[i])
+	{
+		if (!strcasecmp(nick_hash_key[i],nick)) break;
+		i=(i+1)&(NICK_HASH_SIZE-1);
+	}
+
+	if (!nick_hash_key[i]) return;
+
+	nick_hash_key[i]=NULL;
+	hole=i;
+
+	/* backward shift: pull every following entry one slot back toward
+	   its home slot, keeping every probe chain intact */
+	for (i=(i+1)&(NICK_HASH_SIZE-1); nick_hash_key[i]; i=(i+1)&(NICK_HASH_SIZE-1))
+	{
+		j=nick_hash(nick_hash_key[i])&(NICK_HASH_SIZE-1);
+
+		if ((i<=j && (j<hole || hole<=i)) || (j<hole && hole<=i)) continue;
+
+		nick_hash_key[hole]=nick_hash_key[i];
+		nick_hash_id[hole]=nick_hash_id[i];
+		nick_hash_key[i]=NULL;
+		hole=i;
+	}
+}
+
+static int nick_hash_find(char *nick)
+{
+	unsigned i=nick_hash(nick)&(NICK_HASH_SIZE-1);
+
+	while (nick_hash_key[i])
+	{
+		if (!strcasecmp(nick_hash_key[i],nick)) return nick_hash_id[i];
+		i=(i+1)&(NICK_HASH_SIZE-1);
+	}
+
+	return -1;
+}
+
+/* re-home a user's index after userlist_del() moved it into another slot */
+void nick_hash_rehome(char *nick, int id)
+{
+	if (!nick) return;
+	nick_hash_add(nick,id);
+}
+
+/* set (or clear) a user's nick, keeping the nick hash in sync; the
+   replacement frees the old string, so the old key is dropped first.
+   Callers must hold mutex_users. */
+void user_set_nick(userrec_t *usr, char *nick)
+{
+	if (usr->nick) nick_hash_del(usr->nick);
+
+	my_duplicate(nick,&usr->nick);
+
+	if (usr->nick) nick_hash_add(usr->nick,usr->id);
+}
+
+/* drop a nick key before its string is freed (disconnect path) */
+void nick_hash_forget(userrec_t *usr)
+{
+	if (usr->nick) nick_hash_del(usr->nick);
+}
+/* }}} */
+
 /* nick2id() - convert user's nick to table index {{{ */
 int nick2id(char *nick)
 {
-	int i;
-	for(i=0;i<NUSERS;i++)
-		if (user[i]	&& user[i]->nick && !strcasecmp(user[i]->nick,nick)) return i;
+	if (!nick) return -1;
 
-	return -1;
+	return nick_hash_find(nick);
 } /* }}} */
 
 /* ip2hub() - convert user's nick to table index {{{ */

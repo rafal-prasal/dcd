@@ -162,7 +162,7 @@ char manage_cons(userrec_t *usr,char *line) {
 			return 1;
 
 			case NICK_IS_OK:
-					my_duplicate(cmd,&usr->nick);
+					user_set_nick(usr,cmd);
 					user_set_state(usr,STATE_PASSWORD);
 					disttcp(usr,"password:\377\373\001");
 			return 0;

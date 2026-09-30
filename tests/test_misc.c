@@ -1,10 +1,12 @@
 /* Unit tests for helpers in src/misc.c: add2buf, my_duplicate/my_free,
-   make_path, uptime, flag_myinfo, lock_gen, get_progname, my_sprintf. */
+   make_path, uptime, flag_myinfo, lock_gen, get_progname, my_sprintf,
+   nick2id/user_set_nick (nick hash). */
 
 #include "pch.h"
 #include "test.h"
 
 extern config_t conf;
+extern userrec_t *user[MAXUSERS];
 
 /* add2buf {{{ */
 
@@ -212,6 +214,140 @@ static void test_my_sprintf(void)
 	free(in);
 } /* }}} */
 
+/* nick2id / user_set_nick (nick hash) {{{ */
+
+static userrec_t *mk_user(void)
+{
+	userrec_t *u = (userrec_t *)calloc(1, sizeof(userrec_t));
+	userlist_add(u);
+	return u;
+}
+
+static void test_nick2id_basic(void)
+{
+	userrec_t *a = mk_user(), *b = mk_user();
+
+	/* users without a nick are not findable */
+	CHECK_INT(nick2id("anything"), -1);
+
+	user_set_nick(a, "Alice");
+	user_set_nick(b, "Bob");
+
+	CHECK_INT(nick2id("Alice"), 0);
+	CHECK_INT(nick2id("alice"), 0);	/* case-insensitive, like the old scan */
+	CHECK_INT(nick2id("BOB"), 1);
+	CHECK_INT(nick2id("bob"), 1);
+	CHECK_INT(nick2id("Carol"), -1);
+	CHECK_INT(nick2id(""), -1);
+	CHECK_INT(nick2id(NULL), -1);
+
+	/* re-nicking drops the old key and keeps the record consistent */
+	user_set_nick(a, "Alicia");
+	CHECK_INT(nick2id("Alice"), -1);
+	CHECK_INT(nick2id("alicia"), 0);
+	free(a->nick); a->nick = NULL;
+	free(b->nick); b->nick = NULL;
+	free(a); free(b);
+	user[0] = user[1] = NULL;
+	NUSERS = 0;
+}
+
+static void test_nick2id_swap_remove(void)
+{
+	userrec_t *a = mk_user(), *b = mk_user(), *c = mk_user();
+
+	user_set_nick(a, "Alice");
+	user_set_nick(b, "Bob");
+	user_set_nick(c, "Carol");
+
+	/* deleting the middle user moves the last one into its slot; the
+	   nick hash must follow the new index (userlist_del re-homes it) */
+	userlist_del(b);
+	CHECK_INT(NUSERS, 2);
+	CHECK(user[1] == c);
+	CHECK_INT(c->id, 1);
+	CHECK_INT(nick2id("Carol"), 1);
+	CHECK_INT(nick2id("Bob"), -1);
+	CHECK_INT(nick2id("alice"), 0);
+
+	/* deleting the last slot must not re-home a NULL user */
+	userlist_del(c);
+	CHECK_INT(NUSERS, 1);
+	CHECK_INT(nick2id("Carol"), -1);
+	CHECK_INT(nick2id("Alice"), 0);
+
+	free(a->nick); a->nick = NULL;
+	free(b->nick); b->nick = NULL;
+	free(c->nick); c->nick = NULL;
+	free(a); free(b); free(c);
+	user[0] = NULL;
+	NUSERS = 0;
+}
+
+static void test_nick2id_validnick(void)
+{
+	userrec_t *a = mk_user(), *probe;
+
+	conf.conf_nallow = (char *)"";	/* the daemon always initializes this */
+
+	user_set_nick(a, "Alice");
+
+	probe = (userrec_t *)calloc(1, sizeof(userrec_t));
+	probe->cons = 0;
+
+	/* validnick() must reject a nick that is in use, case-insensitively */
+	CHECK_INT(validnick(probe, "alice"), NICK_IS_ALREADY_USED);
+	CHECK_INT(validnick(probe, "NewNick"), NICK_IS_OK);
+
+	free(probe);
+	free(a->nick); a->nick = NULL;
+	free(a);
+	user[0] = NULL;
+	NUSERS = 0;
+}
+
+static void test_nick2id_many(void)
+{
+	int i;
+	char nick[32];
+	userrec_t *users[500];
+
+	/* enough keys to exercise collisions and the backward-shift delete */
+	for (i = 0; i < 500; i++) {
+		users[i] = mk_user();
+		sprintf(nick, "User_%03d", i);
+		user_set_nick(users[i], nick);
+	}
+
+	for (i = 0; i < 500; i++) {
+		sprintf(nick, "user_%03d", i);
+		CHECK_INT(nick2id(nick), i);
+	}
+
+	/* delete every other user (forces probe-chain shifts); swap-remove
+	   permutes the table, so verify against each survivor's own id */
+	for (i = 499; i >= 1; i -= 2)
+		userlist_del(users[i]);
+
+	for (i = 0; i < 500; i += 2) {
+		sprintf(nick, "USER_%03d", i);
+		CHECK_INT(nick2id(nick), users[i]->id);
+		CHECK_INT(user[users[i]->id], users[i]);
+	}
+	for (i = 1; i < 500; i += 2) {
+		sprintf(nick, "User_%03d", i);
+		CHECK_INT(nick2id(nick), -1);
+	}
+
+	for (i = 0; i < 500; i++) {
+		free(users[i]->nick);
+		users[i]->nick = NULL;
+		free(users[i]);
+	}
+	for (i = 0; i < NUSERS; i++) user[i] = NULL;
+	NUSERS = 0;
+} /* }}} */
+
 int main(void)
 {
 	RUN(test_add2buf_basic);
@@ -223,5 +359,9 @@ int main(void)
 	RUN(test_lock_gen);
 	RUN(test_get_progname);
 	RUN(test_my_sprintf);
+	RUN(test_nick2id_basic);
+	RUN(test_nick2id_swap_remove);
+	RUN(test_nick2id_validnick);
+	RUN(test_nick2id_many);
 	TEST_REPORT();
 }

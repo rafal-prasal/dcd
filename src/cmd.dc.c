@@ -81,7 +81,7 @@ void dc_ValidateNick(dc_param_t *param)
 	break;
 	
 	case NICK_REQUIRES_PASSWORD:
-			my_duplicate(nick,&usr->nick);
+			user_set_nick(usr,nick);
 			pubmsg(usr,"ValidateNick: nick '%s' requires password", usr->nick);
 
             log_write(FAC_ACCESS,PR_WARNING,"'%s'@%s: ValidateNick: nick requires password",usr->nick,usr->ip);
@@ -95,7 +95,7 @@ void dc_ValidateNick(dc_param_t *param)
 
 	case NICK_IS_NOT_IN_PATTERNS:
 			pubmsg(usr,"ValidateNick: nick '%s' does not match any allowed pattern", nick);
-			my_duplicate(nick,&usr->nick);
+			user_set_nick(usr,nick);
 			
 			usr->reason=strdup("ValidateNick: nick does not match any allowed pattern");						
 			user_set_state(usr,STATE_QUIT);
@@ -124,7 +124,7 @@ void dc_ValidateNick(dc_param_t *param)
 			}
 	
 			pubmsg(usr,"ValidateNick: nick is fine");
-			my_duplicate(nick,&usr->nick);
+			user_set_nick(usr,nick);
 			log_write(FAC_ACCESS,PR_INFO,"'%s'@%s: ValidateNick: Logs in as normal user",usr->nick,usr->ip);
 			
 			if (penalty_welcome(usr)) return;
@@ -143,7 +143,7 @@ void dc_ValidateNick(dc_param_t *param)
 			pubmsg(usr,"- '#' is not allowed as the first character");
 			pubmsg(usr,"- '?','$',':','<','>' are also not allowed");
 
-			my_duplicate(nick,&usr->nick);
+			user_set_nick(usr,nick);
 
 			usr->reason=strdup("ValidateNick: nick contains invalid characters");
 			user_set_state(usr,STATE_QUIT);

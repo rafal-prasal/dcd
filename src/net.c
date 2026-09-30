@@ -318,6 +318,9 @@ void disconnect(userrec_t *usr)
 
 	log_write(FAC_ACCESS,PR_INFO,"'%s'@%s: disconnect: %s",(usr->nick)?usr->nick:"Unknown",usr->ip,(usr->reason)?usr->reason:"Connection closed.");
 	
+	/* drop the nick key before the string it points to is freed */
+	nick_hash_forget(usr);
+
 	my_free(usr->reason);	
 	my_free(usr->ip);
 	my_free(usr->ip);

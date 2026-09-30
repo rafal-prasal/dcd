@@ -122,16 +122,18 @@ static void test_validnick_in_use(void)
 	static userrec_t existing;
 
 	memset(&existing, 0, sizeof(existing));
-	existing.nick = (char *)"Bob";
 	user[0] = &existing;
 	existing.id = 0;
 	NUSERS = 1;
+	user_set_nick(&existing, "Bob");
 
 	CHECK_INT(validnick(&usr, "Bob"), NICK_IS_ALREADY_USED);
 	/* comparison is case-insensitive */
 	CHECK_INT(validnick(&usr, "bOb"), NICK_IS_ALREADY_USED);
 	CHECK_INT(validnick(&usr, "NotBob"), NICK_IS_OK);
 
+	free(existing.nick);
+	existing.nick = NULL;
 	user[0] = NULL;
 	NUSERS = 0;
 } /* }}} */

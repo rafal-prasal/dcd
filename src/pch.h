@@ -81,6 +81,7 @@
 #include "penalties.h"
 #include "conf.h"
 #include "misc.h"
+#include "sha512.h"
 #include "compatibility.h"
 #include "log.h"
 

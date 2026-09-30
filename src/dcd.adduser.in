@@ -49,8 +49,16 @@ passwd=`echo -n "$_passwd"|grep --regexp="[[:print:]]"|grep -v --regexp="[:|$]"`
 
 [ -z "$passwd" ] && echo "password has invalid characters" && exit
 
-#md5_passwd=`echo $passwd|md5sum`;
-code_passwd="$passwd"
+# The password is stored as a salted SHA-512 hash in an /etc/shadow-like
+# format: $sha512$<salt>$<hex(sha512(salt+password))>
+# dcd verifies it on login; plaintext values are still accepted.
+salt=`tr -dc 'A-Za-z0-9./' < /dev/urandom | head -c 16`
+[ -z "$salt" ] && echo "cannot generate random salt" > $ERROR && exit 1
+
+hash=`printf '%s%s' "$salt" "$passwd" | sha512sum | cut -d ' ' -f1`
+[ -z "$hash" ] && echo "cannot compute password hash (is sha512sum installed?)" > $ERROR && exit 1
+
+code_passwd="\$sha512\$${salt}\$${hash}"
 
 
 echo use [:alnum:] and '.','-'
@@ -125,7 +133,7 @@ cat "$dcd_users"|while read line; do
 	
 	user_upper=`echo $usernick|sed "y/$LOWER/$UPPER/"`
 
-	if [ "$user_upper" == "$nick_upper" ]; then
+	if [ "$user_upper" = "$nick_upper" ]; then
 
 		rm -f "$dcd_usersnew.notfound";
 

@@ -288,13 +288,13 @@ int validlogin(userrec_t *usr,char *nick, char *pass)
 	{		
 		if (usr->cons) 
 		{
-			if (strcmp(ulogin->password, pass)) goto leave;
+			if (!password_match(ulogin->password, pass)) goto leave;
 			
 			snprintf(usr->myinfo.email,EMAIL_LEN-1,"%s",ulogin->email);
 			snprintf(usr->myinfo.desc,DESC_LEN-1,"%s",ulogin->desc);
 
 		}
-		else my_duplicate(ulogin->password,	&usr->password);
+		else if (ulogin->password) my_duplicate(ulogin->password,	&usr->password);
 
 		if (ulogin->perm) my_duplicate(ulogin->perm,	&usr->perm);
 		EC = 1;

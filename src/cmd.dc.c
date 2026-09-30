@@ -162,7 +162,7 @@ void dc_MyPass(dc_param_t *param)
 	if (!passwd || !*passwd ||
 		!user_tst_state(usr,STATE_PASSWORD)) return;
 		
-	if (strcmp(passwd,usr->password))
+	if (!password_match(usr->password, passwd))
 	{
 		pubmsg(usr,"MyPass: incorrect password for nick '%s'",usr->nick);
 		disttcp(usr,"$BadPass|");		

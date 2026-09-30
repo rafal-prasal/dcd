@@ -40,7 +40,7 @@ A text file in dcd's config directory with anything you want to send to users af
 A text file in dcd's config directory with list of banned host. Default is  \fIdcd.banned\fR
 .TP
 \fBconf_cusers\fR
-A text file in dcd's config directory with administration accounts. Default is \fIdcd.users\fR. Each line of this file contain one account \fBlogin:password:e-mail:description:permissions\fR, where permissions are: \fBc\fR-access to the telnet console ex. statistics; or \fBa\fR-full administration account.
+A text file in dcd's config directory with administration accounts. Default is \fIdcd.users\fR. Each line of this file contain one account \fBlogin:password:e-mail:description:permissions\fR, where permissions are: \fBc\fR-access to the telnet console ex. statistics; or \fBa\fR-full administration account. The \fBpassword\fR field may be plaintext or a salted SHA-512 hash in an /etc/shadow-like format \fB$sha512$<salt>$<hex(sha512(salt+password))></fR; \fBdcd.adduser\fR generates such hashes with a random salt automatically.
 .TP
 \fBconf_callow\fR
 A text file in dcd's config directory with list of hosts allowed to access the console. Default is \fIconsole.allow\fR

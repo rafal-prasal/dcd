@@ -80,9 +80,11 @@ dcd.users	- file with users accounts.
 
 		login - you know what is that :)
 
-		password - written in clean text password. There will be soon
-			option to put here crypted or somehow encrypted
-			password.
+		password - either a clean text password or a salted SHA-512
+			hash in an /etc/shadow-like format:
+			$sha512$<salt>$<hex(sha512(salt+password))>
+			dcd.adduser generates such hashes with a random salt
+			automatically; plaintext values are still accepted.
 
 		e-mail - this e-mail will be shown on userlist
 

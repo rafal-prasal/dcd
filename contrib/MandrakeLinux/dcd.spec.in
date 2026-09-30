@@ -10,7 +10,9 @@ Vendor:		DConnect Team <dc-hub@ds.pg.gda.pl>
 Source0:	ftp://pollux.ds.pg.gda.pl/Linux/DConnect/sources/stable/%{name}-%{version}.tar.gz
 URL:		http://www.dc.ds.pg.gda.pl/
 Requires:	chkconfig
+Requires:	libcrypto
 BuildRequires:	cmake
+BuildRequires:	openssl-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root-%(id -u -n)
 
 %description

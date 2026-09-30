@@ -25,6 +25,7 @@ set(prefix "${CMAKE_INSTALL_PREFIX}")
 
 set(DCD_CONFIG_DIR "${CMAKE_INSTALL_PREFIX}/etc/${PACKAGE_NAME}" CACHE PATH
 	"Directory where the dcd configuration files are stored")
+set(CONFIGDIR "${DCD_CONFIG_DIR}")
 set(DEFAULT_USER "daemon" CACHE STRING "Default user dcd runs as")
 set(DEFAULT_GROUP "daemon" CACHE STRING "Default group dcd runs as")
 set(LOG_DIR "/var/log/${PACKAGE_NAME}" CACHE PATH "Directory with dcd log files")
@@ -32,6 +33,7 @@ set(LOG_DIR "/var/log/${PACKAGE_NAME}" CACHE PATH "Directory with dcd log files"
 string(TIMESTAMP BUILD_TIME "%a %b %d %H:%M:%S UTC %Y" UTC)
 
 find_package(Threads REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 # daemon sources without main(), shared between the dcd binary and the tests
 set(DCD_CORE_SOURCES
@@ -48,6 +50,7 @@ set(DCD_CORE_SOURCES
 	src/cmd.conf.c
 	src/compatibility.c
 	src/cmd.udp.c
+	src/sha512.c
 		src/log.c)
 
 add_library(dcd_obj OBJECT ${DCD_CORE_SOURCES})
@@ -63,6 +66,8 @@ target_compile_definitions(dcd_obj PUBLIC
 	"-DBUILD_TIME=\"${BUILD_TIME}\"")
 
 target_compile_options(dcd_obj PRIVATE -Wall -fno-strict-aliasing)
+
+target_link_libraries(dcd_obj PUBLIC OpenSSL::Crypto)
 
 if(DCD_ENABLE_LTO)
 	target_compile_options(dcd_obj PRIVATE -flto)
@@ -143,7 +148,8 @@ if(DCD_BUILD_TESTS)
 		test_cmd_dict
 		test_match
 		test_misc
-		test_myinfo)
+		test_myinfo
+		test_sha512)
 
 	foreach(tst ${DCD_UNIT_TESTS})
 		add_executable(${tst} tests/${tst}.c ${DCD_TEST_HELPERS})

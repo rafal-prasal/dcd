@@ -373,6 +373,29 @@ The hash is guarded by the same recursive `mutex_users` as the user table; every
 - **ASan E2E**: only the pre-existing `sockerr` 20-byte leak (unrelated, present before this change).
 - Clean `-Wall` build, zero new warnings.
 
+## 14. Salted SHA-512 password hashes in dcd.users (2026-09-30)
+
+`dcd.users` password fields were plaintext-only. Added `/etc/shadow`-style hashed passwords: `$sha512$<salt>$<hex(sha512(salt+password))>` (same `$id$salt$hash` layout; salt alphabet `[a-zA-Z0-9./]`, ≤64 chars; digest lowercase hex, constant-time compare). Plaintext values are still accepted (legacy entries).
+
+### Implementation
+
+- `src/sha512.{c,h}` (was present but never built): added `password_match(stored, supplied)` — parses the `$sha512$` form (validates salt charset, 128-hex digest), hashes `salt||password` with the existing `sha512_hex`, constant-time digest compare; anything not `$sha512$`-prefixed falls back to plaintext compare. NULL-safe.
+- `src/conf.c` `validlogin()`: console password check now `password_match()`; also guards `my_duplicate()` of a NULL password (the documented `login:` reserve-only form previously segfaulted on `strdup(NULL)`).
+- `src/cmd.dc.c` `dc_MyPass()`: `$MyPass` verification now `password_match()`.
+- `src/pch.h`: includes `sha512.h`; `CMakeLists.txt`: `src/sha512.c` added to `DCD_CORE_SOURCES`.
+- `src/dcd.adduser.in`: generates a 16-char random salt from `/dev/urandom` (`tr -dc 'A-Za-z0-9./'`) and stores `$sha512$<salt>$<sha512sum>`; also fixed two pre-existing bugs: `@CONFIGDIR@` was never substituted (CMake variable `CONFIGDIR` undefined — only the compile definition existed; now `set(CONFIGDIR ...)` in CMakeLists) and `[ … == … ]` bashism under `#!/bin/sh` (dash) broke the existing-user update path.
+- Docs: `conf/dcd.users` header comment, `README.in` (replaces the "there will be soon" placeholder), `doc/dcd.2` `conf_cusers` section.
+
+### Tests
+
+- `tests/test_sha512.c` (new ctest): FIPS 180-4 vectors (`abc`, empty, salted) pin `sha512_hex`; plaintext match/mismatch/NULL; hashed match, wrong password, wrong salt, empty-password hash; malformed hashes (truncated/extended/uppercase/non-hex digest, missing `$`, empty/bad-charset salt, `$sha512$`-prefixed value never treated as plaintext).
+
+### Verification
+
+- `ctest --test-dir build`: 9/9 pass (was 8).
+- E2E (`tests/e2e/run_e2e.sh`): 25/25 pass (plaintext flow unchanged).
+- Live-hub check: `dcd.adduser` (installed script) add + update paths produce fresh random-salt hashes; console and NMDC `$MyPass` login accept the correct password and reject wrong ones for hashed entries; plaintext `admin:changeme` still logs in.
+
 ## Status
 
-§1–§11 are committed (`master` ahead of `origin/master`). The §12 and §13 changes are **uncommitted** in the working tree.
+§1–§11 are committed (`master` ahead of `origin/master`). The §12, §13 and §14 changes are **uncommitted** in the working tree.

@@ -293,3 +293,48 @@ Remote console (TCP `listen_port_cons`): banner → `login:` → nick → `passw
 
 - `bash tests/e2e/run_e2e.sh`: **25/25 pass**, stable across 3 consecutive full runs.
 - `ctest --test-dir build`: 7/7 unit/perf tests still pass; clean build, no new warnings (temporary `sendtcp` instrumentation used during diagnosis was reverted).
+
+## 12. ThreadSanitizer/AddressSanitizer pass: race + OOB fixes (2026-09-29/30)
+
+Method: built `dcd` under ThreadSanitizer and AddressSanitizer and ran the §11 E2E suite against each. TSan reported 28 data races + 7 "heap-use-after-free" + 5 thread-leaks + 1 signal-unsafe call; ASan (precise line info) showed the "UAF" was really a heap-buffer-underflow. All findings triaged; the thread-leaks were left as benign.
+
+### Sanitizer tooling (reproducible)
+
+- `CMakeLists.txt`: `DCD_ENABLE_TSAN` / `DCD_ENABLE_ASAN` cache options (OFF by default) — instrument only the `dcd` binary with `-fsanitize=thread|address -g -O1` (drop the Release `-O2` so the sanitizer's `-O1` wins).
+- `tests/e2e/run_e2e.sh`: `DCD_SANITIZER=thread|address` — separate build/prefix dir, `-DDCD_BUILD_TESTS=OFF` (the shared `dcd_obj` object lib isn't linked against the sanitizer runtime), and `TSAN_OPTIONS`/`ASAN_OPTIONS=log_path=…` because `daemon()` sends stderr to `/dev/null`. Prints a findings count + full logs after the run.
+
+### Per-user data race — fixed (structural)
+
+The five user-table locks (`mutex_userlist`, per-thread `mutex_user_manager[]`, `mutex_th_udp`, `mutex_th_cleaner`, `mutex_is_managed`) were used inconsistently: `lock_threads()` (cleaner/rehash) froze the workers, but `adduser` (accept thread) only took `mutex_userlist` and the console thread took nothing — so those paths raced with the worker on `user[]`/`NUSERS`/`userrec_t`.
+
+| Location | Change |
+|---|---|
+| `main.c` mutex set | Collapsed the five into one **recursive `mutex_users`** guarding `user[]`, `NUSERS`, every `userrec_t`, and the config/pattern/login tables. `lock_threads()`/`unlock_threads()` lock it; `userlist_add/del` lock it. |
+| `main.c` `adduser` / `console.c` `addcons` | Hold `mutex_users` across the user-limit check + insertion (atomic w.r.t. worker/cleaner). |
+| `main.c` `listen_thread_udp` | Lock `mutex_users` (was `mutex_th_udp`). |
+| `main.c` `user_manager` | Hold `mutex_users` across the whole cycle, including the `if(!NUSERS)` fast-path read (the last remaining race). Removed the `is_managed()`/`managed[]` claim machinery and per-worker mutexes. |
+| `main.c` `make_threads` | **Single protocol worker** — under one lock extra workers only duplicate work, so `conf.n_user_manager` is no longer used for thread creation. |
+
+### `match()` heap-buffer-underflow — fixed
+
+The TSan "UAF" (read in `match.c:40` ← `nick_allowed` ← `validnick` ← `$ValidateNick`) was, per ASan, a read 1 byte **before** the `strdup`'d pattern buffer: for a single-char `*` pattern the wildcard-zap moves `m` to `ma-1` and `switch(*m)` reads out of bounds. Added `if (m < ma) break;` at the top of the loop; the existing tail logic then correctly returns a match. `test_match` still passes.
+
+### Signal-unsafe handler — fixed
+
+`finish()` no longer locks/logs/`pthread_cancel()`/`exit()` from the handler. It only sets async-signal-safe flags (`rehash`, `term_sig`); the main loop runs new `do_rehash()`/`do_shutdown()`. `SIGPIPE` → `SIG_IGN`; the uncatchable `SIGKILL` handler dropped. `rehash` is now `volatile sig_atomic_t` (externs updated in `cmd.{user,dc,udp}.c`, `tests/globals.c`). `signal_p` removed.
+
+### Left as-is (not a defect)
+
+- 5 TSan **thread-leak** reports: threads still running when the process exits via the SIGTERM path. Joining would deadlock against `mutex_users` (deferred-cancel worker blocks on the lock) and the process is exiting anyway.
+
+### Verification
+
+- Normal build: clean, **zero warnings** (`-Wall`); strict `-Wall -Wextra` shows only pre-existing unused-callback-param noise.
+- `ctest --test-dir build`: 7/7 pass.
+- **TSan E2E: 25/25 pass, 0 data races, 0 UAF/OOB** (was 28 races + 7 UAF; only the 5 expected thread-leaks remain).
+- **ASan E2E: 25/25 pass, 0 findings** (confirms the `match()` fix).
+- Signal smoke test: daemon survives SIGHUP (rehash), exits cleanly on SIGTERM.
+
+## Status
+
+§1–§11 are committed (`master` ahead of `origin/master`). The §12 changes are **uncommitted** in the working tree.

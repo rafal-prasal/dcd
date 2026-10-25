@@ -51,6 +51,7 @@ set(DCD_CORE_SOURCES
 	src/compatibility.c
 	src/cmd.udp.c
 	src/sha512.c
+	src/stats.c
 		src/log.c)
 
 add_library(dcd_obj OBJECT ${DCD_CORE_SOURCES})
@@ -149,7 +150,8 @@ if(DCD_BUILD_TESTS)
 		test_match
 		test_misc
 		test_myinfo
-		test_sha512)
+		test_sha512
+		test_stats)
 
 	foreach(tst ${DCD_UNIT_TESTS})
 		add_executable(${tst} tests/${tst}.c ${DCD_TEST_HELPERS})
@@ -161,7 +163,8 @@ if(DCD_BUILD_TESTS)
 		bench_cmd_dict
 		bench_add2buf
 		bench_match
-		bench_nick2id)
+		bench_nick2id
+		bench_sha512)
 
 	foreach(tst ${DCD_PERF_TESTS})
 		add_executable(${tst} tests/${tst}.c ${DCD_TEST_HELPERS})

@@ -82,6 +82,7 @@
 #include "conf.h"
 #include "misc.h"
 #include "sha512.h"
+#include "stats.h"
 #include "compatibility.h"
 #include "log.h"
 

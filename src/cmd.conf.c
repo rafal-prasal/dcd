@@ -802,7 +802,7 @@ static void conf_cmd_dict_init(void)
 		{NULL,							(funct_t)conf_unknown				}
 	};
 
-	cmd_dict_build(&conf_dict, conf_set, 0);
+	cmd_dict_build_nc(&conf_dict, conf_set, 0);
 }
 
 void conf_cmd_exec(int start, char *line )

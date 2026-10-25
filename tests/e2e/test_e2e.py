@@ -310,6 +310,36 @@ class TestConsole(E2EBase):
             con.quit()
             con.close()
 
+    def test_console_stats(self):
+        self.logged_in(uniq("statuser"))
+        self.used_nicks.add(OP_NICK)
+        con = ConsoleClient(port=CONS)
+        con.connect()
+        try:
+            con.login(OP_NICK, OP_PASS)
+            out = con.command("stats")
+            self.assertIn("STATS", out)
+            self.assertIn("TCP in:", out)
+            self.assertIn("UDP in:", out)
+            self.assertIn("logins:", out)
+            self.assertIn("online:", out)
+            self.assertIn("max online:", out)
+            self.assertIn("rotation:", out)
+            # console commands run through the chat dictionary and must
+            # show up in the per-command breakdown
+            self.assertIn("chat", out)
+            self.assertIn("stats=", out)
+            out = con.command("stats reset")
+            self.assertIn("Stats counters reset", out)
+            out = con.command("stats")
+            self.assertIn("logins: 0", out)
+            self.assertIn("logouts: 0", out)
+            # online must survive the reset: users are still connected
+            self.assertNotIn("online: 0", out)
+        finally:
+            con.quit()
+            con.close()
+
     def test_console_wrong_password(self):
         self.used_nicks.add(OP_NICK)
         con = ConsoleClient(port=CONS)

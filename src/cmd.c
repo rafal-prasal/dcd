@@ -49,13 +49,46 @@ static unsigned cmd_hash(const char *s, int ci)
 	return h;
 }
 
+/* dispatch telemetry registry: built dictionaries with count=1 and a
+   name are reported by the console "stats" command */
+
+#define CMD_DICT_REGISTRY_MAX 16
+
+static cmd_dict_t *cmd_dicts[CMD_DICT_REGISTRY_MAX];
+static int cmd_dicts_n=0;
+
+static void cmd_dict_register(cmd_dict_t *dict)
+{
+	int i;
+
+	for (i=0;i<cmd_dicts_n;i++)
+		if (cmd_dicts[i]==dict) return;
+
+	if (cmd_dicts_n<CMD_DICT_REGISTRY_MAX) cmd_dicts[cmd_dicts_n++]=dict;
+}
+
+static void cmd_dict_unregister(cmd_dict_t *dict)
+{
+	int i;
+
+	for (i=0;i<cmd_dicts_n;i++)
+		if (cmd_dicts[i]==dict)
+		{
+			cmd_dicts[i]=cmd_dicts[--cmd_dicts_n];
+			return;
+		}
+}
+
 void cmd_dict_build(cmd_dict_t *dict, const cmd_t *set, int case_insensitive)
 {
 	unsigned b;
 
 	dict->set=set;
 	dict->ci=case_insensitive;
+	dict->count=1;
+	dict->name=NULL;
 	dict->n=0;
+	memset(dict->hits,0,sizeof(dict->hits));
 
 	for (b=0;b<CMD_DICT_BUCKETS;b++) dict->head[b]=-1;
 
@@ -69,11 +102,21 @@ void cmd_dict_build(cmd_dict_t *dict, const cmd_t *set, int case_insensitive)
 
 		dict->n++;
 	}
+
+	cmd_dict_register(dict);
+}
+
+void cmd_dict_build_nc(cmd_dict_t *dict, const cmd_t *set, int case_insensitive)
+{
+	cmd_dict_build(dict, set, case_insensitive);
+	dict->count=0;
+	cmd_dict_unregister(dict);
 }
 
 void cmd_dict_exec(cmd_dict_t *dict, const char *cmd, void *param)
 {
 	const cmd_t *found=NULL;
+	unsigned idx;
 
 	if (cmd && dict->n)
 	{
@@ -84,15 +127,67 @@ void cmd_dict_exec(cmd_dict_t *dict, const char *cmd, void *param)
 			if (cmd_str_eq(dict->set[i].cmd,cmd,dict->ci))
 			{
 				found=&dict->set[i];
+				idx=(unsigned)i;
 				break;
 			}
 			i=dict->next[i];
 		}
 	}
 
-	if (!found) found=&dict->set[dict->n]; /* default handler (terminator entry) */
+	if (!found) { idx=dict->n; found=&dict->set[dict->n]; } /* default handler (terminator entry) */
+
+	if (dict->count)
+		__atomic_fetch_add(&dict->hits[idx], 1, __ATOMIC_RELAXED);
 
 	if (found->funct) (found->funct)(param);
+}
+
+void cmd_stats_reset(void)
+{
+	int d;
+
+	for (d=0;d<cmd_dicts_n;d++)
+		if (cmd_dicts[d]->count)
+			memset(cmd_dicts[d]->hits,0,sizeof(cmd_dicts[d]->hits));
+}
+
+void cmd_stats_format(char *buf, size_t size)
+{
+	int d, i, off=0, named, after;
+
+	if (!size) return;
+	buf[0]=0;
+
+	for (d=0;d<cmd_dicts_n;d++)
+	{
+		cmd_dict_t *dict=cmd_dicts[d];
+
+		if (!dict->count || !dict->name) continue;
+
+		named=off;
+		off+=snprintf(buf+off,size-off,"%s",dict->name);
+		if (off>=(int)size-1) { off=size-1; break; }
+		after=off;
+
+		for (i=0;i<=(int)dict->n;i++)
+		{
+			unsigned long h=__atomic_load_n(&dict->hits[i],__ATOMIC_RELAXED);
+
+			if (!h) continue;
+
+			off+=snprintf(buf+off,size-off," %s=%lu",
+				i==(int)dict->n ? "(unknown)" : dict->set[i].cmd, h);
+
+			if (off>=(int)size-1) { off=size-1; break; }
+		}
+
+		if (off==after) off=named;	/* no hits: roll the name back */
+		else buf[off++]='\n';
+
+		if (off>=(int)size-1) { off=size-1; break; }
+	}
+
+	buf[off]=0;
 }
 
 /* VIM Settings {{{

@@ -396,6 +396,38 @@ The hash is guarded by the same recursive `mutex_users` as the user table; every
 - E2E (`tests/e2e/run_e2e.sh`): 25/25 pass (plaintext flow unchanged).
 - Live-hub check: `dcd.adduser` (installed script) add + update paths produce fresh random-salt hashes; console and NMDC `$MyPass` login accept the correct password and reject wrong ones for hashed entries; plaintext `admin:changeme` still logs in.
 
+## 15. SHA-512 backend: custom implementation → OpenSSL libcrypto (2026-10-25)
+
+The hand-rolled dependency-free SHA-512 from §14 (K[80] table, `sha512_compress()`, manual padding — ~90 lines of crypto) was replaced with OpenSSL's `EVP_Q_digest(NULL, "SHA512", ...)`. `sha512_hex()`/`password_match()` APIs, the `$sha512$salt$hex` format and all tests are unchanged; a failed digest now yields an empty string (impossible before). Rationale: no hand-written crypto to audit; OpenSSL's SHA-512 is also ~4x faster than the removed code (see below).
+
+### Implementation
+
+- `src/sha512.c`: hand-rolled core removed; `sha512_hex()` is now a thin `EVP_Q_digest` wrapper + hex encoding (110 → 25 lines in that area).
+- `CMakeLists.txt`: `find_package(OpenSSL REQUIRED)`, `target_link_libraries(dcd_obj PUBLIC OpenSSL::Crypto)` (propagates to `dcd` and all tests).
+- `contrib/PLD/dcd.spec.in`, `contrib/MandrakeLinux/dcd.spec.in`: `BuildRequires: openssl-devel`, `Requires: libcrypto`.
+
+### Tests / Verification
+
+- New `tests/bench_sha512.c` (ctest, `perf` label): pins the FIPS `abc` vector, floors sub-50 µs per password-sized hash, >50 MiB/s bulk, sub-200 µs per `password_match`. Measured (OpenSSL 3.5.5, -O2): `sha512_hex(17 B)` ≈ 3.3 M ops/s (0.30 µs), bulk 1 MiB ≈ 1.3 GiB/s, full `password_match` ≈ 2.65 M ops/s (0.4 µs) — login-time hashing cost is negligible.
+- ctest 10/10; `dcd` links `libcrypto.so.3`.
+
+## 16. Runtime telemetry: traffic, command and user-rotation counters (2026-10-25)
+
+Console `stats` / `stats reset` commands report hub traffic, per-command dispatch counts and user rotation (logins/logouts, concurrent online, max online, EWMA logins/hour). Counters are relaxed GCC atomics (the daemon is threaded: listeners, cleaner, user_manager); the EWMA is a double under its own mutex.
+
+### Implementation
+
+- `src/stats.{c,h}` (new): `stats_add_tcp/udp()`, `stats_user_registered()/left()`, `stats_format()`, `stats_reset()`; max_online maintained by CAS; `stats_reset()` zeroes counters but keeps currently-online visible.
+- `src/cmd.{c,h}`: `cmd_dict_t` gains `hits[CMD_DICT_MAXENTRIES+1]` (index `n` = unknown/default handler), `count`, `name` and a registry; `cmd_dict_exec()` counts dispatches atomically; `cmd_stats_format()`/`cmd_stats_reset()` emit per-dictionary lines. `cmd_dict_build_nc()` builds non-counted dictionaries — used by `src/cmd.conf.c` (config-file parser shares the dispatcher; its "commands" are not hub traffic) and `src/cmd.opt_line.c`; counted: `dc`, `chat`, `udp`.
+- Hooks: `user_set_state()` (src/main.c — the single choke point for all `STATE_*` transitions) drives login/logout/online counts; `my_recv()`/`sendtcp()` (src/net.c) add TCP totals plus per-user `userrec_t.recv_bytes/send_bytes` (usable later for transfer limits); `sendudp()` and the UDP `recvfrom` loop add UDP totals.
+- `src/cmd.user.c`: `chat_stats` (console only; non-console falls back to `disttcp` like `chat_stat`), table entry `stats`.
+
+### Tests / Verification
+
+- New `tests/test_stats.c` (bytes formatting, rotation math, online clamping at zero, reset keeps online) and `test_cmd_dict` telemetry cases (hits incl. unknown, nc not counted/not reported, format output, reset).
+- New e2e `test_console_stats`: console `stats` shows all report fields + `chat stats=` breakdown; `stats reset` zeroes counters while online users stay visible.
+- ctest 11/11; e2e 26/26; e2e under ThreadSanitizer: no data races (only the pre-existing `make_threads` thread-leak warnings at shutdown).
+
 ## Status
 
-§1–§11 are committed (`master` ahead of `origin/master`). The §12, §13 and §14 changes are **uncommitted** in the working tree.
+§1–§11 are committed (`master` ahead of `origin/master`). The §12, §13, §14, §15 and §16 changes are **uncommitted** in the working tree.

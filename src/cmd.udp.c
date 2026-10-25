@@ -234,6 +234,7 @@ static void udp_cmd_dict_init(void)
 	};
 
 	cmd_dict_build(&udp_dict, udp_set, 0);
+	udp_dict.name="udp";
 }
 
 void udp_cmd_exec(char *ip, char *line)

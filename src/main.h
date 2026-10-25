@@ -291,6 +291,9 @@ typedef struct
 
 	char *key;
 
+	unsigned long recv_bytes;	/* cumulative bytes read/sent for this user */
+	unsigned long send_bytes;
+
 	myinfo_t myinfo;
 
 	char userip[7+1+NICK_LEN+1+15+1+1];

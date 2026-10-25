@@ -68,7 +68,7 @@ void opt_line(int argc, char *argv[] )
 	int i;
 	opt_param_t param;
 
-	cmd_dict_build(&opt_dict, opt_set, 0);
+	cmd_dict_build_nc(&opt_dict, opt_set, 0);
 
 	for ( i = 1; i < argc; i++ )
 	{

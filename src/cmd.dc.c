@@ -1060,6 +1060,7 @@ static void dc_cmd_dict_init(void)
 	};
 
 	cmd_dict_build(&dc_dict, dc_set, 0);
+	dc_dict.name="dc";
 }
 
 void dc_cmd_exec( userrec_t *usr, char *line)

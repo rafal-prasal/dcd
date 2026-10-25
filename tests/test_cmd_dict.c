@@ -31,7 +31,7 @@ static const cmd_t small_set[] = {
 
 static void test_exact_hit(void)
 {
-	cmd_dict_t d;
+	static cmd_dict_t d;
 	int param = 7;
 
 	reset();
@@ -51,7 +51,7 @@ static void test_exact_hit(void)
 
 static void test_case_sensitive(void)
 {
-	cmd_dict_t d;
+	static cmd_dict_t d;
 
 	reset();
 	cmd_dict_build(&d, small_set, 0);
@@ -66,7 +66,7 @@ static void test_case_sensitive(void)
 
 static void test_case_insensitive(void)
 {
-	cmd_dict_t d;
+	static cmd_dict_t d;
 	char buf[8];
 
 	reset();
@@ -85,7 +85,7 @@ static void test_case_insensitive(void)
 
 static void test_miss_and_null(void)
 {
-	cmd_dict_t d;
+	static cmd_dict_t d;
 
 	reset();
 	cmd_dict_build(&d, small_set, 0);
@@ -106,7 +106,7 @@ static void test_null_handler(void)
 		{"x", (funct_t)h_nul},
 		{NULL, NULL},		/* default handler is NULL too */
 	};
-	cmd_dict_t d;
+	static cmd_dict_t d;
 
 	reset();
 	cmd_dict_build(&d, set, 0);
@@ -126,7 +126,7 @@ static void test_capacity_and_chaining(void)
 	static cmd_t big_set[MANY + 1];
 	char names[MANY][8];
 	int i;
-	cmd_dict_t d;
+	static cmd_dict_t d;
 
 	for (i = 0; i < MANY; i++) {
 		sprintf(names[i], "c%03d", i);
@@ -166,7 +166,7 @@ static void test_empty_terminator(void)
 		{(char*)"", (funct_t)h_default},	/* empty cmd terminates */
 		{"b",    (funct_t)h_two},		/* never indexed */
 	};
-	cmd_dict_t d;
+	static cmd_dict_t d;
 
 	reset();
 	cmd_dict_build(&d, set, 0);
@@ -180,6 +180,49 @@ static void test_empty_terminator(void)
 	CHECK_INT(g_called, 0);	/* default handler */
 }
 
+static void test_telemetry(void)
+{
+	static cmd_dict_t td;
+	char fbuf[512];
+
+	reset();
+	cmd_dict_build(&td, small_set, 0);
+	CHECK_INT(td.count, 1);
+	td.name = "tst";
+
+	cmd_dict_exec(&td, "one", NULL);
+	cmd_dict_exec(&td, "one", NULL);
+	cmd_dict_exec(&td, "three", NULL);
+	cmd_dict_exec(&td, "bogus", NULL);	/* default entry: index n */
+
+	CHECK_INT((long)__atomic_load_n(&td.hits[0], __ATOMIC_RELAXED), 2);
+	CHECK_INT((long)__atomic_load_n(&td.hits[1], __ATOMIC_RELAXED), 0);
+	CHECK_INT((long)__atomic_load_n(&td.hits[2], __ATOMIC_RELAXED), 1);
+	CHECK_INT((long)__atomic_load_n(&td.hits[td.n], __ATOMIC_RELAXED), 1);
+
+	cmd_stats_format(fbuf, sizeof(fbuf));
+	CHECK(strstr(fbuf, "tst one=2 three=1 (unknown)=1") != NULL);
+
+	cmd_stats_reset();
+	cmd_stats_format(fbuf, sizeof(fbuf));
+	CHECK_STR(fbuf, "");
+
+	/* nc dictionaries: handlers run but nothing is counted or reported */
+	{
+		static cmd_dict_t nd;
+
+		cmd_dict_build_nc(&nd, small_set, 0);
+		CHECK_INT(nd.count, 0);
+
+		cmd_dict_exec(&nd, "one", NULL);
+		CHECK_INT(g_called, 1);
+		CHECK_INT((long)__atomic_load_n(&nd.hits[0], __ATOMIC_RELAXED), 0);
+
+		cmd_stats_format(fbuf, sizeof(fbuf));
+		CHECK_STR(fbuf, "");
+	}
+}
+
 int main(void)
 {
 	RUN(test_exact_hit);
@@ -189,5 +232,6 @@ int main(void)
 	RUN(test_null_handler);
 	RUN(test_capacity_and_chaining);
 	RUN(test_empty_terminator);
+	RUN(test_telemetry);
 	TEST_REPORT();
 }

@@ -1105,6 +1105,60 @@ void chat_stat (chat_param_t *param)
 	pubmsg(usr,"========================================");
 } /* }}} */
 
+/* chat_stats {{{ */
+void chat_stats(chat_param_t *param)
+{
+	userrec_t *usr=param->usr;
+	char buf[4096],
+		 cmds[4096],
+		*line=param->param,
+		 *p,
+		 *nl;
+
+	if (!usr->cons)
+	{
+		disttcp(usr,param->line);
+		return;
+	}
+
+	if (line && !strcmp(line,"reset"))
+	{
+		stats_reset();
+		cmd_stats_reset();
+		pubmsg(usr,"========================================");
+		pubmsg(usr,"\tStats counters reset");
+		pubmsg(usr,"========================================");
+		return;
+	}
+
+	stats_format(buf,sizeof(buf));
+	cmd_stats_format(cmds,sizeof(cmds));
+
+	pubmsg(usr,"========================================");
+	pubmsg(usr,"\tSTATS");
+	pubmsg(usr,"========================================");
+
+	for (p=buf; *p; p=nl+1)
+	{
+		nl=strchr(p,'\n');
+		if (nl) *nl=0;
+		pubmsg(usr,"\t%s",p);
+		if (!nl) break;
+	}
+
+	pubmsg(usr,"----------------------------------------");
+
+	for (p=cmds; *p; p=nl+1)
+	{
+		nl=strchr(p,'\n');
+		if (nl) *nl=0;
+		pubmsg(usr,"\t%s",p);
+		if (!nl) break;
+	}
+
+	pubmsg(usr,"========================================");
+} /* }}} */
+
 /* hlp_() {{{ */
 void hlp_whois( userrec_t *usr)
 {
@@ -1516,6 +1570,7 @@ static void chat_cmd_dict_init(void)
 		{ "rules",			(funct_t)chat_rules					},
 		{ "showops",		(funct_t)chat_showops				},
 		{ "stat",			(funct_t)chat_stat					},
+		{ "stats",			(funct_t)chat_stats				},
 		{ "time",			(funct_t)chat_date					},
 		{ "uptime", 		(funct_t)chat_uptime				},
 		{ "users",			(funct_t)chat_users					},
@@ -1527,6 +1582,7 @@ static void chat_cmd_dict_init(void)
 	};
 
 	cmd_dict_build(&chat_dict, chat_set, 1);
+	chat_dict.name="chat";
 }
 
 void chat_cmd_exec(userrec_t *usr, char *line, char *line_copy)

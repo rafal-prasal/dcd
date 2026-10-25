@@ -206,6 +206,8 @@ void make_sockets()
 
 int user_set_state(userrec_t *usr, int state)
 {
+	int was=usr->state;
+
 	//if user quits his state cannot be changed
 	if (user_tst_state(usr,STATE_QUIT)) return 0;
 	
@@ -215,6 +217,12 @@ int user_set_state(userrec_t *usr, int state)
 	    else usr->state=STATE_QUIT;
 	}
 	else usr->state=state;
+
+	/* hub telemetry: every transition into/out of STATE_REGISTERED */
+	if (!(was&STATE_REGISTERED) && (usr->state&STATE_REGISTERED))
+		stats_user_registered();
+	else if ((was&STATE_REGISTERED) && (usr->state&(STATE_QUIT|STATE_QUIT_SHOW)))
+		stats_user_left();
 
 	return 0;
 }
@@ -435,6 +443,8 @@ void listen_thread_udp(void *args)
 	
 		n=recvfrom(listen_udp,buffer,MAX_RECEIVE_ONCE-1,0,(struct sockaddr*)&remote,&remote_size);
 		if (n<=0) continue;
+
+		stats_add_udp((size_t)n,0);
 
 		buffer[n]='\000';
 	

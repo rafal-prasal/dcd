@@ -63,7 +63,12 @@ void sendtcp(userrec_t *usr, char *msg)
 	
 	ret=send(usr->sock, msg, msglen, MSG_DONTWAIT|MSG_NOSIGNAL);
 
-	if (ret==-1) sockerr("send", errno, usr);
+	if (ret>0)
+	{
+		usr->send_bytes+=(unsigned long)ret;
+		stats_add_tcp(0,(size_t)ret);
+	}
+	else if (ret==-1) sockerr("send", errno, usr);
 
 	return;
 }
@@ -123,12 +128,14 @@ void disttcp_userip(userrec_t *usr)
 
 void sendudp(hub_t *_hub, char *msg)
 {
-	int msglen=strlen(msg);
+	int ret, msglen=strlen(msg);
 
 	size_t addr=sizeof(struct sockaddr_in);
 		
-	/* return value intentionally ignored: UDP hub heartbeats are fire-and-forget */
-	sendto(_hub->sock, msg, msglen, 0, (struct sockaddr *)&_hub->udp ,addr );
+	/* return value intentionally ignored for errors: UDP hub heartbeats
+	   are fire-and-forget; it is only collected for traffic counters */
+	ret=sendto(_hub->sock, msg, msglen, 0, (struct sockaddr *)&_hub->udp ,addr );
+	if (ret>0) stats_add_udp(0,(size_t)ret);
 }
 
 void distudp(hub_t *_hub, char *str)
@@ -302,6 +309,12 @@ int my_recv(userrec_t *usr, int max_length, char *message)
 	
 	ec=1;
 	message[ret]=0;
+
+	if (ret>0)
+	{
+		usr->recv_bytes+=(unsigned long)ret;
+		stats_add_tcp((size_t)ret,0);
+	}
 
 	/* update last idle */
 	if (user_tst_state(usr,STATE_REGISTERED)) usr->idle=time(NULL);

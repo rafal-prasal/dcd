@@ -20,4 +20,9 @@ void stats_format(char *buf, size_t size);
 
 void stats_reset(void);
 
+/* point-in-time getters for reports (healthcheck endpoint) */
+unsigned long stats_online(void);
+unsigned long stats_max_online(void);
+unsigned long stats_total_logins(void);
+
 #endif /* __STATS_H_INCLUDED__ */

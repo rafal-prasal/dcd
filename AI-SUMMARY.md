@@ -428,6 +428,39 @@ Console `stats` / `stats reset` commands report hub traffic, per-command dispatc
 - New e2e `test_console_stats`: console `stats` shows all report fields + `chat stats=` breakdown; `stats reset` zeroes counters while online users stay visible.
 - ctest 11/11; e2e 26/26; e2e under ThreadSanitizer: no data races (only the pre-existing `make_threads` thread-leak warnings at shutdown).
 
+## 17. HTTP endpoint: web console + /healthcheck (2026-10-25)
+
+New `listen_port_http` config option (default 0 = disabled) starts an embedded HTTP/WebSocket server. It serves a self-contained web console client (HTML + console.js + console.css embedded in the binary via `src/web_assets.h`), a `/healthcheck` endpoint, and bridges a WebSocket to the local console port so the browser client behaves exactly like the telnet console.
+
+### Implementation
+
+- `src/web.c` (new): one thread, static buffers, no per-client allocation. Routes: `GET /` (web console), `/console.js`, `/console.css`, `GET /healthcheck` (200 `OK online=… max_online=… logins=…` when the hub core is responsive, 500 otherwise — `pthread_mutex_timedlock` on `mutex_users` with 2 s timeout; every worker releases that lock each cycle, so timing out means a deadlock), `GET /ws` (RFC6455 upgrade).
+- WebSocket bridge: each `/ws` client gets a loopback TCP connection to `listen_port_cons` and protocol bytes are relayed raw; telnet IAC option triplets (`FF FB/FC/FD xx`) are stripped server-side. Minimal RFC6455 codec (`ws_parse_frame`/`ws_write_frame` in `src/web.{c,h}`, shared with tests) — text/close/ping/pong, no fragmentation; SHA-1 for the handshake uses OpenSSL `EVP_Q_digest` (§15). Non-console responses use proper status codes (400/404/405/500/503).
+- Config: `listen_port_http` (`src/main.h` field, `src/cmd.conf.c` handler, `conf/dcd.conf.in` entry); thread created in `make_threads()` and cancelled/closed in `do_shutdown()` alongside the console listener.
+
+### Tests / Verification
+
+- e2e `TestWeb` (4 tests, dependency-free raw RFC6455 python client in `tests/e2e/test_e2e.py`): healthcheck 200 + body; static asset serving; WS console login (`login:`/`password:` prompts, IAC-free stream, `stats` output incl. `online:`); wrong-password teardown.
+- ctest 11/11; e2e 30/30; e2e under ThreadSanitizer: 30/30, no data races (thread-leak-at-shutdown warnings now 6 = 5 pre-existing + the new http thread, same category).
+
+## 18. Static-analysis (CVE-pattern) audit pass: flawfinder + cppcheck + gcc -fanalyzer (2026-10-25)
+
+Scanned `src/` with `flawfinder 2.0.19` (CVE/CWE pattern DB, all 21 hits at risk level >=3), `cppcheck 2.19` (warning+style+portability) and `gcc -fanalyzer`. Real defects found and fixed:
+
+- **Remote buffer overflow — `$MyINFO`** (`src/misc.c` `fill_myinfo`): `strcpy(myinfo->cache, line)` copied the whole request line into a 467-byte struct field with no bound; trailing garbage after the last `$` overflowed `myinfo_t`. Now rejected with new code `MyINFO_LINE` before any copy.
+- **Broken input validation — `$MyINFO` flag**: `if (flag<1 && flag>11)` is always false; any byte passed as the connection flag. Fixed to `flag<1 || flag>11` with `unsigned char` flag (raw protocol bytes 1..11 per the `flag_myinfo()` table). The e2e NMDC client and unit tests previously used an ASCII digit as the flag (passing only because validation was broken) — switched to raw protocol bytes.
+- **Remote NULL-deref DoS — `$Search`** (`src/cmd.dc.c`): `if (!source_nick && !*source_nick)` dereferences NULL when `strtok_r` returns NULL (whitespace-only options). Fixed to `||`.
+- **Dead-code hazard — console login** (`src/main.c` `buf2cmd`): removed a statement guarded by an always-false `!cmd` (removing only the sub-condition turns it live — discovered the hard way when the console suite caught it); empty-line handling lives in `manage_cons`.
+- **Robustness**: `randomize()` now seeds `srand` from 4 urandom bytes (was 1 byte + pid/time); `daemonize()` aborts when any `freopen("/dev/null")` fails; `lock_key()` uses `my_malloc` (OOM-abort) instead of unchecked raw `malloc` (`gcc -fanalyzer` null-deref); `%ld` → `%lu` for unsigned penalty dates (`conf.c`); dangling empty-bodied `if (!usr->cons)` removed from `chat_rehash`.
+- **Reviewed safe, annotated `/* flawfinder: ignore */`**: bounded `strcat`/`strcpy` in `$GetNickList` (buffers sized `(NICK_LEN+2)*MAXUSERS+22`), exactly-sized `sprintf` in `main.c`/`make_path`/`lockgen`, `my_vsprintf` (`fmt` always a compile-time constant at call sites), `realpath(tmp)` with `PATH_MAX` buffer, `sscanf` into integer destinations.
+- `cppcheck` residual: one `syntaxError` in `cmd.dc.c` is a cppcheck 2.19 parser limitation (GCC/Clang/MSVC-plain all compile; suppression is impossible before parse).
+
+### Tests
+
+- `test_myinfo` `test_fill_security`: bad flag bytes (`'A'`, `0x0c`, embedded NUL) rejected; 496-byte trailing-garbage line → `MyINFO_LINE`; flag `0x0b` accepted.
+- e2e `test_search_empty_options_no_crash` (NULL-deref regression) and `test_myinfo_oversized_line_kicks` (overflow must kick, never corrupt).
+- ctest 11/11; e2e 32/32; `gcc -fanalyzer` clean on touched files.
+
 ## Status
 
-§1–§11 are committed (`master` ahead of `origin/master`). The §12, §13, §14, §15 and §16 changes are **uncommitted** in the working tree.
+§1–§11 are committed (`master` ahead of `origin/master`). The §12, §13, §14, §15, §16, §17 and §18 changes are **uncommitted** in the working tree.

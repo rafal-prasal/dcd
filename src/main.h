@@ -220,6 +220,7 @@
 #define MyINFO_FLAG 6
 #define MyINFO_EMAIL 7
 #define MyINFO_SHARE 8
+#define MyINFO_LINE 9
 /* }}} */
 
 /* SUPPORTS / what of extended protocol is supported {{{ */
@@ -336,6 +337,7 @@ typedef struct
 	char *admin_contact;
 	unsigned short int listen_port_main;
 	unsigned short int listen_port_cons;
+	unsigned short int listen_port_http;
 	unsigned short int listen_port_udp;
 	char *hubname;
 	unsigned int userlimit;

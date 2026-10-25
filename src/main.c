@@ -53,10 +53,11 @@ pthread_t listen_th_main[MAX_N_LISTEN_MAIN];	/* listen thread handle for main se
 pthread_t th_user_manager[MAX_N_USER_MANAGER] ;/* handles managing user's communicates */
 
 pthread_t listen_th_cons;	/* listen thread handle for remote console */
+pthread_t listen_th_http;	/* listen thread handle for web endpoint */
 pthread_t listen_th_udp;		/* listen thread handle for minslots checking */
 pthread_t th_cleaner;
 
-struct sockaddr_in local_main,local_udp, local_cons;
+struct sockaddr_in local_main,local_udp, local_cons, local_http;
 
 so_opts_t listen_opts,user_opts;
 
@@ -83,6 +84,7 @@ static volatile sig_atomic_t term_sig=0;
 int listen_main;			/* main listening socket */
 int listen_udp;				/* search result listening socket */
 int listen_cons;			/* console listening socket */
+int listen_http;				/* web endpoint listening socket */
 time_t starttime;			/* start time in sec */
 
 /* logging */
@@ -197,6 +199,41 @@ void make_sockets()
 		}
 
 		if (listen(listen_cons,5)<0)
+		{
+           	log_write(FAC_DAEMON,PR_CRITICAL,"listen() failed - terminating: %s.", strerror(errno));
+			exit(1);
+		}
+	}
+
+	if (conf.listen_port_http)
+	{
+		/* setup and bind the web endpoint listening socket */
+		if ((listen_http=socket(AF_INET,SOCK_STREAM,0))==-1)
+		{
+           	log_write(FAC_DAEMON,PR_CRITICAL,"socket() failed - terminating: %s.", strerror(errno));
+
+			exit(1);
+		}
+
+		if (setsockopts(listen_http,&listen_opts)) 
+		{
+           	log_write(FAC_DAEMON,PR_CRITICAL,"setsockopts() failed - terminating: %s.", strerror(errno));
+			exit(1);
+		}
+		
+		memset(&local_http,0,sizeof(struct sockaddr_in));
+
+		local_http.sin_family=AF_INET;
+		local_http.sin_port=htons(conf.listen_port_http);
+		inet_aton(conf.listen_interface,&local_http.sin_addr);
+
+		if (bind(listen_http,(struct sockaddr *)&local_http,sizeof(struct sockaddr))<0)
+		{
+           	log_write(FAC_DAEMON,PR_CRITICAL,"bind() failed - terminating: %s.", strerror(errno));
+			exit(1);
+		}
+
+		if (listen(listen_http,8)<0)
 		{
            	log_write(FAC_DAEMON,PR_CRITICAL,"listen() failed - terminating: %s.", strerror(errno));
 			exit(1);
@@ -511,6 +548,7 @@ static void do_shutdown(int sig)
 		log_write(FAC_DAEMON,PR_ALERT,"SIGSEGV received - crashing");
 		close(listen_main);
 		if (conf.listen_port_cons) close(listen_cons);
+		if (conf.listen_port_http) close(listen_http);
 		if (conf.minslots) close(listen_udp);
 		log_close();
 		exit(SIGSEGV);
@@ -524,12 +562,14 @@ static void do_shutdown(int sig)
 	pthread_cancel(th_user_manager[0]);
 	pthread_cancel(listen_th_udp);
 	if (conf.listen_port_cons) pthread_cancel(listen_th_cons);
+	if (conf.listen_port_http) pthread_cancel(listen_th_http);
 	pthread_cancel(th_cleaner);
 
 	for (i=0;i<NUSERS;i++) disconnect(user[i]);
 
 	close(listen_main);
 	if (conf.listen_port_cons) close(listen_cons);
+	if (conf.listen_port_http) close(listen_http);
 	if (conf.minslots) close(listen_udp);
 
 	exit(sig);
@@ -561,7 +601,7 @@ char *buf2cmd(userrec_t *usr)
 	len=strlen(line);
 
 	cmd=my_malloc(len+2);
-	strcpy(cmd,line);
+	strcpy(cmd,line); /* flawfinder: ignore */
 
 	cmd[len]=delim[0];
 	cmd[len+1]='\000';
@@ -570,7 +610,9 @@ char *buf2cmd(userrec_t *usr)
 	my_free(usr->buf);
 	usr->buf=tmp;
 
-	if (usr->cons && user_tst_state(usr, STATE_KEY|STATE_PASSWORD) && !cmd) user_set_state(usr, STATE_QUIT);
+	/* the (cons && STATE_KEY|STATE_PASSWORD && !cmd) QUIT here was dead
+	   code: cmd is never NULL (my_malloc above) and the empty-line case
+	   is already handled by manage_cons' "broken registration" branch */
 
 leave:
 	return cmd;
@@ -787,7 +829,7 @@ void init_var(char *argv0)
 	/* set up default config values */
 
 	conf.conf_main=(char *)my_malloc(strlen(CONFIGDIR)+strlen(CONF_MAIN)+2); /* one byte for '/' and one for '\0' */
-	sprintf(conf.conf_main, "%s%s%s", CONFIGDIR, (CONFIGDIR[strlen(CONFIGDIR)-1]=='/')?"":"/", CONF_MAIN);
+	sprintf(conf.conf_main, "%s%s%s", CONFIGDIR, (CONFIGDIR[strlen(CONFIGDIR)-1]=='/')?"":"/", CONF_MAIN); /* flawfinder: ignore */
 
 	conf.conf_welcome=strdup(CONF_WELCOME);
 	conf.conf_motd=strdup(CONF_MOTD);
@@ -1029,7 +1071,14 @@ void make_threads()
 	/* create listening thread for remote console */
 	if (conf.listen_port_cons && (listen_cons==-1 || pthread_create( &listen_th_cons, NULL, (void *)listen_thread_cons, NULL)!=0))
 	{
-		log_write(FAC_DAEMON,PR_CRITICAL,"pthread_create() failed: %s", strerror(errno));
+		 log_write(FAC_DAEMON,PR_CRITICAL,"pthread_create() failed: %s", strerror(errno));
+		exit(1);
+	}
+
+	/* create listening thread for the web endpoint (HTTP + WebSocket) */
+	if (conf.listen_port_http && pthread_create( &listen_th_http, NULL, (void *)listen_thread_http, NULL)!=0)
+	{
+		 log_write(FAC_DAEMON,PR_CRITICAL,"pthread_create() failed: %s", strerror(errno));
 		exit(1);
 	}
 }

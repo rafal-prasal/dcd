@@ -1037,11 +1037,8 @@ void chat_rehash(chat_param_t *param)
 	userrec_t *usr=param->usr;
 	char *line=param->line;
 
-	if (!usr->cons) 
-
 	//can be used only from console
-	if (!usr->cons)
-	{
+	if (!usr->cons)	{
 		disttcp(usr,line);	
 		return;
 	}

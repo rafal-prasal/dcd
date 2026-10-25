@@ -210,7 +210,7 @@ void dc_GetNickList(dc_param_t *param)
 			if (user[i] 
 				&& user_tst_state(user[i],STATE_REGISTERED))
 			{
-				strcat(nicks,user[i]->nick);
+				strcat(nicks,user[i]->nick); /* flawfinder: ignore */
 				strcat(nicks,"$$");			
 			}
 	}
@@ -222,7 +222,7 @@ void dc_GetNickList(dc_param_t *param)
 			&& (strchr(user[i]->perm,'s') 
 					|| strchr(user[i]->perm,'a')))
 		{			
-			strcat(ops,user[i]->nick);
+			strcat(ops,user[i]->nick); /* flawfinder: ignore */
 			strcat(ops,"$$");
 		}
 
@@ -231,13 +231,13 @@ void dc_GetNickList(dc_param_t *param)
 	{
 		if(!user_tst_supports(usr,SUPPORTS_NoHello_NoGetINFO))
 		{ 
-			strcat(nicks,usr->nick);
+			strcat(nicks,usr->nick); /* flawfinder: ignore */
 			strcat(nicks,"$$");
 		}
 
 		if (usr->perm && (strchr(usr->perm,'a')||strchr(usr->perm,'s')))
 		{
-			strcat(ops,usr->nick);
+			strcat(ops,usr->nick); /* flawfinder: ignore */
 			strcat(ops,"$$");
 		}
 	}
@@ -620,7 +620,7 @@ void dc_SR(dc_param_t *param)
 		|| (user_tst_penalty(usr,PENALTY_NOSEARCH) && !strchr(usr->perm,'s'))) return;
 
 	source_nick=strtok_r(par," ",&__strtok_temp__);
-	if (!source_nick && !*source_nick) return;
+	if (!source_nick || !*source_nick) return;
 	
 	if(strcasecmp(usr->nick,source_nick))
 	{

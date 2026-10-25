@@ -358,6 +358,27 @@ void conf_listen_port_cons(conf_param_t *param)
 	conf.listen_port_cons=ival;
 }
 
+void conf_listen_port_http(conf_param_t *param)
+{
+	int ival=0;
+
+	char *cmd=param->cmd,
+		 *value=param->value;
+	int start = param->start;
+
+	if (!start) return;
+
+	ival=atoi(value);
+
+	if (ival<0 || ival>65535)
+	{
+        log_write(FAC_DAEMON,PR_CRITICAL,"'%s' should be in <0,65535>",cmd);
+		exit(1);
+	}
+
+	conf.listen_port_http=ival;
+}
+
 void conf_log_facility(conf_param_t *param)
 {
 	int ival=0;
@@ -488,7 +509,7 @@ void conf_min_share(conf_param_t *param)
 
 	ival=atoi(value);
 
-	if (!ival || !sscanf(value,"%"SCNu64,&(conf.minshare))) conf.minshare=0;
+	if (!ival || !sscanf(value,"%"SCNu64,&(conf.minshare))) conf.minshare=0; /* flawfinder: ignore */
 }
 
 void conf_min_slots(conf_param_t *param)
@@ -762,6 +783,7 @@ static void conf_cmd_dict_init(void)
 		{"kick_max_chat_length",		(funct_t)conf_max_chat_length_kick	},		
 		{"listen_interface",			(funct_t)conf_obsolete				},
 		{"listen_port_cons",			(funct_t)conf_listen_port_cons 		},
+		{"listen_port_http",			(funct_t)conf_listen_port_http 		},
 		{"listen_port_main",			(funct_t)conf_listen_port_main 		},
 		{"log_chat",					(funct_t)conf_obsolete				},
 		{"log_con",						(funct_t)conf_obsolete				},

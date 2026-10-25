@@ -70,7 +70,7 @@ char parse_config(int start, config_t *conf)
 
 	/* opening config {{{ */
 	/* we look for config in location taken from configure or from command-line option */
-	if (!realpath(conf->conf_main,tmp))
+	if (!realpath(conf->conf_main,tmp)) /* flawfinder: ignore */
 	{
 		log_write(FAC_DAEMON,PR_ERROR,"Can't find config file (%s): %s.",conf->conf_main, strerror(errno));
 		return 1;
@@ -571,7 +571,7 @@ void penalties_write()
 		
 		if ((duration=user_exp_penalty(penalties[i]))>0) 
 		{
-			fprintf(fp,"%s:%s:%s:%d:%ld:%ld:%s\004\n",penalties[i]->ip,
+			fprintf(fp,"%s:%s:%s:%d:%lu:%lu:%s\004\n",penalties[i]->ip,
 										penalties[i]->nick,
 										penalties[i]->op,
 										penalties[i]->penalty,

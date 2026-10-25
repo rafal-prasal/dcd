@@ -52,6 +52,7 @@ set(DCD_CORE_SOURCES
 	src/cmd.udp.c
 	src/sha512.c
 	src/stats.c
+	src/web.c
 		src/log.c)
 
 add_library(dcd_obj OBJECT ${DCD_CORE_SOURCES})

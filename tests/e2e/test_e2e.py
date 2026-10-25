@@ -10,11 +10,16 @@ Usage: python3 test_e2e.py --port 41111 --cons-port 41511
 """
 
 import argparse
+import base64
 import itertools
 import os
+import select
+import socket
+import struct
 import sys
 import time
 import unittest
+import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -29,6 +34,82 @@ from nmdc import (  # noqa: E402
 HUBNAME = "E2E-Test-Hub"
 OP_NICK = "testop"
 OP_PASS = "secret"
+HTTP = 0
+
+
+def ws_connect(http_port, path="/ws"):
+    """Minimal RFC6455 client: handshake + return (socket, leftover bytes)."""
+    s = socket.create_connection(("127.0.0.1", http_port), timeout=10)
+    key = base64.b64encode(b"0123456789abcdef").decode()
+    s.sendall((
+        f"GET {path} HTTP/1.1\r\nHost: 127.0.0.1\r\nUpgrade: websocket\r\n"
+        "Connection: Upgrade\r\nSec-WebSocket-Key: " + key + "\r\n"
+        "Sec-WebSocket-Version: 13\r\n\r\n").encode())
+    hdr = b""
+    while b"\r\n\r\n" not in hdr:
+        chunk = s.recv(4096)
+        if not chunk:
+            raise AssertionError("websocket handshake closed early")
+        hdr += chunk
+    status, _, rest = hdr.partition(b"\r\n\r\n")
+    if b"101" not in status.split(b"\r\n", 1)[0]:
+        raise AssertionError("bad websocket handshake: %r" % status)
+    return s, rest
+
+
+def ws_send(s, text):
+    payload = text.encode()
+    mask = os.urandom(4)
+    masked = bytes(b ^ mask[i % 4] for i, b in enumerate(payload))
+    ln = len(payload)
+    if ln < 126:
+        hdr = struct.pack("!BB", 0x81, 0x80 | ln)
+    elif ln < 0x10000:
+        hdr = struct.pack("!BBH", 0x81, 0x80 | 126, ln)
+    else:
+        hdr = struct.pack("!BBQ", 0x81, 0x80 | 127, ln)
+    s.sendall(hdr + mask + masked)
+
+
+def ws_read_until(s, buf, needle, timeout=10.0):
+    """Collect text frames until needle appears; returns (text, leftover)."""
+    text = ""
+
+    def need(n):
+        nonlocal buf
+        while len(buf) < n:
+            if not select.select([s], [], [], timeout)[0]:
+                raise TimeoutError("websocket read timeout")
+            chunk = s.recv(4096)
+            if not chunk:
+                raise ConnectionError("websocket closed")
+            buf += chunk
+
+    while needle not in text:
+        need(2)
+        b0, b1 = buf[0], buf[1]
+        if b1 & 0x80:
+            raise AssertionError("server must not mask frames")
+        ln = b1 & 0x7F
+        i = 2
+        if ln == 126:
+            need(4)
+            ln = struct.unpack("!H", buf[2:4])[0]
+            i = 4
+        elif ln == 127:
+            need(10)
+            ln = struct.unpack("!Q", buf[2:10])[0]
+            i = 10
+        need(i + ln)
+        op = b0 & 0x0F
+        payload = buf[i:i + ln]
+        buf = buf[i + ln:]
+        if op == 0x8:
+            raise ConnectionError("websocket close frame")
+        if op == 0x1:
+            text += payload.decode(errors="replace")
+
+    return text, buf
 
 _counter = itertools.count(1)
 
@@ -230,6 +311,21 @@ class TestChat(E2EBase):
 
 
 class TestSearchAndDownloads(E2EBase):
+    def test_search_empty_options_no_crash(self):
+        c = self.logged_in(uniq("srempty"))
+        # whitespace-only $Search options: strtok_r returns NULL and the
+        # old "if (!p && !*p)" check dereferenced it (remote NULL deref)
+        c.send("$Search  |")
+        c.send("$GetNickList")
+        c.expect("NickList", timeout=5)   # connection must still be alive
+
+    def test_myinfo_oversized_line_kicks(self):
+        c = self.logged_in(uniq("mibig"))
+        # trailing garbage after the last '$' used to overflow the myinfo
+        # cache (remote buffer overflow); now it must kick, never corrupt
+        c.send("$MyINFO $ALL " + c.nick + " d$ $C\x01$a@b$1$" + "X" * 600 + "$|")
+        c.expect_closed(timeout=8)
+
     def test_search_forwarded(self):
         a = self.logged_in(uniq("srchA"))
         b = self.logged_in(uniq("srchB"))
@@ -354,13 +450,69 @@ class TestConsole(E2EBase):
             con.close()
 
 
+class TestWeb(E2EBase):
+    """Web endpoint: HTTP healthcheck, static client assets and the
+    WebSocket console bridge (raw RFC6455 client, no third-party deps)."""
+
+    def test_healthcheck(self):
+        with urllib.request.urlopen(f"http://127.0.0.1:{HTTP}/healthcheck",
+                                    timeout=5) as r:
+            self.assertEqual(r.status, 200)
+            self.assertIn("OK online=", r.read().decode())
+
+    def test_web_static_assets(self):
+        for path, needle in [("/", "web console"),
+                             ("/console.js", "WebSocket"),
+                             ("/console.css", "body"),
+                             ("/index.html", "web console")]:
+            with urllib.request.urlopen(f"http://127.0.0.1:{HTTP}{path}",
+                                        timeout=5) as r:
+                self.assertEqual(r.status, 200)
+                self.assertIn(needle, r.read().decode())
+
+    def test_web_console_login_and_stats(self):
+        self.used_nicks.add(OP_NICK)
+        s, buf = ws_connect(HTTP)
+        try:
+            text, buf = ws_read_until(s, buf, "login:")
+            ws_send(s, OP_NICK + "\r\n")
+            text, buf = ws_read_until(s, buf, "password:")
+            ws_send(s, OP_PASS + "\r\n")
+            text, buf = ws_read_until(s, buf, "Logged in")
+            # telnet IAC triplets must be stripped
+            self.assertNotIn("\xff", text)
+            ws_send(s, "stats\r\n")
+            text, buf = ws_read_until(s, buf, "online:")
+            self.assertIn("STATS", text)
+            # leave the console session cleanly so the next test can
+            # reuse the operator nick before the cleaner reaps us
+            ws_send(s, "quit\r\n")
+        finally:
+            s.close()
+
+    def test_web_console_wrong_password(self):
+        self.used_nicks.add(OP_NICK)
+        s, buf = ws_connect(HTTP)
+        try:
+            text, buf = ws_read_until(s, buf, "login:")
+            ws_send(s, OP_NICK + "\r\n")
+            text, buf = ws_read_until(s, buf, "password:")
+            ws_send(s, "totally-wrong\r\n")
+            # the console kills the session; the bridge must tear down
+            with self.assertRaises((ConnectionError, TimeoutError)):
+                ws_read_until(s, buf, "definitely-not-there", timeout=5.0)
+        finally:
+            s.close()
+
+
 def main():
-    global PORT, CONS
+    global PORT, CONS, HTTP
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=41111)
     ap.add_argument("--cons-port", type=int, default=41511)
+    ap.add_argument("--http-port", type=int, default=41911)
     args, rest = ap.parse_known_args()
-    PORT, CONS = args.port, args.cons_port
+    PORT, CONS, HTTP = args.port, args.cons_port, args.http_port
 
     unittest.main(verbosity=2, argv=[sys.argv[0]] + rest)
 

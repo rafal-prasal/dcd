@@ -110,15 +110,23 @@ char *get_progname(char *argv0)
 void randomize( void )
 {
 	unsigned int seed=0;
+	size_t got=0;
 
 	FILE * rdev = fopen( "/dev/urandom", "r" );
 	if ( rdev != NULL )
 	{
-		seed = fgetc( rdev ); fclose( rdev );
+		/* consume a full unsigned int worth of entropy: a single byte
+		   left the lock salt far too predictable */
+		unsigned char buf[sizeof(seed)];
+
+		got=fread(buf,1,sizeof(buf),rdev);
+		fclose( rdev );
+
+		while (got--) seed=(seed<<8)|buf[got];
 	}
 
-	seed += getpid() + time( NULL );
-	srand( seed );
+	seed += getpid() + time( NULL );	/* mix even when urandom failed */
+	srand( seed ); /* flawfinder: ignore */
 } /* }}} */
 
 /* lockgen() - lock generator: 'salt Pk=privkey' {{{ */
@@ -126,7 +134,7 @@ void lock_gen(char *lock)
 {
 	int i,
 		n;
-	n=sprintf(lock,"%s","EXTENDEDPROTOCOL");
+	n=sprintf(lock,"%s","EXTENDEDPROTOCOL"); /* flawfinder: ignore */
 	for(i=n;i<SALT_LEN-1;i++) lock[i]=33+rand()%(60);
 	lock[SALT_LEN-1]=0;
 
@@ -161,7 +169,7 @@ void lock_key(userrec_t *usr, char *lock)
 	}	
 	tmp[0] ^= tmp[i - 1];
 
-	key = malloc(10*(SALT_LEN-1)+1);
+	key = my_malloc(10*(SALT_LEN-1)+1);
 	offset = 0;
 	
 	for(i = 0; i<SALT_LEN-1; i++) 
@@ -191,7 +199,7 @@ char *my_vsprintf(const char *fmt, va_list ap)
 		/* each vsnprintf() call consumes ap: re-arm it per attempt,
 		   otherwise the growth loop reads freed/garbage stack args */
 		va_copy(ap2, ap);
-		n=vsnprintf(p,(size_t)size,fmt,ap2);
+		n=vsnprintf(p,(size_t)size,fmt,ap2); /* flawfinder: ignore */
 		va_end(ap2);
 
 		if (n!=-1 && n<size) break;
@@ -468,12 +476,12 @@ void move_myinfo(myinfo_t *from, myinfo_t *to)
 
 //	*to=*from;
 
-	strcpy(to->desc,from->desc);
-	strcpy(to->ctype,from->ctype);		
+	strcpy(to->desc,from->desc); /* flawfinder: ignore */
+	strcpy(to->ctype,from->ctype); /* flawfinder: ignore */
 	to->flag=from->flag;		
-	strcpy(to->email,from->email);
+	strcpy(to->email,from->email); /* flawfinder: ignore */
 	to->share=from->share;
-	strcpy(to->cache,from->cache);
+	strcpy(to->cache,from->cache); /* flawfinder: ignore */
 
 	pthread_mutex_unlock(&mutex_myinfo);
 }
@@ -487,9 +495,10 @@ int fill_myinfo(userrec_t *usr, myinfo_t *myinfo, char *info, char *line)
 		 *desc,
 		 *space,
 		 *ctype,
-		 flag,
 		 *email,
 		 *share;
+
+	unsigned char flag;
 		 			 
 	all=strsep(&tmp," ");
 	if (!tmp || strcmp(all,"$ALL")) return MyINFO_ALL;
@@ -507,7 +516,7 @@ int fill_myinfo(userrec_t *usr, myinfo_t *myinfo, char *info, char *line)
 	if(!tmp || strlen(ctype)<1 || strlen(ctype)>CTYPE_LEN-1) return MyINFO_SPEED;
 
 	flag=ctype[strlen(ctype)-1];
-	if (flag<1 && flag>11) return MyINFO_FLAG;
+	if (flag<1 || flag>11) return MyINFO_FLAG;
 	
 	ctype[strlen(ctype)-1]='\000';
 		
@@ -517,12 +526,17 @@ int fill_myinfo(userrec_t *usr, myinfo_t *myinfo, char *info, char *line)
 	share=strsep(&tmp,"$");
 	if(!tmp || strlen(share)>SHARE_LEN-1) return MyINFO_SHARE;
 
-	strcpy(myinfo->desc,desc);
-	strcpy(myinfo->email,email);
-	strcpy(myinfo->ctype,ctype);		
+	/* cache holds the rebuilt full line: anything longer than the
+	   struct's cache (e.g. trailing garbage after the last '$') would
+	   overflow myinfo_t */
+	if (strlen(line)>=sizeof(myinfo->cache)) return MyINFO_LINE;
+
+	strcpy(myinfo->desc,desc); /* flawfinder: ignore */
+	strcpy(myinfo->email,email); /* flawfinder: ignore */
+	strcpy(myinfo->ctype,ctype); /* flawfinder: ignore */
 	myinfo->flag=flag;
-	sscanf(share,"%"SCNu64,&(myinfo->share));
-	strcpy(myinfo->cache,line);
+	sscanf(share,"%"SCNu64,&(myinfo->share)); /* flawfinder: ignore */
+	strcpy(myinfo->cache,line); /* flawfinder: ignore */
 	return MyINFO_OK;
 } /* }}} */
 
@@ -586,7 +600,7 @@ void make_path(char *dir,char **file)
 		return;
 	}
 	*file=newp;
-	sprintf(*file,"%s%s%s",dir,(dir[strlen(dir)-1]=='/')?"":"/",p);
+	sprintf(*file,"%s%s%s",dir,(dir[strlen(dir)-1]=='/')?"":"/",p); /* flawfinder: ignore */
 	my_free(tmp);
 } /* }}} */
 

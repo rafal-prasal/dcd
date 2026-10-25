@@ -14,6 +14,7 @@ volatile sig_atomic_t rehash = 0;
 int listen_main = -1;
 int listen_udp = -1;
 int listen_cons = -1;
+int listen_http = -1;
 
 userrec_t *user[MAXUSERS];
 hub_t *hub[MAXHUBS];

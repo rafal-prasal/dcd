@@ -13,6 +13,7 @@ case "$SAN" in
 esac
 PORT="${DCD_E2E_PORT:-41111}"
 CONS_PORT=$((PORT + 400))
+HTTP_PORT=$((PORT + 800))
 PREFIX="$E2E_DIR/prefix"
 CONF="$PREFIX/etc/dcd"
 
@@ -41,6 +42,7 @@ cat > "$CONF/dcd.conf" <<EOF
 bind_address = 127.0.0.1
 listen_port_main = $PORT
 listen_port_cons = $CONS_PORT
+listen_port_http = $HTTP_PORT
 n_listen_main = 1
 n_user_manager = 1
 hubname = E2E-Test-Hub
@@ -114,7 +116,7 @@ done
 echo "hub pid $HUB_PID"
 
 echo "== running E2E suite =="
-python3 "$ROOT/tests/e2e/test_e2e.py" --port "$PORT" --cons-port "$CONS_PORT"
+python3 "$ROOT/tests/e2e/test_e2e.py" --port "$PORT" --cons-port "$CONS_PORT" --http-port "$HTTP_PORT"
 RC=$?
 
 echo "== stopping hub =="

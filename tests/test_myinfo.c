@@ -9,7 +9,7 @@ extern userrec_t *user[];
 extern int NUSERS;
 
 /* format: $ALL <nick> <desc>$ $<ctype><flag>$<email>$<share>$ */
-static const char *GOOD = "$ALL MyNick SomeDesc$ $Conn1$me@dcd.pl$1234567890$";
+static const char *GOOD = "$ALL MyNick SomeDesc$ $Conn\x01$me@dcd.pl$1234567890$";
 
 static userrec_t usr;
 static char nick_buf[] = "MyNick";	/* userrec_t.nick is a pointer */
@@ -38,8 +38,8 @@ static void test_fill_ok(void)
 {
 	CHECK_INT(run_fill(GOOD), MyINFO_OK);
 	CHECK_STR(mi.desc, "SomeDesc");
-	CHECK_STR(mi.ctype, "Conn");	/* flag digit stripped from ctype */
-	CHECK_INT(mi.flag, '1');
+	CHECK_STR(mi.ctype, "Conn");	/* raw flag byte stripped from ctype */
+	CHECK_INT(mi.flag, 1);
 	CHECK_STR(mi.email, "me@dcd.pl");
 	CHECK(mi.share == 1234567890ULL);
 	CHECK_STR(mi.cache, GOOD);	/* cache holds the original line */
@@ -47,20 +47,20 @@ static void test_fill_ok(void)
 
 static void test_fill_errors(void)
 {
-	CHECK_INT(run_fill("$AL MyNick D$ $C1$a@b$1$"), MyINFO_ALL);
-	CHECK_INT(run_fill("$ALL OtherNick D$ $C1$a@b$1$"), MyINFO_NICK);
+	CHECK_INT(run_fill("$AL MyNick D$ $C\x01$a@b$1$"), MyINFO_ALL);
+	CHECK_INT(run_fill("$ALL OtherNick D$ $C\x01$a@b$1$"), MyINFO_NICK);
 
 	/* description longer than DESC_LEN-1 */
 	{
 		char bad[512], filler[300];
 		memset(filler, 'd', 260);
 		filler[260] = 0;
-		sprintf(bad, "$ALL MyNick %s$ $C1$a@b$1$", filler);
+		sprintf(bad, "$ALL MyNick %s$ $C\x01$a@b$1$", filler);
 		CHECK_INT(run_fill(bad), MyINFO_DESC);
 	}
 
 	/* the single space between the two '$' after desc is missing */
-	CHECK_INT(run_fill("$ALL MyNick D$$C1$a@b$1$"), MyINFO_SPACE);
+	CHECK_INT(run_fill("$ALL MyNick D$$C\x01$a@b$1$"), MyINFO_SPACE);
 
 	/* empty connection token */
 	CHECK_INT(run_fill("$ALL MyNick D$ $$a@b$1$"), MyINFO_SPEED);
@@ -70,7 +70,7 @@ static void test_fill_errors(void)
 		char bad[512], filler[80];
 		memset(filler, 'e', 70);
 		filler[70] = 0;
-		sprintf(bad, "$ALL MyNick D$ $C1$%s$1$", filler);
+		sprintf(bad, "$ALL MyNick D$ $C\x01$%s$1$", filler);
 		CHECK_INT(run_fill(bad), MyINFO_EMAIL);
 	}
 
@@ -79,12 +79,37 @@ static void test_fill_errors(void)
 		char bad[512], filler[40];
 		memset(filler, '9', 35);
 		filler[35] = 0;
-		sprintf(bad, "$ALL MyNick D$ $C1$a@b$%s$", filler);
+		sprintf(bad, "$ALL MyNick D$ $C\x01$a@b$%s$", filler);
 		CHECK_INT(run_fill(bad), MyINFO_SHARE);
 	}
 
 	/* missing trailing '$' after share */
-	CHECK_INT(run_fill("$ALL MyNick D$ $C1$a@b$1"), MyINFO_SHARE);
+	CHECK_INT(run_fill("$ALL MyNick D$ $C\x01$a@b$1"), MyINFO_SHARE);
+}
+
+/* security regressions found by flawfinder/cppcheck review */
+static void test_fill_security(void)
+{
+	/* flag must be a raw protocol byte in 1..11, not arbitrary text */
+	CHECK_INT(run_fill("$ALL MyNick D$ $ConnA$a@b$1$"), MyINFO_FLAG);
+	CHECK_INT(run_fill("$ALL MyNick D$ $Conn\x0c$a@b$1$"), MyINFO_FLAG);
+	CHECK_INT(run_fill("$ALL MyNick D$ $Conn\x00dummy$a@b$1$"), MyINFO_FLAG);
+
+	/* trailing garbage after the final '$' used to overflow myinfo->cache
+	   via strcpy(line); must be rejected instead (cache is 467 bytes) */
+	{
+		char bad[1024];
+		char x[441];
+
+		memset(x, 'X', 440);
+		x[440]=0;
+		snprintf(bad,sizeof(bad),
+			"$ALL MyNick SomeDesc$ $Conn\x01$me@dcd.pl$1234567890$%s$", x);
+		CHECK_INT(run_fill(bad), MyINFO_LINE);
+	}
+
+	/* flag 1..11 accepted (raw bytes, including high values) */
+	CHECK_INT(run_fill("$ALL MyNick D$ $C\x0b$a@b$1$"), MyINFO_OK);
 }
 
 /* validnick {{{ */
@@ -143,6 +168,7 @@ int main(void)
 	setup();
 	RUN(test_fill_ok);
 	RUN(test_fill_errors);
+	RUN(test_fill_security);
 	RUN(test_validnick_basic);
 	RUN(test_validnick_in_use);
 	TEST_REPORT();

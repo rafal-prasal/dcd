@@ -83,6 +83,21 @@ void stats_user_left(void)
 		cur=__atomic_load_n(&online,__ATOMIC_RELAXED);
 }
 
+unsigned long stats_online(void)
+{
+	return __atomic_load_n(&online,__ATOMIC_RELAXED);
+}
+
+unsigned long stats_max_online(void)
+{
+	return __atomic_load_n(&max_online,__ATOMIC_RELAXED);
+}
+
+unsigned long stats_total_logins(void)
+{
+	return __atomic_load_n(&logins,__ATOMIC_RELAXED);
+}
+
 static void stats_bytes(char *buf, size_t size, unsigned long n)
 {
 	unsigned long v=n;
@@ -128,8 +143,7 @@ void stats_format(char *buf, size_t size)
 		rx,tx,urx,utx,nlogins,nlogouts,nonline,nmax,uph,ewma);
 }
 
-void stats_reset(void)
-{
+void stats_reset(void){
 	__atomic_store_n(&rx_tcp,0,__ATOMIC_RELAXED);
 	__atomic_store_n(&tx_tcp,0,__ATOMIC_RELAXED);
 	__atomic_store_n(&rx_udp,0,__ATOMIC_RELAXED);

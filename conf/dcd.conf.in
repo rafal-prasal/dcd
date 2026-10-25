@@ -44,6 +44,11 @@ n_user_manager = 1
 # IMPORTANT: is set only when starting dcd
 listen_port_cons = 511
 
+# Web endpoint listening port (HTTP: web console + /healthcheck,
+# WebSocket console bridge). Requires listen_port_cons. Set 0 to disable.
+# IMPORTANT: is set only when starting dcd
+listen_port_http = 0
+
 # UID/GID
 # IMPORTANT: is set only when starting dcd
 #

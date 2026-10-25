@@ -250,7 +250,8 @@ class NMDCClient:
 
     def myinfo(self, desc="e2e client", ctype="DSL", flag=1,
                email="e2e@example.com", share=1024 * 1024 * 1024):
-        self.send(f"$MyINFO $ALL {self.nick} {desc}$ ${ctype}{flag}${email}${share}$")
+        # flag is a raw protocol byte (valid range 1..11), not an ASCII digit
+        self.send(f"$MyINFO $ALL {self.nick} {desc}$ ${ctype}{chr(flag)}${email}${share}$")
 
     def login(self, nick, password=None, desc="e2e client"):
         """Full registration: handshake, ValidateNick, optional MyPass, MyINFO.

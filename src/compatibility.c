@@ -44,9 +44,13 @@ int daemon(int nochdir,int noclose)
 	if (ret<0) return (int)ret;
 	if (noclose==0)
 	{
-		freopen("/dev/null", "r", stdin);
-		freopen("/dev/null", "w", stdout);
-		freopen("/dev/null", "w", stderr);
+		if (!freopen("/dev/null", "r", stdin)
+			|| !freopen("/dev/null", "w", stdout)
+			|| !freopen("/dev/null", "w", stderr))
+		{
+			/* cannot detach stdio: refuse to daemonize silently */
+			return -1;
+		}
 #ifdef TIOCNOTTY
 		/* disconnect from the controlling tty */
 		fd=open("/dev/tty",O_RDWR|O_NOCTTY);

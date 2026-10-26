@@ -1155,8 +1155,8 @@ int main(int argc,char *argv[])
 
 	initialize_semaphores();
 
-	/* daemonize */
-	if (daemon(0,0)<0)
+	/* daemonize - DCD_NO_DAEMON keeps dcd in the foreground (containers) */
+	if (!getenv("DCD_NO_DAEMON") && daemon(0,0)<0)
 	{
         log_write(FAC_DAEMON,PR_CRITICAL,"Couldn't fall into background: %s.", strerror(errno));
 		exit(1);

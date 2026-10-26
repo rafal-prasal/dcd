@@ -1,0 +1,12 @@
+.git
+.kilo
+build
+tests/e2e/__pycache__
+*.md
+ChangeLog
+NEWS
+FAQ
+TODO
+SYSLOG
+USERCOMMANDS
+BUGS

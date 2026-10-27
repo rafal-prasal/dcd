@@ -30,6 +30,7 @@ You can find newest version of DConnect Deamon on website <url url="http://www.d
 	    <item> nick pattern matching</item>
 	    <item> administration through telnet console and built-in web console</item>
 	    <item> built-in web chat and /healthcheck endpoint</item>
+	    <item> optional TLS: encrypted client port and HTTPS for the web endpoint</item>
 	    <item> salted SHA-512 password hashes</item>
 	    <item> runtime statistics (traffic, per-command counts, user rotation)</item>
 	    <item> ready-to-run Docker image</item>
@@ -440,7 +441,7 @@ To compile DConnect Daemon, you need:
 
 <list>
 	    <item>libpthread</item>
-	    <item>OpenSSL (libcrypto)</item>
+	    <item>OpenSSL (libcrypto + libssl; SHA-512, WebSocket handshake and optional TLS)</item>
 	    <item>CMake (min. 3.16)</item>
 	    <item>a C compiler (C17)</item>
 	  </list>
@@ -482,6 +483,20 @@ command.
 
 <em>listen_port_http</em> - web endpoint port (web console, web chat,
 /healthcheck), default 0 (disabled)
+
+<em>ssl_cert_file / ssl_key_file</em> - PEM certificate and private key for
+TLS; without a certificate TLS stays off entirely (ssl_key_file defaults to
+ssl_cert_file). A self-signed certificate is fine:
+<em>openssl req -x509 -newkey rsa:2048 -nodes -keyout dcd.key -out dcd.crt
+-days 365 -subj "/CN=hub"</em>. Read at startup only; changing them (or the
+TLS ports) requires a restart.
+
+<em>listen_port_ssl</em> - TLS hub client port; TLS-capable clients connect
+with ssl://host:port while every other client keeps using listen_port_main,
+so TLS is optional. Default 412, 0 disables; used only with a certificate.
+
+<em>listen_port_https</em> - HTTPS port serving the same web endpoint as
+listen_port_http. Default 0 (disabled); used only with a certificate.
 
 <em>user / group</em> - UID/GID the daemon runs as (set at build time with
 -DDEFAULT_USER/-DDEFAULT_GROUP, default daemon)

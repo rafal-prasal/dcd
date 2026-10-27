@@ -21,6 +21,8 @@ Features
 * nick pattern matching
 * simple administration throught telnet console
 * built-in web endpoint: web console, web chat and /healthcheck
+* optional TLS: encrypted client port (default 412, for TLS-capable
+  DC++-style clients using ssl://) and HTTPS for the web endpoint
 * salted SHA-512 password hashes in dcd.users
 * hub statistics (traffic, per-command counts, user rotation)
 * ready-to-run Docker image (Dockerfile + docker/)
@@ -39,7 +41,8 @@ Requirements
 To compile DConnect Daemon, you will need:
 
 * libpthread
-* OpenSSL (libcrypto; SHA-512 for password hashes and the WebSocket handshake)
+* OpenSSL (libcrypto + libssl; SHA-512 for password hashes, the WebSocket
+  handshake and optional TLS)
 * CMake (min. 3.16)
 * a C compiler (C17)
 

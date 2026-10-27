@@ -54,10 +54,11 @@ pthread_t th_user_manager[MAX_N_USER_MANAGER] ;/* handles managing user's commun
 
 pthread_t listen_th_cons;	/* listen thread handle for remote console */
 pthread_t listen_th_http;	/* listen thread handle for web endpoint */
+pthread_t listen_th_ssl;	/* listen thread handle for the TLS hub port */
 pthread_t listen_th_udp;		/* listen thread handle for minslots checking */
 pthread_t th_cleaner;
 
-struct sockaddr_in local_main,local_udp, local_cons, local_http;
+struct sockaddr_in local_main,local_udp, local_cons, local_http, local_ssl, local_https;
 
 so_opts_t listen_opts,user_opts;
 
@@ -84,7 +85,9 @@ static volatile sig_atomic_t term_sig=0;
 int listen_main;			/* main listening socket */
 int listen_udp;				/* search result listening socket */
 int listen_cons;			/* console listening socket */
-int listen_http;				/* web endpoint listening socket */
+int listen_http=-1;				/* web endpoint listening socket */
+int listen_ssl=-1;				/* TLS hub listening socket (-1 = disabled) */
+int listen_https=-1;			/* TLS web listening socket (-1 = disabled) */
 time_t starttime;			/* start time in sec */
 
 /* logging */
@@ -235,11 +238,84 @@ void make_sockets()
 
 		if (listen(listen_http,8)<0)
 		{
-           	log_write(FAC_DAEMON,PR_CRITICAL,"listen() failed - terminating: %s.", strerror(errno));
+            log_write(FAC_DAEMON,PR_CRITICAL,"listen() failed - terminating: %s.", strerror(errno));
 			exit(1);
 		}
 	}
+
+	/* optional TLS hub port (DC++ clients over ssl://): used only when a
+	   certificate loaded at startup, so TLS stays optional next to the
+	   plaintext port */
+	if (conf.listen_port_ssl && ssl_available())
+	{
+		if ((listen_ssl=socket(AF_INET,SOCK_STREAM,0))==-1)
+		{
+            log_write(FAC_DAEMON,PR_CRITICAL,"socket() failed - terminating: %s.", strerror(errno));
+			exit(1);
+		}
+
+		if (setsockopts(listen_ssl,&listen_opts)) 
+		{
+            log_write(FAC_DAEMON,PR_CRITICAL,"setsockopts() failed - terminating: %s.", strerror(errno));
+			exit(1);
+		}
+
+		memset(&local_ssl,0,sizeof(struct sockaddr_in));
+		local_ssl.sin_family=AF_INET;
+		local_ssl.sin_port=htons(conf.listen_port_ssl);
+		inet_aton(conf.listen_interface,&local_ssl.sin_addr);
+
+		if (bind(listen_ssl,(struct sockaddr *)&local_ssl,sizeof(struct sockaddr))<0)
+		{
+            log_write(FAC_DAEMON,PR_CRITICAL,"bind() failed - terminating: %s.", strerror(errno));
+			exit(1);
+		}
+
+		if (listen(listen_ssl,SOMAXCONN)<0)
+		{
+            log_write(FAC_DAEMON,PR_CRITICAL,"listen() failed - terminating: %s.", strerror(errno));
+			exit(1);
+		}
+
+		log_write(FAC_DAEMON,PR_INFO,"TLS hub service listening on %s:%u.",conf.listen_interface,conf.listen_port_ssl);
+	}
+
+	/* optional HTTPS variant of the web endpoint (same thread serves both) */
+	if (conf.listen_port_https && ssl_available())
+	{
+		if ((listen_https=socket(AF_INET,SOCK_STREAM,0))==-1)
+		{
+            log_write(FAC_DAEMON,PR_CRITICAL,"socket() failed - terminating: %s.", strerror(errno));
+			exit(1);
+		}
+
+		if (setsockopts(listen_https,&listen_opts)) 
+		{
+            log_write(FAC_DAEMON,PR_CRITICAL,"setsockopts() failed - terminating: %s.", strerror(errno));
+			exit(1);
+		}
+
+		memset(&local_https,0,sizeof(struct sockaddr_in));
+		local_https.sin_family=AF_INET;
+		local_https.sin_port=htons(conf.listen_port_https);
+		inet_aton(conf.listen_interface,&local_https.sin_addr);
+
+		if (bind(listen_https,(struct sockaddr *)&local_https,sizeof(struct sockaddr))<0)
+		{
+            log_write(FAC_DAEMON,PR_CRITICAL,"bind() failed - terminating: %s.", strerror(errno));
+			exit(1);
+		}
+
+		if (listen(listen_https,8)<0)
+		{
+            log_write(FAC_DAEMON,PR_CRITICAL,"listen() failed - terminating: %s.", strerror(errno));
+			exit(1);
+		}
+
+		log_write(FAC_DAEMON,PR_INFO,"TLS web service listening on %s:%u.",conf.listen_interface,conf.listen_port_https);
+	}
 }
+
 
 int user_set_state(userrec_t *usr, int state)
 {
@@ -313,19 +389,25 @@ void userlist_del(userrec_t *usr)
 }
 
 /* adduser() - allocate and initialize new DC user {{{ */
-void adduser(int sock,char *remote,char *local)
+void adduser(int sock,char *remote,char *local,void *ssl)
 {
 	char lock[SALT_LEN];
 	userrec_t *tmp=NULL,tmpik;
+	memset(&tmpik,0,sizeof(tmpik));
 
 	if (setsockopts(sock,&user_opts)) 
 	{
         log_write(FAC_NETWORK,PR_ERROR,"setsockopts() failed for Unknown@%s: %s.", remote, strerror(errno));
 		my_free(remote);
 		my_free(local);
-		close(sock);
+		if (ssl) ssl_destroy(ssl);
+		ssl_reject_socket(sock);
 		goto leave;		
 	}
+
+	/* TLS users must close with FIN, not the RST setsockopts' SO_LINGER(0)
+	   forces (it destroys queued TLS records during teardown) */
+	if (ssl) ssl_clean_close(sock);
 
 	/* we use select() anyway, but let's care for blocking send() */
 	if (fcntl(sock,F_SETFL,O_NONBLOCK)<0)
@@ -386,6 +468,7 @@ void adduser(int sock,char *remote,char *local)
 	tmp->buf=NULL;
 
 	tmp->sock=sock;
+	tmp->ssl=ssl;	/* NULL for plaintext connections */
 	tmp->slots=0;
 	tmp->slots_old=0;
 
@@ -449,7 +532,80 @@ void listen_thread_main(void *voidp)
 	    log_write(FAC_ACCESS, PR_ALERT,"Connection to DC from %s:%d to %s.",remote_ip=my_inet_ntoa(remote.sin_addr),
 															 ntohs(remote.sin_port),
 															 local_ip=my_inet_ntoa(addr.sin_addr));
-		adduser(new_sock,remote_ip, local_ip);
+		adduser(new_sock,remote_ip, local_ip,NULL);
+	}
+
+	pthread_exit(0); /* never reached */
+} /* }}} */
+
+/* listen_thread_ssl() - listen for new TLS connections to the hub {{{ */
+void listen_thread_ssl(void *voidp)
+{
+	int new_sock;
+	socklen_t remote_size,size_addr=sizeof(struct sockaddr_in);
+	struct sockaddr_in remote,addr;
+
+	char *remote_ip,*local_ip;
+
+	(void)voidp;
+
+	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,NULL);
+
+	remote_size=sizeof(struct sockaddr_in);
+	/* accept connections */
+	while(1)
+	{
+		if ((new_sock=accept(listen_ssl,(struct sockaddr *)&remote,&remote_size))<0)
+		{
+			if (errno!=EINTR)  log_write(FAC_NETWORK,PR_ERROR,"accept() failed: %s.", strerror(errno));
+			continue;
+		}
+
+		getsockname(new_sock,(struct sockaddr *)&addr,&size_addr);
+
+		remote_ip=my_inet_ntoa(remote.sin_addr);
+		local_ip=my_inet_ntoa(addr.sin_addr);
+
+	    log_write(FAC_ACCESS, PR_ALERT,"Connection to DC (TLS) from %s:%d to %s.",remote_ip,
+															 ntohs(remote.sin_port),
+															 local_ip);
+
+		if (setsockopts(new_sock,&user_opts)) 
+		{
+        	log_write(FAC_NETWORK,PR_ERROR,"setsockopts() failed for Unknown@%s: %s.", remote_ip, strerror(errno));
+			my_free(remote_ip);
+			my_free(local_ip);
+			close(new_sock);
+			continue;
+		}
+
+		/* the TLS handshake needs nonblocking I/O (poll-driven deadline) */
+		if (fcntl(new_sock,F_SETFL,O_NONBLOCK)<0)
+		{
+        	log_write(FAC_NETWORK,PR_ERROR,"fcntl() failed for Unknown@%s: %s.", remote_ip, strerror(errno));
+			my_free(remote_ip);
+			my_free(local_ip);
+			close(new_sock);
+			continue;
+		}
+
+		/* TLS connections must close with FIN, not the RST our SO_LINGER(0)
+		   would send (an RST discards pending TLS records) */
+		ssl_clean_close(new_sock);
+
+		SSL *tls=ssl_accept_socket(new_sock);
+
+		if (!tls)
+		{
+			/* the client did not complete the handshake (plaintext client
+			   hitting the TLS port, dropped connection, timeout, ...) */
+			my_free(remote_ip);
+			my_free(local_ip);
+			ssl_reject_socket(new_sock);
+			continue;
+		}
+
+		adduser(new_sock,remote_ip, local_ip,(void *)tls);
 	}
 
 	pthread_exit(0); /* never reached */
@@ -550,6 +706,8 @@ static void do_shutdown(int sig)
 		if (conf.listen_port_cons) close(listen_cons);
 		if (conf.listen_port_http) close(listen_http);
 		if (conf.minslots) close(listen_udp);
+		if (listen_ssl!=-1) close(listen_ssl);
+		if (listen_https!=-1) close(listen_https);
 		log_close();
 		exit(SIGSEGV);
 	}
@@ -562,7 +720,8 @@ static void do_shutdown(int sig)
 	pthread_cancel(th_user_manager[0]);
 	pthread_cancel(listen_th_udp);
 	if (conf.listen_port_cons) pthread_cancel(listen_th_cons);
-	if (conf.listen_port_http) pthread_cancel(listen_th_http);
+	if (conf.listen_port_http || listen_https!=-1) pthread_cancel(listen_th_http);
+	if (listen_ssl!=-1) pthread_cancel(listen_th_ssl);
 	pthread_cancel(th_cleaner);
 
 	for (i=0;i<NUSERS;i++) disconnect(user[i]);
@@ -571,6 +730,8 @@ static void do_shutdown(int sig)
 	if (conf.listen_port_cons) close(listen_cons);
 	if (conf.listen_port_http) close(listen_http);
 	if (conf.minslots) close(listen_udp);
+	if (listen_ssl!=-1) close(listen_ssl);
+	if (listen_https!=-1) close(listen_https);
 
 	exit(sig);
 } /* }}} */
@@ -773,7 +934,7 @@ void user_manager(void *voidp)
 				    user_set_state(user[i],STATE_CONNECTED);
 				}
 
-				if( poll_ready(pfds,puser,nfds,i)
+				if ((poll_ready(pfds,puser,nfds,i)||ssl_pending(user[i]->ssl))
 					&& my_recv(user[i], conf.max_receive_once, message)) user_msg2buf(user[i],message);
 
 				if (user[i]->buf) manage_sock(user[i]);
@@ -854,6 +1015,7 @@ void init_var(char *argv0)
 	conf.admin_contact=strdup(ADMIN_CONTACT);
 	conf.listen_port_main=LISTEN_PORT_MAIN;
 	conf.listen_port_cons=LISTEN_PORT_CONS;
+	conf.listen_port_ssl=LISTEN_PORT_SSL;
 
 	conf.redirect_switch=REDIRECT_SWITCH_OFF;
 	conf.redirect_hub_is_full=strdup(REDIRECT_HUB_IS_FULL);
@@ -1075,8 +1237,16 @@ void make_threads()
 		exit(1);
 	}
 
-	/* create listening thread for the web endpoint (HTTP + WebSocket) */
-	if (conf.listen_port_http && pthread_create( &listen_th_http, NULL, (void *)listen_thread_http, NULL)!=0)
+	/* create listening thread for the web endpoint (HTTP + WebSocket);
+	   it serves the optional HTTPS listener as well */
+	if ((conf.listen_port_http || listen_https!=-1) && pthread_create( &listen_th_http, NULL, (void *)listen_thread_http, NULL)!=0)
+	{
+		 log_write(FAC_DAEMON,PR_CRITICAL,"pthread_create() failed: %s", strerror(errno));
+		exit(1);
+	}
+
+	/* create listening thread for the optional TLS hub port */
+	if (listen_ssl!=-1 && pthread_create( &listen_th_ssl, NULL, (void *)listen_thread_ssl, NULL)!=0)
 	{
 		 log_write(FAC_DAEMON,PR_CRITICAL,"pthread_create() failed: %s", strerror(errno));
 		exit(1);
@@ -1127,6 +1297,10 @@ int main(int argc,char *argv[])
 	/* read config file */
 	if (parse_config(1,&conf)) exit(1);
 	make_paths(&conf);
+
+	/* TLS (optional): load the certificate now, while still root, so a
+	   root-owned key file stays readable; failure just means plaintext */
+	ssl_init();
 
 	make_sockets();
 

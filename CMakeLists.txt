@@ -51,6 +51,7 @@ set(DCD_CORE_SOURCES
 	src/compatibility.c
 	src/cmd.udp.c
 	src/sha512.c
+	src/ssl.c
 	src/stats.c
 	src/web.c
 		src/log.c)
@@ -69,7 +70,7 @@ target_compile_definitions(dcd_obj PUBLIC
 
 target_compile_options(dcd_obj PRIVATE -Wall -fno-strict-aliasing)
 
-target_link_libraries(dcd_obj PUBLIC OpenSSL::Crypto)
+target_link_libraries(dcd_obj PUBLIC OpenSSL::Crypto OpenSSL::SSL)
 
 if(DCD_ENABLE_LTO)
 	target_compile_options(dcd_obj PRIVATE -flto)

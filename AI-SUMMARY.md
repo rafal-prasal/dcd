@@ -597,6 +597,71 @@ banner and the distro spec templates) moved `1.1.1` → **`2.0.0`**:
 pinned to 2.0.0; a `2.0.0` changelog entry added to `NEWS` (EN + PL sections).
 Historical records (`ChangeLog`, older `NEWS` entries) untouched.
 
+## 23. Optional TLS: encrypted hub client port 412 + HTTPS web endpoint (2026-10-27)
+
+Adds **optional TLS** with OpenSSL `libssl`. Two independent, opt-in surfaces
+sharing one certificate/key: an encrypted hub client port (**default 412**)
+so TLS-capable clients (DC++-style `ssl://host:412`) connect encrypted while
+plaintext clients keep using 411, and an **HTTPS** mirror of the web endpoint.
+TLS is entirely optional: unset `ssl_cert_file` ⇒ hub is pure plaintext (as
+before), and the plaintext ports are never touched by TLS code.
+
+### Config (`src/main.{h,c}`, `src/cmd.conf.c`, `conf/dcd.conf.in`)
+
+- `ssl_cert_file` / `ssl_key_file` (key defaults to cert) — presence enables
+  TLS; `LISTEN_PORT_SSL 412` default; `listen_port_ssl`, `listen_port_https`
+  startup-only port options; all documented in `dcd.conf.in`, `dcd.2`,
+  `dcd.sgml`, README.
+- Certificate/key are loaded at startup **while still root** (before
+  `setuid`) so a root-owned key stays readable; a load failure logs CRITICAL
+  and simply leaves TLS off (`ssl_init()` returns non-zero) rather than
+  aborting the hub.
+
+### `src/ssl.{c,h}` (new)
+
+`SSL_CTX_new(TLS_server_method())` pinned to TLS ≥1.2, no compression;
+`SSL_CTX_use_certificate_chain_file` + `use_PrivateKey_file` +
+`check_private_key`. `ssl_accept_socket()` is **poll-driven with a
+15 s total deadline**, so a half-open client can never pin a listen thread
+or the single web thread. `ssl_pending()` exposes libssl's buffered bytes —
+poll() never reports them, so both the hub `user_manager` loop and the web
+loop check it to avoid stalling on a full record.
+
+### Hub port (`src/main.c`, `src/net.c`)
+
+- `make_sockets()` opens `listen_ssl` only when `listen_port_ssl &&
+  ssl_available()`; a dedicated `listen_thread_ssl()` accepts, does the TLS
+  handshake, then calls `adduser()` with a new `void *ssl` parameter.
+  `userrec_t` gains `void *ssl` (NULL = plaintext).
+- `sendtcp()`/`my_recv()`/`disconnect()` branch on `usr->ssl` to
+  `SSL_write`/`SSL_read`/`ssl_destroy`, mapping `SSL_ERROR_WANT_*` to the
+  same "retry next poll" behaviour as a plaintext `EAGAIN`.
+- `SO_LINGER(0)` (the hub's `TIME_WAIT` trick) sends **RST** on `close()`,
+  which discards queued TLS records and breaks peer teardown; TLS sockets get
+  `ssl_clean_close()` (linger off) and failed handshakes go through
+  `ssl_reject_socket()` (drain leftover bytes so the just-written TLS alert
+  reaches the peer instead of being RST'd).
+
+### Web (`src/web.c`)
+
+- One thread serves both listeners: `listen_http` + optional `listen_https`;
+  `web_accept()` selects the two accept slots by index, doing the TLS
+  handshake inline. `webc_t` gains `void *ssl`.
+- All client I/O goes through new `web_read()`/`web_write()` wrappers
+  (plaintext `read`/`write` vs `SSL_read`/`SSL_write`, `WANT_*`→`EAGAIN`);
+  request/frame read gates and the read-again condition add `ssl_pending()`.
+  `/ws`, `/chatws`, chat, console and `/healthcheck` all work over HTTPS.
+
+### Build / tests
+
+- `CMakeLists.txt`: `src/ssl.c` added; `target_link_libraries(...
+  OpenSSL::SSL)` (was Crypto only).
+- New e2e `TestTLS` (6 tests): TLS banner/hubname, TLS↔plaintext chat
+  interop, plaintext-on-TLS-port rejected (TLS alert, never NMDC `$` data),
+  HTTPS `/healthcheck`, HTTPS page, HTTPS console WebSocket login.
+  `run_e2e.sh` generates a self-signed cert and exposes 4 ports.
+- ctest 11/11; e2e 43/43 (was 37).
+
 ## Status
 
 All §1–§21 work is committed; branch `ai-update` is in sync with

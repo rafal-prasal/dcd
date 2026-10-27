@@ -14,6 +14,8 @@ esac
 PORT="${DCD_E2E_PORT:-41111}"
 CONS_PORT=$((PORT + 400))
 HTTP_PORT=$((PORT + 800))
+SSL_PORT=$((PORT + 900))
+HTTPS_PORT=$((PORT + 950))
 PREFIX="$E2E_DIR/prefix"
 CONF="$PREFIX/etc/dcd"
 
@@ -43,6 +45,10 @@ bind_address = 127.0.0.1
 listen_port_main = $PORT
 listen_port_cons = $CONS_PORT
 listen_port_http = $HTTP_PORT
+listen_port_ssl = $SSL_PORT
+listen_port_https = $HTTPS_PORT
+ssl_cert_file = $CONF/dcd.crt
+ssl_key_file = $CONF/dcd.key
 n_listen_main = 1
 n_user_manager = 1
 hubname = E2E-Test-Hub
@@ -87,7 +93,13 @@ EOF
 cp "$ROOT/conf/dcd.webchat" "$ROOT/conf/dcd.webconsole" "$CONF/"
 printf '<!-- e2e-page-marker -->\n' >> "$CONF/dcd.webchat"
 
-echo "== starting hub on port $PORT (console $CONS_PORT) =="
+echo "== generating self-signed TLS certificate =="
+openssl req -x509 -newkey rsa:2048 -nodes -days 1 \
+  -keyout "$CONF/dcd.key" -out "$CONF/dcd.crt" \
+  -subj "/CN=127.0.0.1" 2> "$E2E_DIR-openssl.log" \
+  || fail "openssl certificate generation failed (see $E2E_DIR-openssl.log)"
+
+echo "== starting hub on port $PORT (console $CONS_PORT, tls $SSL_PORT, https $HTTPS_PORT) =="
 pkill -f "$PREFIX/sbin/dcd" 2>/dev/null
 sleep 0.2
 if [ -n "$SAN" ]; then
@@ -120,7 +132,7 @@ done
 echo "hub pid $HUB_PID"
 
 echo "== running E2E suite =="
-python3 "$ROOT/tests/e2e/test_e2e.py" --port "$PORT" --cons-port "$CONS_PORT" --http-port "$HTTP_PORT"
+python3 "$ROOT/tests/e2e/test_e2e.py" --port "$PORT" --cons-port "$CONS_PORT" --http-port "$HTTP_PORT" --ssl-port "$SSL_PORT" --https-port "$HTTPS_PORT"
 RC=$?
 
 echo "== stopping hub =="

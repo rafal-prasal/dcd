@@ -82,6 +82,7 @@
 #include "conf.h"
 #include "misc.h"
 #include "sha512.h"
+#include "ssl.h"
 #include "stats.h"
 #include "web.h"
 #include "compatibility.h"

@@ -60,7 +60,34 @@ int sockerr(char *operation, int error, userrec_t *usr)
 void sendtcp(userrec_t *usr, char *msg)
 {
 	int ret, msglen=strlen(msg);
-	
+
+	if (usr->ssl)
+	{
+		SSL *s=(SSL *)usr->ssl;
+
+		ret=SSL_write(s,msg,msglen);
+
+		if (ret>0)
+		{
+			usr->send_bytes+=(unsigned long)ret;
+			stats_add_tcp(0,(size_t)ret);
+		}
+		else
+		{
+			int se=SSL_get_error(s,ret);
+
+			/* want_write: the socket buffer is full, like a dropped plaintext
+			   send (this hub has no output queue); other errors are fatal */
+			if (se!=SSL_ERROR_WANT_WRITE && se!=SSL_ERROR_WANT_READ)
+			{
+				usr->reason=strdup("problem with socket");
+				user_set_state(usr,STATE_QUIT);
+				log_write(FAC_NETWORK,PR_ERROR,"SSL_write() failed %s@%s: %s",usr->nick?usr->nick:"Unknown",usr->ip,ERR_error_string(ERR_get_error(),NULL));
+			}
+		}
+		return;
+	}
+
 	ret=send(usr->sock, msg, msglen, MSG_DONTWAIT|MSG_NOSIGNAL);
 
 	if (ret>0)
@@ -307,9 +334,35 @@ int my_recv(userrec_t *usr, int max_length, char *message)
 
 	message[0]=0;
 
-	ret=recv(usr->sock, message, max_length, MSG_DONTWAIT);
+	if (usr->ssl)
+	{
+		SSL *s=(SSL *)usr->ssl;
 
-	if (ret==-1 && sockerr("recv", errno, usr)) goto leave;
+		ret=SSL_read(s,message,max_length);
+
+		if (ret<=0)
+		{
+			int se=SSL_get_error(s,ret);
+
+			/* no data yet: not an error, the poll cycle retries */
+			if (se==SSL_ERROR_WANT_READ || se==SSL_ERROR_WANT_WRITE) return 0;
+
+			if (se!=SSL_ERROR_ZERO_RETURN)
+				log_write(FAC_NETWORK,PR_ERROR,"SSL_read() failed %s@%s: %s",usr->nick?usr->nick:"Unknown",usr->ip,ERR_error_string(ERR_get_error(),NULL));
+
+			usr->reason=strdup("TLS connection closed");
+			user_set_state(usr,STATE_QUIT);
+			goto leave;
+		}
+	}
+	else
+	{
+		ret=recv(usr->sock, message, max_length, MSG_DONTWAIT);
+
+		if (ret==-1 && sockerr("recv", errno, usr)) goto leave;
+		/* EAGAIN: no data yet (sockerr passed it); never write message[-1] */
+		if (ret==-1) goto leave;
+	}
 	
 	ec=1;
 	message[ret]=0;
@@ -349,6 +402,7 @@ void disconnect(userrec_t *usr)
 	my_free(usr->ver);
 
 	my_free(usr->perm);
+	ssl_destroy(usr->ssl);
 	close(usr->sock);
 	my_free(usr);
 

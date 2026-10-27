@@ -85,6 +85,10 @@
 /* remote console listening port	*/
 #define LISTEN_PORT_CONS 511
 
+/* TLS client (hub) listening port; used only when ssl_cert_file is set.
+ * 0 disables it. */
+#define LISTEN_PORT_SSL 412
+
 /* contact to administrator of hub. this is displayed when user is not allowed to connect to hub*/
 #define ADMIN_CONTACT "god@heaven.com"
 
@@ -266,6 +270,7 @@ typedef struct
 typedef struct
 {
 	unsigned int sock;
+	void *ssl;		/* SSL* when the connection is TLS, NULL for plaintext */
 	char *buf; // uncomplete data holder
 	char bufrd; // buffer ready flag
 
@@ -345,6 +350,11 @@ typedef struct
 	unsigned short int listen_port_cons;
 	unsigned short int listen_port_http;
 	unsigned short int listen_port_udp;
+	unsigned short int listen_port_ssl;	/* TLS hub port (0 = off) */
+	unsigned short int listen_port_https;	/* TLS web port (0 = off) */
+
+	char *ssl_cert_file;	/* PEM cert; NULL/empty disables TLS entirely */
+	char *ssl_key_file;		/* PEM key; defaults to ssl_cert_file */
 	char *hubname;
 	unsigned int userlimit;
 	char allow_broken_key;
@@ -455,7 +465,7 @@ int user_tst_supports(userrec_t *usr, int supports);
 void userlist_add(userrec_t *usr);
 void userlist_del(userrec_t *usr);
 
-void adduser( int sock, char *remote, char *local);
+void adduser( int sock, char *remote, char *local, void *ssl);
 void deluser( userrec_t *usr );
 void finish( int sig );
 

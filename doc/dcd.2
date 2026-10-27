@@ -27,6 +27,18 @@ Remote console listening port. Set 0 to disable. Default is \fB511\fR
 \fBlisten_port_http\fR
 Web endpoint listening port: web console (\fI/console\fR), web chat (\fI/\fR), \fI/healthcheck\fR and the WebSocket bridges. Requires \fBOpenSSL (libcrypto)\fR at build time. Set 0 to disable. Default is \fB0\fR
 .TP
+\fBssl_cert_file\fR
+PEM file with the certificate (and optionally the private key) used for TLS. TLS is enabled only when this is set; without it the hub is fully plaintext. The file is read once at startup (before the daemon drops root), so changing it requires a restart. A self-signed certificate works for a start: \fIopenssl req -x509 -newkey rsa:2048 -nodes -keyout dcd.key -out dcd.crt -days 365 -subj "/CN=hub"\fR
+.TP
+\fBssl_key_file\fR
+PEM file with the private key, when it is separate from the certificate. Defaults to \fIssl_cert_file\fR.
+.TP
+\fBlisten_port_ssl\fR
+TLS hub clients' port. TLS-capable clients (e.g. DC++-style clients using \fIssl://server:port\fR) connect here over an encrypted connection; all other clients keep using \fIlisten_port_main\fR (411), so TLS is entirely optional. Ignored without a certificate. Set 0 to disable. Default is \fB412\fR
+.TP
+\fBlisten_port_https\fR
+HTTPS port serving the same web endpoint as \fIlisten_port_http\fR (web chat, web console, \fI/healthcheck\fR, \fI/ws\fR, \fI/chatws\fR). Ignored without a certificate. Set 0 to disable. Default is \fB0\fR
+.TP
 \fBuser\fR
 UID. Default is \fBdaemon\fR (CMake \fBDEFAULT_USER\fR option)
 .TP

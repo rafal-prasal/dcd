@@ -379,6 +379,62 @@ void conf_listen_port_http(conf_param_t *param)
 	conf.listen_port_http=ival;
 }
 
+void conf_listen_port_ssl(conf_param_t *param)
+{
+	int ival=0;
+
+	char *cmd=param->cmd,
+		 *value=param->value;
+	int start = param->start;
+
+	if (!start) return;
+
+	ival=atoi(value);
+
+	if (ival<0 || ival>65535)
+	{
+        log_write(FAC_DAEMON,PR_CRITICAL,"'%s' should be in <0,65535>",cmd);
+		exit(1);
+	}
+
+	conf.listen_port_ssl=ival;
+}
+
+void conf_listen_port_https(conf_param_t *param)
+{
+	int ival=0;
+
+	char *cmd=param->cmd,
+		 *value=param->value;
+	int start = param->start;
+
+	if (!start) return;
+
+	ival=atoi(value);
+
+	if (ival<0 || ival>65535)
+	{
+        log_write(FAC_DAEMON,PR_CRITICAL,"'%s' should be in <0,65535>",cmd);
+		exit(1);
+	}
+
+	conf.listen_port_https=ival;
+}
+
+void conf_ssl_cert_file(conf_param_t *param)
+{
+	char *value=param->value;
+
+	my_duplicate(value,&conf.ssl_cert_file);
+}
+
+void conf_ssl_key_file(conf_param_t *param)
+{
+	char *value=param->value;
+
+	my_duplicate(value,&conf.ssl_key_file);
+}
+
 void conf_log_facility(conf_param_t *param)
 {
 	int ival=0;
@@ -784,7 +840,9 @@ static void conf_cmd_dict_init(void)
 		{"listen_interface",			(funct_t)conf_obsolete				},
 		{"listen_port_cons",			(funct_t)conf_listen_port_cons 		},
 		{"listen_port_http",			(funct_t)conf_listen_port_http 		},
+		{"listen_port_https",			(funct_t)conf_listen_port_https 	},
 		{"listen_port_main",			(funct_t)conf_listen_port_main 		},
+		{"listen_port_ssl",				(funct_t)conf_listen_port_ssl 		},
 		{"log_chat",					(funct_t)conf_obsolete				},
 		{"log_con",						(funct_t)conf_obsolete				},
 		{"log_dir",						(funct_t)conf_obsolete				},
@@ -817,6 +875,8 @@ static void conf_cmd_dict_init(void)
 		{"send_retries_time",			(funct_t)conf_obsolete				},
 		{"socket_receive_buffer",		(funct_t)conf_socket_receive_buffer	},
 		{"socket_send_buffer",			(funct_t)conf_socket_send_buffer	},
+		{"ssl_cert_file",				(funct_t)conf_ssl_cert_file			},
+		{"ssl_key_file",				(funct_t)conf_ssl_key_file			},
 		{"std_penalty_duration",		(funct_t)conf_std_penalty_duration	},
 		{"stealth_mode",			    (funct_t)conf_obsolete		        },
 		{"user",						(funct_t)conf_user					},

@@ -7,7 +7,7 @@ Requires a running DCD hub configured for testing (see run_e2e.sh):
   * registered chat account      chatuser / chatpass
   * console access allowed from 127.0.0.1
 
-Usage: python3 test_e2e.py --port 41111 --cons-port 41511
+Usage: python3 test_e2e.py --port 41111 --cons-port 41511 --ssl-port 42011 --https-port 42061
 """
 
 import argparse
@@ -17,6 +17,7 @@ import json
 import os
 import select
 import socket
+import ssl
 import struct
 import sys
 import time
@@ -40,11 +41,20 @@ OP_PASS = "secret"
 CHAT_USER = "chatuser"
 CHAT_PASS = "chatpass"
 HTTP = 0
+SSLP = 0
+HTTPS = 0
 
 
-def ws_connect(http_port, path="/ws"):
+def _unverified_tls():
+    """Self-signed test hub cert: skip verification."""
+    return ssl._create_unverified_context()
+
+
+def ws_connect(http_port, path="/ws", tls=False):
     """Minimal RFC6455 client: handshake + return (socket, leftover bytes)."""
     s = socket.create_connection(("127.0.0.1", http_port), timeout=10)
+    if tls:
+        s = _unverified_tls().wrap_socket(s, server_hostname="127.0.0.1")
     key = base64.b64encode(b"0123456789abcdef").decode()
     s.sendall((
         f"GET {path} HTTP/1.1\r\nHost: 127.0.0.1\r\nUpgrade: websocket\r\n"
@@ -178,18 +188,22 @@ def uniq(base):
     return f"{base}{next(_counter):03d}"
 
 
-def connect(nick=None):
-    c = NMDCClient(port=PORT, timeout=5.0)
+def connect(nick=None, tls=False):
+    c = NMDCClient(port=(SSLP if tls else PORT), timeout=5.0)
     c.connect()
+    if tls:
+        c.sock = _unverified_tls().wrap_socket(c.sock, server_hostname="127.0.0.1")
     if nick:
         c.handshake()
         c.validate_nick(nick)
     return c
 
 
-def login(nick, password=None):
-    c = NMDCClient(port=PORT, timeout=5.0)
+def login(nick, password=None, tls=False):
+    c = NMDCClient(port=(SSLP if tls else PORT), timeout=5.0)
     c.connect()
+    if tls:
+        c.sock = _unverified_tls().wrap_socket(c.sock, server_hostname="127.0.0.1")
     c.login(nick, password=password)
     return c
 
@@ -232,9 +246,9 @@ class E2EBase(unittest.TestCase):
         self.clients.append(c)
         return c
 
-    def logged_in(self, nick, password=None):
+    def logged_in(self, nick, password=None, tls=False):
         self.used_nicks.add(nick)
-        c = login(nick, password)
+        c = login(nick, password, tls=tls)
         self.clients.append(c)
         return c
 
@@ -665,14 +679,83 @@ class TestChat(E2EBase):
             s.close()
 
 
+class TestTLS(E2EBase):
+    """Optional TLS: hub client port listen_port_ssl (encrypted NMDC) and
+    the HTTPS web endpoint listen_port_https (self-signed test cert)."""
+
+    def test_tls_client_banner_and_hubname(self):
+        c = connect(tls=True)
+        self.clients.append(c)
+        lock = c.expect("Lock")
+        self.assertIn("Pk=DCONNECT..DAEMON", lock.arg)
+        hub = c.expect("HubName")
+        self.assertEqual(hub.arg, HUBNAME)
+
+    def test_tls_client_chat_roundtrip(self):
+        # a TLS hub client and a plaintext one must be able to talk
+        a = self.logged_in(uniq("tlsA"), tls=True)
+        b = self.logged_in(uniq("plainB"))
+        a.chat("secure hello")
+        m = b.expect(lambda m: m.kind == "chat" and m.cmd == a.nick)
+        self.assertIn("secure hello", m.arg)
+
+    def test_tls_port_rejects_plaintext_bytes(self):
+        s = socket.create_connection(("127.0.0.1", SSLP), timeout=5)
+        try:
+            s.sendall(b"$Hello plaintext|")
+            s.settimeout(8)
+            # the TLS handshake fails on non-TLS bytes: the hub answers with
+            # a TLS alert and closes - never any NMDC protocol data
+            data = b""
+            while b"$" not in data:
+                chunk = s.recv(100)
+                if not chunk:
+                    break
+                data += chunk
+            self.assertEqual(data[:1], b"\x15")   # TLS Alert record
+        finally:
+            s.close()
+
+    def test_https_healthcheck(self):
+        with urllib.request.urlopen(f"https://127.0.0.1:{HTTPS}/healthcheck",
+                                    timeout=5, context=_unverified_tls()) as r:
+            self.assertEqual(r.status, 200)
+            self.assertIn("OK online=", r.read().decode())
+
+    def test_https_pages(self):
+        with urllib.request.urlopen(f"https://127.0.0.1:{HTTPS}/",
+                                    timeout=5, context=_unverified_tls()) as r:
+            self.assertEqual(r.status, 200)
+            body = r.read().decode()
+            self.assertIn("dcd chat", body)
+            self.assertIn("e2e-page-marker", body)
+
+    def test_https_console_ws_login(self):
+        self.used_nicks.add(OP_NICK)
+        s, buf = ws_connect(HTTPS, tls=True)
+        try:
+            text, buf = ws_read_until(s, buf, "login:")
+            ws_send(s, OP_NICK + "\r\n")
+            text, buf = ws_read_until(s, buf, "password:")
+            ws_send(s, OP_PASS + "\r\n")
+            text, buf = ws_read_until(s, buf, "Logged in")
+            self.assertNotIn("\xff", text)
+            ws_send(s, "quit\r\n")
+        finally:
+            s.close()
+
+
 def main():
-    global PORT, CONS, HTTP
+    global PORT, CONS, HTTP, SSLP, HTTPS
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=41111)
     ap.add_argument("--cons-port", type=int, default=41511)
     ap.add_argument("--http-port", type=int, default=41911)
+    ap.add_argument("--ssl-port", type=int, default=42011)
+    ap.add_argument("--https-port", type=int, default=42061)
     args, rest = ap.parse_known_args()
-    PORT, CONS, HTTP = args.port, args.cons_port, args.http_port
+    PORT, CONS, HTTP, SSLP, HTTPS = (args.port, args.cons_port, args.http_port,
+                                     args.ssl_port, args.https_port)
 
     unittest.main(verbosity=2, argv=[sys.argv[0]] + rest)
 

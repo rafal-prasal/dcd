@@ -51,6 +51,37 @@ listen_port_cons = 511
 # IMPORTANT: is set only when starting dcd
 listen_port_http = 0
 
+########
+## TLS ##
+########
+
+# Optional TLS support. TLS is enabled only when ssl_cert_file points to a
+# PEM certificate (a self-signed one is fine for a start):
+#   openssl req -x509 -newkey rsa:2048 -nodes \
+#       -keyout @CONFIGDIR@/dcd.key -out @CONFIGDIR@/dcd.crt \
+#       -days 365 -subj "/CN=hub"
+# Leaving ssl_cert_file unset keeps the hub fully plaintext.
+#
+# The certificate/key are read at startup (while dcd is still root, so a
+# root-owned key file works); changing them requires a restart.
+#
+# ssl_key_file is optional and defaults to ssl_cert_file (combined PEM).
+#ssl_cert_file = @CONFIGDIR@/dcd.crt
+#ssl_key_file = @CONFIGDIR@/dcd.key
+
+# TLS client (hub) port. TLS-capable clients (e.g. DC++-style clients
+# started with ssl://server:port) connect here; regular clients keep using
+# listen_port_main, so TLS is entirely optional. Ignored without a
+# certificate. Set 0 to disable.
+# IMPORTANT: is set only when starting dcd
+listen_port_ssl = 412
+
+# HTTPS port serving the same web endpoint as listen_port_http (web chat,
+# web console, /healthcheck, /ws and /chatws). Ignored without a
+# certificate. Set 0 to disable.
+# IMPORTANT: is set only when starting dcd
+listen_port_https = 0
+
 # UID/GID
 # IMPORTANT: is set only when starting dcd
 #

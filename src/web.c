@@ -8,7 +8,8 @@
  *	 #(@) Homepage: http://www.dc.ds.pg.gda.pl/
  *
  * ----------------------------------------------------------------
- * Embedded HTTP endpoint (listen_port_http):
+ * Embedded HTTP endpoint (listen_port_http, TLS variant on
+ * listen_port_https when a certificate is configured):
  *
  *   GET /            - web chat page (default endpoint)
  *   GET /console     - web console page
@@ -49,6 +50,7 @@
 
 extern config_t conf;
 extern int listen_http;
+extern int listen_https;	/* TLS web socket, -1 when disabled */
 extern pthread_mutex_t mutex_users;
 extern userrec_t *user[MAXUSERS];
 extern int NUSERS;
@@ -80,6 +82,7 @@ typedef struct
 	int state;
 	int cfd;
 	int consfd;
+	void *ssl;		/* SSL* when the client speaks TLS (https), NULL for http */
 
 	char req[WEB_REQ_MAX];
 	size_t reqn;
@@ -358,6 +361,49 @@ static void web_enqueue(webc_t *c,const void *data,size_t len)
 	}
 
 	pthread_mutex_unlock(&mutex_out);
+}
+
+/* client I/O: plaintext read/write or SSL, depending on c->ssl;
+   WANT_* maps to EAGAIN so the poll-driven loops behave as before */
+static ssize_t web_read(webc_t *c,void *buf,size_t n)
+{
+	int r;
+
+	if (!c->ssl) return read(c->cfd,buf,n);
+
+	r=SSL_read((SSL *)c->ssl,buf,(int)n);
+	if (r>0) return r;
+	if (r==-1 && SSL_get_error((SSL *)c->ssl,r)==SSL_ERROR_ZERO_RETURN) return 0;
+
+	if (SSL_get_error((SSL *)c->ssl,r)==SSL_ERROR_WANT_READ
+		|| SSL_get_error((SSL *)c->ssl,r)==SSL_ERROR_WANT_WRITE)
+	{
+		errno=EAGAIN;
+		return -1;
+	}
+
+	errno=ECONNRESET;
+	return -1;
+}
+
+static ssize_t web_write(webc_t *c,const void *buf,size_t n)
+{
+	int r;
+
+	if (!c->ssl) return write(c->cfd,buf,n);
+
+	r=SSL_write((SSL *)c->ssl,buf,(int)n);
+	if (r>0) return r;
+
+	if (SSL_get_error((SSL *)c->ssl,r)==SSL_ERROR_WANT_WRITE
+		|| SSL_get_error((SSL *)c->ssl,r)==SSL_ERROR_WANT_READ)
+	{
+		errno=EAGAIN;
+		return -1;
+	}
+
+	errno=ECONNRESET;
+	return -1;
 }
 
 static void web_http_response(webc_t *c,int code,const char *status,
@@ -1166,7 +1212,7 @@ static int web_service(webc_t *c,short ev_c,short ev_k)
 		ssize_t w;
 
 		pthread_mutex_lock(&mutex_out);
-		w=write(c->cfd,c->out,c->outn);
+		w=web_write(c,c->out,c->outn);
 
 		if (w>0)
 		{
@@ -1194,9 +1240,9 @@ static int web_service(webc_t *c,short ev_c,short ev_k)
 			c->closing=1;
 	}
 
-	if (c->state==ST_REQ && ev_c&POLLIN)
+	if (c->state==ST_REQ && (ev_c&POLLIN || ssl_pending(c->ssl)))
 	{
-		ssize_t r=read(c->cfd,c->req+c->reqn,WEB_REQ_MAX-c->reqn-1);
+		ssize_t r=web_read(c,c->req+c->reqn,WEB_REQ_MAX-c->reqn-1);
 
 		if (r==0) return 0;
 
@@ -1215,9 +1261,9 @@ static int web_service(webc_t *c,short ev_c,short ev_k)
 
 after_read:
 
-	if (c->state==ST_WS && !c->closing && ev_c&POLLIN)
+	if (c->state==ST_WS && !c->closing && (ev_c&POLLIN || ssl_pending(c->ssl)))
 	{
-		ssize_t r=read(c->cfd,c->rbuf+c->rbufn,WEB_RBUF_MAX-c->rbufn);
+		ssize_t r=web_read(c,c->rbuf+c->rbufn,WEB_RBUF_MAX-c->rbufn);
 
 		if (r==0) c->closing=1;
 		else if (r<0)
@@ -1306,9 +1352,64 @@ after_read:
 	return 1;
 }
 
+/* accept one web connection on the plaintext or TLS listener; the TLS
+   handshake runs here (poll-driven, bounded), so a stalled client can
+   only delay this thread, not the hub core */
+static void web_accept(int lfd,int tls)
+{
+	int new_sock=accept(lfd,NULL,NULL);
+	int i,slot=-1;
+
+	if (new_sock==-1) return;
+
+	for (i=0;i<WEB_MAX_CLIENTS;i++)
+		if (!webc[i].used) { slot=i; break; }
+
+	if (slot==-1)
+	{
+		const char busy[]="503 too many web clients\n";
+		/* best effort (plaintext only: we can't write HTTP over TLS) */
+		if (!tls && write(new_sock,busy,sizeof(busy)-1)<0) {}
+		close(new_sock);
+		return;
+	}
+
+	{
+		webc_t *c=&webc[slot];
+
+		memset(c,0,sizeof(*c));
+
+		c->used=1;
+		c->state=ST_REQ;
+		c->cfd=new_sock;
+		c->consfd=-1;
+
+		fcntl(new_sock,F_SETFL,O_NONBLOCK);
+
+		if (tls)
+		{
+			SSL *s;
+
+			/* TLS must close with FIN, not the RST our SO_LINGER(0) sends */
+			ssl_clean_close(new_sock);
+
+			s=ssl_accept_socket(new_sock);
+
+			if (!s)
+			{
+				ssl_reject_socket(new_sock);
+				memset(c,0,sizeof(*c));
+				return;
+			}
+
+			c->ssl=(void *)s;
+		}
+	}
+}
+
 void listen_thread_http(void *args)
 {
-	struct pollfd pfd[1+2*WEB_MAX_CLIENTS];
+	struct pollfd pfd[2+2*WEB_MAX_CLIENTS];
 	int poll_ticks=0;
 
 	(void)args;
@@ -1329,11 +1430,25 @@ void listen_thread_http(void *args)
 
 	for (;;)
 	{
-		int n=0,i;
+		int n=0,i,nl;
 
-		pfd[n].fd=listen_http;
-		pfd[n].events=POLLIN;
-		pfd[n++].revents=0;
+		/* listener slots first: http (if enabled) then https (if enabled);
+		   either can be absent (-1), the thread may serve one or both */
+		if (listen_http!=-1)
+		{
+			pfd[n].fd=listen_http;
+			pfd[n].events=POLLIN;
+			pfd[n++].revents=0;
+		}
+
+		if (listen_https!=-1)
+		{
+			pfd[n].fd=listen_https;
+			pfd[n].events=POLLIN;
+			pfd[n++].revents=0;
+		}
+
+		nl=n;
 
 		for (i=0;i<WEB_MAX_CLIENTS;i++)
 		{
@@ -1359,39 +1474,8 @@ void listen_thread_http(void *args)
 			continue;
 		}
 
-		if (pfd[0].revents&POLLIN)
-		{
-			int new_sock=accept(listen_http,NULL,NULL);
-
-			if (new_sock!=-1)
-			{
-				int slot=-1;
-
-				for (i=0;i<WEB_MAX_CLIENTS;i++)
-					if (!webc[i].used) { slot=i; break; }
-
-				if (slot==-1)
-				{
-					const char busy[]="503 too many web clients\n";
-					/* best effort */
-					if (write(new_sock,busy,sizeof(busy)-1)<0) {}
-					close(new_sock);
-				}
-				else
-				{
-					webc_t *c=&webc[slot];
-
-					memset(c,0,sizeof(*c));
-
-					c->used=1;
-					c->state=ST_REQ;
-					c->cfd=new_sock;
-					c->consfd=-1;
-
-					fcntl(new_sock,F_SETFL,O_NONBLOCK);
-				}
-			}
-		}
+		for (i=0;i<nl;i++)
+			if (pfd[i].revents&POLLIN) web_accept(pfd[i].fd, pfd[i].fd==listen_https);
 
 		for (i=0;i<WEB_MAX_CLIENTS;i++)
 		{
@@ -1401,10 +1485,10 @@ void listen_thread_http(void *args)
 
 			if (!c->used) continue;
 
-			for (j=1;j<n;j++)
+			for (j=nl;j<n;j++)
 				if (pfd[j].fd==c->cfd) ev_c=pfd[j].revents;
 
-			for (j=1;j<n;j++)
+			for (j=nl;j<n;j++)
 				if (pfd[j].fd==c->consfd) ev_k=pfd[j].revents;
 
 			if (!web_service(c,ev_c,ev_k) || (ev_c&(POLLERR|POLLHUP)))
@@ -1426,6 +1510,7 @@ void listen_thread_http(void *args)
 					log_write(FAC_ACCESS,PR_INFO,"Web chat disconnect: %s.",c->cnick);
 				}
 
+				ssl_destroy(c->ssl);
 				if (c->cfd!=-1) close(c->cfd);
 				if (c->consfd!=-1) close(c->consfd);
 				memset(c,0,sizeof(*c));

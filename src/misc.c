@@ -400,6 +400,10 @@ char validnick(userrec_t *usr,char *nick)
 
 	/* if nick is already in use */
 	if (nick2id(nick)!=-1) return NICK_IS_ALREADY_USED;
+
+	/* if the nick is claimed by an embedded web chat session (validnick
+	   runs under mutex_users; web_chat_nick_used only locks webchat/out) */
+	if (web_chat_nick_used(nick)) return NICK_IS_ALREADY_USED;
 	
 	/* if nick requiers password/ usr->password will contain password to check*/
 	if (!usr->cons && validlogin(usr,nick,NULL)) return NICK_REQUIRES_PASSWORD;

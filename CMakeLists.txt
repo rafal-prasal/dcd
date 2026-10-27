@@ -116,7 +116,8 @@ install(DIRECTORY DESTINATION ${DCD_CONFIG_DIR} MESSAGE_NEVER)
 
 set(DCD_CONF_FILES
 	console.allow dcd.users dcd.banned dcd.conf dcd.motd dcd.welcome
-	nicks.allow dcd.penalties dcd.rules dcd.hublinks dcd.usercommands)
+	nicks.allow dcd.penalties dcd.rules dcd.hublinks dcd.usercommands
+	dcd.webchat dcd.webconsole)
 
 foreach(conf_file ${DCD_CONF_FILES})
 	if(conf_file STREQUAL "dcd.conf")

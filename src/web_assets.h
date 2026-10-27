@@ -1,36 +1,22 @@
-/* Embedded web console client assets (see src/web.c). Plain C string
- * literals so the hub binary stays self-contained: no files on disk. */
+/* Built-in default web client pages (see src/web.c). The served pages are
+ * configuration files dcd.webchat / dcd.webconsole in the config dir,
+ * self-contained HTML with inlined CSS/JS; these fragments compose copies
+ * identical to the installed defaults and are the fallback when the files
+ * are missing. */
 
 #if !defined(__WEB_ASSETS_H_INCLUDED__)
 #define __WEB_ASSETS_H_INCLUDED__
 
-static const char WEB_HTML[]=
+/* ---- admin console page: WEB_HTML_A + <style>WEB_CSS</style> + head/body
+        tail + <script>WEB_JS</script> + html tail ---- */
+
+static const char WEB_HTML_A[]=
 "<!DOCTYPE html>\n"
 "<html lang=\"en\">\n"
 "<head>\n"
 "<meta charset=\"utf-8\">\n"
 "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
-"<title>dcd web console</title>\n"
-"<link rel=\"stylesheet\" href=\"/console.css\">\n"
-"</head>\n"
-"<body>\n"
-"<header>\n"
-"<h1>dcd web console</h1>\n"
-"<div id=\"health\" class=\"health bad\">health: checking</div>\n"
-"</header>\n"
-"<main>\n"
-"<pre id=\"out\"></pre>\n"
-"<div id=\"statusbar\">\n"
-"<span id=\"status\" class=\"off\">disconnected</span>\n"
-"<form id=\"cmdform\" autocomplete=\"off\">\n"
-"<input id=\"cmd\" placeholder=\"command (help)\" autofocus>\n"
-"<button type=\"submit\">send</button>\n"
-"</form>\n"
-"</div>\n"
-"</main>\n"
-"<script src=\"/console.js\"></script>\n"
-"</body>\n"
-"</html>\n";
+"<title>dcd web console</title>\n";
 
 static const char WEB_CSS[]=
 "body { margin:0; font-family:ui-monospace,Menlo,Consolas,monospace;\n"
@@ -38,6 +24,7 @@ static const char WEB_CSS[]=
 "header { display:flex; justify-content:space-between; align-items:center;\n"
 "  padding:.6rem 1rem; background:#182029; border-bottom:1px solid #2a3542; }\n"
 "h1 { font-size:1rem; margin:0; color:#88c0d0; }\n"
+".nav a { color:#88c0d0; text-decoration:none; margin:0 .25rem; }\n"
 ".health { font-size:.8rem; padding:.2rem .6rem; border-radius:4px; }\n"
 ".health.ok { background:#2e4d33; color:#a3d9a5; }\n"
 ".health.bad { background:#542b2b; color:#e8a0a0; }\n"
@@ -57,6 +44,25 @@ static const char WEB_CSS[]=
 "button { background:#2a3542; color:#d8dee9; border:0; border-radius:4px;\n"
 "  padding:.45rem .9rem; font:inherit; cursor:pointer; }\n"
 "button:hover { background:#39485a; }\n";
+
+static const char WEB_HTML_B[]=
+"</head>\n"
+"<body>\n"
+"<header>\n"
+"<h1>dcd web console</h1>\n"
+"<nav class=\"nav\"><a href=\"/\">chat</a> <a href=\"/console\">console</a></nav>\n"
+"<div id=\"health\" class=\"health bad\">health: checking</div>\n"
+"</header>\n"
+"<main>\n"
+"<pre id=\"out\"></pre>\n"
+"<div id=\"statusbar\">\n"
+"<span id=\"status\" class=\"off\">disconnected</span>\n"
+"<form id=\"cmdform\" autocomplete=\"off\">\n"
+"<input id=\"cmd\" placeholder=\"command (help)\" autofocus>\n"
+"<button type=\"submit\">send</button>\n"
+"</form>\n"
+"</div>\n"
+"</main>\n";
 
 static const char WEB_JS[]=
 "\"use strict\";\n"
@@ -92,5 +98,155 @@ static const char WEB_JS[]=
 "  },function(){healthEl.textContent=\"health: unreachable\";healthEl.className=\"health bad\";});\n"
 "}\n"
 "setInterval(checkHealth,10000); checkHealth(); connect();\n";
+
+/* ---- chat page: WEB_CHAT_HTML_A + <style>WEB_CHAT_CSS</style> + tail
+        + <script>WEB_CHAT_JS</script> + html tail ---- */
+
+static const char WEB_CHAT_HTML_A[]=
+"<!DOCTYPE html>\n"
+"<html lang=\"en\">\n"
+"<head>\n"
+"<meta charset=\"utf-8\">\n"
+"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+"<title>dcd chat</title>\n";
+
+static const char WEB_CHAT_CSS[]=
+"body { margin:0; height:100vh; display:flex; flex-direction:column;\n"
+"  font-family:ui-monospace,Menlo,Consolas,monospace; background:#101418;\n"
+"  color:#d8dee9; }\n"
+"[hidden] { display:none !important; }\n"
+"header { display:flex; justify-content:space-between; align-items:center;\n"
+"  padding:.6rem 1rem; background:#182029; border-bottom:1px solid #2a3542; }\n"
+"h1 { font-size:1rem; margin:0; color:#88c0d0; }\n"
+".pill { font-size:.8rem; } .pill.on { color:#a3d9a5; } .pill.off { color:#e8a0a0; }\n"
+"#login { margin:auto; width:min(340px,90%); background:#182029; border:1px solid\n"
+"  #2a3542; border-radius:8px; padding:1.4rem; } #login h2 { margin:.2rem 0 1rem;\n"
+"  color:#88c0d0; font-size:1.1rem; } #login input { width:100%; box-sizing:border-box;\n"
+"  margin:.3rem 0; padding:.5rem .6rem; background:#0b0e11; color:#d8dee9;\n"
+"  border:1px solid #2a3542; border-radius:4px; font:inherit; }\n"
+"#login button { margin-top:.7rem; width:100%; } .hint { font-size:.75rem;\n"
+"  color:#7a8794; } #loginerr { color:#e8a0a0; font-size:.8rem; min-height:1em; }\n"
+"main { flex:1; display:flex; flex-direction:column; min-height:0; padding:.8rem;\n"
+"  gap:.5rem; } #who { font-size:.8rem; color:#7a8794; }\n"
+"#tabs { display:flex; flex-wrap:wrap; gap:.3rem; }\n"
+".tab { display:inline-flex; align-items:center; gap:.4rem; background:#182029;\n"
+"  border:1px solid #2a3542; border-radius:5px; padding:.35rem .6rem; cursor:pointer;\n"
+"  font:inherit; color:#d8dee9; } .tab.on { background:#2a3542; border-color:#88c0d0; }\n"
+".tab .x { color:#7a8794; padding:0 .1rem; } .tab .x:hover { color:#e8a0a0; }\n"
+".tab .badge { background:#b48c8c; color:#101418; border-radius:8px; padding:0 .35rem;\n"
+"  font-size:.7rem; }\n"
+"#body { flex:1; display:flex; gap:.8rem; min-height:0; }\n"
+"#chat { flex:1; display:flex; flex-direction:column; min-width:0; }\n"
+"#msgs { flex:1; overflow-y:auto; background:#0b0e11; border:1px solid #2a3542;\n"
+"  border-radius:6px; padding:.8rem; font-size:.85rem; line-height:1.4; }\n"
+".msg { margin:0 0 .35rem; white-space:pre-wrap; word-break:break-word; }\n"
+".msg b { color:#88c0d0; } .msg.me b { color:#a3d9a5; } .msg.sys { color:#e8c07a;\n"
+"  font-style:italic; }\n"
+"#sendform { display:flex; gap:.4rem; margin-top:.5rem; }\n"
+"#msg { flex:1; background:#0b0e11; color:#d8dee9; border:1px solid #2a3542;\n"
+"  border-radius:4px; padding:.5rem .6rem; font:inherit; }\n"
+"#msg:focus { outline:none; border-color:#88c0d0; }\n"
+"button { background:#2a3542; color:#d8dee9; border:0; border-radius:4px;\n"
+"  padding:.5rem .9rem; font:inherit; cursor:pointer; } button:hover { background:#39485a; }\n"
+"#users { width:200px; flex-shrink:0; display:flex; flex-direction:column; }\n"
+"#users h2 { font-size:.85rem; margin:.2rem 0 .4rem; color:#88c0d0; }\n"
+"#userlist { list-style:none; margin:0; padding:0; overflow-y:auto; flex:1;\n"
+"  background:#0b0e11; border:1px solid #2a3542; border-radius:6px; }\n"
+"#userlist li { padding:.3rem .6rem; cursor:pointer; font-size:.85rem; }\n"
+"#userlist li:hover { background:#182029; } #userlist li.op { color:#e8c07a; }\n"
+"@media (max-width:640px){ #body { flex-direction:column; } #users { width:auto;\n"
+"  order:-1; max-height:120px; } }\n";
+
+static const char WEB_CHAT_HTML_B[]=
+"</head>\n"
+"<body>\n"
+"<header id=\"bar\" hidden>\n"
+"<h1>dcd chat</h1>\n"
+"<div id=\"status\" class=\"pill off\">disconnected</div>\n"
+"</header>\n"
+"<div id=\"login\">\n"
+"<form id=\"loginform\" autocomplete=\"off\">\n"
+"<h2>Log in</h2>\n"
+"<input id=\"nick\" placeholder=\"nick\" autofocus>\n"
+"<input id=\"pass\" type=\"password\" placeholder=\"password\">\n"
+"<div id=\"loginerr\"></div>\n"
+"<button type=\"submit\">Log in</button>\n"
+"<p class=\"hint\">A registered hub account is required.</p>\n"
+"</form>\n"
+"</div>\n"
+"<main id=\"app\" hidden>\n"
+"<div id=\"who\"></div>\n"
+"<div id=\"tabs\"></div>\n"
+"<div id=\"body\">\n"
+"<section id=\"chat\">\n"
+"<div id=\"msgs\"></div>\n"
+"<form id=\"sendform\" autocomplete=\"off\">\n"
+"<input id=\"msg\" placeholder=\"message\" autocomplete=\"off\">\n"
+"<button type=\"submit\">send</button>\n"
+"</form>\n"
+"</section>\n"
+"<aside id=\"users\">\n"
+"<h2>Users</h2>\n"
+"<ul id=\"userlist\"></ul>\n"
+"</aside>\n"
+"</div>\n"
+"</main>\n";
+
+static const char WEB_CHAT_JS[]=
+"\"use strict\";\n"
+"var $=function(s){return document.querySelector(s);};\n"
+"var statusEl=$('#status'),whoEl=$('#who'),tabsEl=$('#tabs'),msgsEl=$('#msgs'),\n"
+"  listEl=$('#userlist'),msgEl=$('#msg'),loginBox=$('#login'),loginErr=$('#loginerr'),\n"
+"  appEl=$('#app'),barEl=$('#bar');\n"
+"var ws=null,logged=false,me='';\n"
+"var main={id:'main',kind:'main',title:'Main',msgs:[],unread:0},tabs=[main],active=main,pm={};\n"
+"var users=[];\n"
+"function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}\n"
+"function setstatus(t,ok){statusEl.textContent=t;statusEl.className='pill '+(ok?'on':'off');}\n"
+"function showLogin(){logged=false;barEl.hidden=true;loginBox.hidden=false;appEl.hidden=true;}\n"
+"function hideLogin(){barEl.hidden=false;loginBox.hidden=true;appEl.hidden=false;whoEl.textContent='logged in as '+me;}\n"
+"function connect(){\n"
+"  ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/chatws');\n"
+"  ws.onopen=function(){setstatus('connected',true);};\n"
+"  ws.onclose=function(){setstatus('disconnected',false);showLogin();setTimeout(connect,2000);};\n"
+"  ws.onmessage=function(e){try{handle(JSON.parse(e.data));}catch(x){}};\n"
+"}\n"
+"function activeOr(tab){active=tab;tab.unread=0;renderTabs();renderMsgs();msgEl.focus();}\n"
+"function renderTabs(){tabsEl.textContent='';tabs.forEach(function(t){\n"
+"  var b=el('button','tab'+(t===active?' on':''));\n"
+"  b.appendChild(document.createTextNode(t.title+(t.unread?' ('+t.unread+')':'')));\n"
+"  if(t.kind==='pm'){var x=el('span','x','\\u00d7');x.onclick=function(ev){ev.stopPropagation();closePm(t);};b.appendChild(x);}\n"
+"  b.onclick=function(){activeOr(t);};tabsEl.appendChild(b);});}\n"
+"function renderMsgs(){msgsEl.textContent='';active.msgs.forEach(function(m){msgsEl.appendChild(row(m));});msgsEl.scrollTop=msgsEl.scrollHeight;}\n"
+"function row(m){var d=el('div','msg'+(m.me?' me':'')+(m.sys?' sys':''));\n"
+"  if(m.sys)d.textContent=m.t;else{d.appendChild(el('b',null,m.n+':'));d.appendChild(document.createTextNode(' '+m.t));}return d;}\n"
+"function addMsg(tab,m){tab.msgs.push(m);if(tab===active){msgsEl.appendChild(row(m));msgsEl.scrollTop=msgsEl.scrollHeight;}else tab.unread++;renderTabs();}\n"
+"function pmTab(nick){if(pm[nick])return pm[nick];var t={id:nick,kind:'pm',title:nick,nick:nick,msgs:[],unread:0};pm[nick]=t;tabs.push(t);return t;}\n"
+"function openPm(nick){if(!nick||nick===me)return;activeOr(pmTab(nick));}\n"
+"function closePm(t){var i=tabs.indexOf(t);if(i<0)return;tabs.splice(i,1);delete pm[t.nick];if(active===t)activeOr(main);}\n"
+"function renderUsers(){listEl.textContent='';users.forEach(function(u){addUser(u.n,u.op);});}\n"
+"function addUser(n,op){for(var i=0;i<users.length;i++){if(users[i].n===n){users[i].op=op;break;}}if(users.filter(function(u){return u.n===n;}).length===0)users.push({n:n,op:op});renderUsers();}\n"
+"function removeUser(n){users=users.filter(function(u){return u.n!==n;});renderUsers();}\n"
+"function sysMsg(t){addMsg(active,{sys:true,t:t});}\n"
+"function handle(m){\n"
+"  if(m.a==='ok'){me=m.n;logged=true;hideLogin();if(m.op)whoEl.textContent+=' (op)';}\n"
+"  else if(m.a==='err'){if(!logged){loginErr.textContent=m.m;}else sysMsg(m.m);}\n"
+"  else if(m.a==='users'){users=m.u.map(function(x){return {n:x[0],op:x[1]};});renderUsers();}\n"
+"  else if(m.a==='join'){addUser(m.n,m.op);}\n"
+"  else if(m.a==='leave'){removeUser(m.n);}\n"
+"  else if(m.a==='pub'){addMsg(main,{me:(m.n===me),n:m.n,t:m.t});}\n"
+"  else if(m.a==='pm'){var t=pmTab(m.n);addMsg(t,{me:!!m.me,n:m.n,t:m.t});}\n"
+"}\n"
+"$('#loginform').addEventListener('submit',function(e){e.preventDefault();\n"
+"  loginErr.textContent='';var n=$('#nick').value,p=$('#pass').value;\n"
+"  if(!ws||ws.readyState!==1){loginErr.textContent='not connected';return;}\n"
+"  if(!n||!p){loginErr.textContent='nick and password required';return;}\n"
+"  ws.send(JSON.stringify({a:'login',n:n,p:p}));$('#pass').value='';});\n"
+"$('#sendform').addEventListener('submit',function(e){e.preventDefault();\n"
+"  var text=msgEl.value;if(!logged||!text)return;\n"
+"  if(active.kind==='main')ws.send(JSON.stringify({a:'pub',t:text}));\n"
+"  else ws.send(JSON.stringify({a:'pm',n:active.nick,t:text}));\n"
+"  msgEl.value='';msgEl.focus();});\n"
+"renderTabs();renderMsgs();showLogin();connect();\n";
 
 #endif /* __WEB_ASSETS_H_INCLUDED__ */

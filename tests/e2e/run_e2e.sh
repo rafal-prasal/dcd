@@ -62,6 +62,7 @@ EOF
 
 cat > "$CONF/dcd.users" <<'EOF'
 testop:secret:testop@example.com:E2E operator:sc
+chatuser:chatpass:chatuser@example.com:E2E web chat user:
 EOF
 
 cat > "$CONF/dcd.welcome" <<'EOF'
@@ -82,6 +83,9 @@ EOF
 : > "$CONF/dcd.motd"
 : > "$CONF/dcd.rules"
 : > "$CONF/dcd.usercommands"
+
+cp "$ROOT/conf/dcd.webchat" "$ROOT/conf/dcd.webconsole" "$CONF/"
+printf '<!-- e2e-page-marker -->\n' >> "$CONF/dcd.webchat"
 
 echo "== starting hub on port $PORT (console $CONS_PORT) =="
 pkill -f "$PREFIX/sbin/dcd" 2>/dev/null

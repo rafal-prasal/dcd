@@ -305,6 +305,27 @@ leave:
 	return EC;
 } /* }}} */
 
+/* login_verify() - verify login/password against the login table without a
+   userrec; used by the embedded web chat. perm defaults to "n". {{{ */
+int login_verify(char *nick,char *pass,char *permbuf,size_t permbufs)
+{
+	loginrec_t *ulogin;
+
+	if (!nick || !*nick || !permbuf || !permbufs) return 0;
+
+	snprintf(permbuf,permbufs,"n");
+
+	ulogin=nick2login(nick);
+
+	if (!ulogin || !ulogin->password || !*ulogin->password) return 0;
+	if (!pass || !*pass) return 0;
+	if (!password_match(ulogin->password,pass)) return 0;
+
+	if (ulogin->perm && *ulogin->perm) snprintf(permbuf,permbufs,"%s",ulogin->perm);
+
+	return 1;
+} /* }}} */
+
 /* validhost(usr, access_file, deeper){{{
 .description:
 	verifies host access

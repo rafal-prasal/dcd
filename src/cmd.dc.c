@@ -699,7 +699,14 @@ void dc_To(dc_param_t *param)
 	}
 
 	id=nick2id(othernick);
-	if (id<0) return;
+	if (id<0)
+	{
+		/* not a hub user: the nick may belong to an embedded web chat
+		   session (the caller holds mutex_users; deliver_pm does not
+		   re-lock it) */
+		web_chat_deliver_pm(othernick,usr->nick,msg);
+		return;
+	}
 
 	// IF src user is punished and is not s'op and dest user is not a s'op
 	if(	user_tst_penalty(usr,PENALTY_NOPRVCHAT) && 

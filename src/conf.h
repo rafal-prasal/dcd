@@ -31,6 +31,12 @@ void parse_hublist();
 /* verify login and password {{{ */
 int validlogin(userrec_t *usr,char *login,char *pass);
 
+/* verify a login/password pair without a userrec (embedded web chat);
+   copies the account permissions into permbuf ("n" when none).
+   Caller must hold mutex_users (the login table is swapped by rehash).
+   Returns 1 when the account exists, has a password and it matches. */
+int login_verify(char *nick,char *pass,char *permbuf,size_t permbufs);
+
 /* validhost() - verify host access */
 char validhost(userrec_t *usr,char *access_file,int deeper);
 

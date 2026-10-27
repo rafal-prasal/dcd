@@ -70,6 +70,12 @@
 /* a rules file	*/
 #define CONF_RULES	"dcd.rules"
 
+/* web chat page (self-contained HTML with inlined CSS/JS)	*/
+#define CONF_WEBCHAT	"dcd.webchat"
+
+/* web console page (self-contained HTML with inlined CSS/JS)	*/
+#define CONF_WEBCONSOLE	"dcd.webconsole"
+
 /* service listening interface	*/
 #define LISTEN_INTERFACE "0.0.0.0"
 

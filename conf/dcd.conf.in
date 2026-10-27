@@ -44,8 +44,10 @@ n_user_manager = 1
 # IMPORTANT: is set only when starting dcd
 listen_port_cons = 511
 
-# Web endpoint listening port (HTTP: web console + /healthcheck,
-# WebSocket console bridge). Requires listen_port_cons. Set 0 to disable.
+# Web endpoint listening port (HTTP: web console + web chat + /healthcheck,
+# WebSocket console bridge at /ws and chat protocol at /chatws). The console
+# bridge requires listen_port_cons; the web chat (/chat) does not. Set 0 to
+# disable the whole web endpoint.
 # IMPORTANT: is set only when starting dcd
 listen_port_http = 0
 

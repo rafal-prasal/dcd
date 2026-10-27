@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!-- dcd default web console page. Edit to customize: CSS and JS are inlined, this is one self-contained file. dcd re-reads it automatically when it changes; if this file is missing the hub serves its built-in default copy. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dcd web console</title>
+<style>
+body { margin:0; font-family:ui-monospace,Menlo,Consolas,monospace;
+  background:#101418; color:#d8dee9; }
+header { display:flex; justify-content:space-between; align-items:center;
+  padding:.6rem 1rem; background:#182029; border-bottom:1px solid #2a3542; }
+h1 { font-size:1rem; margin:0; color:#88c0d0; }
+.nav a { color:#88c0d0; text-decoration:none; margin:0 .25rem; }
+.health { font-size:.8rem; padding:.2rem .6rem; border-radius:4px; }
+.health.ok { background:#2e4d33; color:#a3d9a5; }
+.health.bad { background:#542b2b; color:#e8a0a0; }
+main { max-width:1000px; margin:0 auto; padding:1rem; }
+#out { min-height:60vh; max-height:70vh; overflow-y:auto; margin:0;
+  background:#0b0e11; border:1px solid #2a3542; border-radius:6px;
+  padding:.8rem; font-size:.85rem; line-height:1.35; white-space:pre-wrap;
+  word-break:break-word; }
+#statusbar { display:flex; justify-content:space-between; align-items:center;
+  gap:1rem; margin-top:.8rem; }
+#status { font-size:.8rem; } #status.on { color:#a3d9a5; }
+#status.off { color:#e8a0a0; }
+#cmdform { display:flex; gap:.4rem; flex:1; }
+#cmd { flex:1; background:#0b0e11; color:#d8dee9; border:1px solid #2a3542;
+  border-radius:4px; padding:.45rem .6rem; font:inherit; }
+#cmd:focus { outline:none; border-color:#88c0d0; }
+button { background:#2a3542; color:#d8dee9; border:0; border-radius:4px;
+  padding:.45rem .9rem; font:inherit; cursor:pointer; }
+button:hover { background:#39485a; }
+</style>
+</head>
+
+<body>
+<header>
+<h1>dcd web console</h1>
+<nav class="nav"><a href="/">chat</a> <a href="/console">console</a></nav>
+<div id="health" class="health bad">health: checking</div>
+</header>
+<main>
+<pre id="out"></pre>
+<div id="statusbar">
+<span id="status" class="off">disconnected</span>
+<form id="cmdform" autocomplete="off">
+<input id="cmd" placeholder="command (help)" autofocus>
+<button type="submit">send</button>
+</form>
+</div>
+</main>
+<script>
+"use strict";
+var out=document.getElementById("out"),
+  statusEl=document.getElementById("status"),
+  form=document.getElementById("cmdform"),
+  cmd=document.getElementById("cmd"),
+  healthEl=document.getElementById("health"),
+  ws=null;
+function log(s){
+  var span=document.createElement("span");
+  span.textContent=s.endsWith("\n")?s:s+"\n";
+  out.appendChild(span); out.scrollTop=out.scrollHeight;
+}
+function connect(){
+  ws=new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/ws");
+  ws.onopen=function(){statusEl.textContent="connected";statusEl.className="on";};
+  ws.onclose=function(){statusEl.textContent="disconnected";statusEl.className="off";
+    log("-- connection closed, retrying --");setTimeout(connect,2000);};
+  ws.onmessage=function(e){log(e.data);};
+}
+form.addEventListener("submit",function(e){
+  e.preventDefault();
+  if(!ws||ws.readyState!==1||!cmd.value){return;}
+  ws.send(cmd.value+"\r\n");cmd.value="";cmd.focus();
+});
+function checkHealth(){
+  fetch("/healthcheck",{cache:"no-store"}).then(function(r){
+    return r.text().then(function(t){
+      healthEl.textContent="health: "+r.status+" "+t.trim();
+      healthEl.className="health "+(r.status===200?"ok":"bad");
+    });
+  },function(){healthEl.textContent="health: unreachable";healthEl.className="health bad";});
+}
+setInterval(checkHealth,10000); checkHealth(); connect();
+</script>
+</body>
+</html>

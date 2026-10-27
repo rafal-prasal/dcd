@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<!-- dcd default web chat page. Edit to customize: CSS and JS are inlined, this is one self-contained file. dcd re-reads it automatically when it changes; if this file is missing the hub serves its built-in default copy. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dcd chat</title>
+<style>
+body { margin:0; height:100vh; display:flex; flex-direction:column;
+  font-family:ui-monospace,Menlo,Consolas,monospace; background:#101418;
+  color:#d8dee9; }
+[hidden] { display:none !important; }
+header { display:flex; justify-content:space-between; align-items:center;
+  padding:.6rem 1rem; background:#182029; border-bottom:1px solid #2a3542; }
+h1 { font-size:1rem; margin:0; color:#88c0d0; }
+.pill { font-size:.8rem; } .pill.on { color:#a3d9a5; } .pill.off { color:#e8a0a0; }
+#login { margin:auto; width:min(340px,90%); background:#182029; border:1px solid
+  #2a3542; border-radius:8px; padding:1.4rem; } #login h2 { margin:.2rem 0 1rem;
+  color:#88c0d0; font-size:1.1rem; } #login input { width:100%; box-sizing:border-box;
+  margin:.3rem 0; padding:.5rem .6rem; background:#0b0e11; color:#d8dee9;
+  border:1px solid #2a3542; border-radius:4px; font:inherit; }
+#login button { margin-top:.7rem; width:100%; } .hint { font-size:.75rem;
+  color:#7a8794; } #loginerr { color:#e8a0a0; font-size:.8rem; min-height:1em; }
+main { flex:1; display:flex; flex-direction:column; min-height:0; padding:.8rem;
+  gap:.5rem; } #who { font-size:.8rem; color:#7a8794; }
+#tabs { display:flex; flex-wrap:wrap; gap:.3rem; }
+.tab { display:inline-flex; align-items:center; gap:.4rem; background:#182029;
+  border:1px solid #2a3542; border-radius:5px; padding:.35rem .6rem; cursor:pointer;
+  font:inherit; color:#d8dee9; } .tab.on { background:#2a3542; border-color:#88c0d0; }
+.tab .x { color:#7a8794; padding:0 .1rem; } .tab .x:hover { color:#e8a0a0; }
+.tab .badge { background:#b48c8c; color:#101418; border-radius:8px; padding:0 .35rem;
+  font-size:.7rem; }
+#body { flex:1; display:flex; gap:.8rem; min-height:0; }
+#chat { flex:1; display:flex; flex-direction:column; min-width:0; }
+#msgs { flex:1; overflow-y:auto; background:#0b0e11; border:1px solid #2a3542;
+  border-radius:6px; padding:.8rem; font-size:.85rem; line-height:1.4; }
+.msg { margin:0 0 .35rem; white-space:pre-wrap; word-break:break-word; }
+.msg b { color:#88c0d0; } .msg.me b { color:#a3d9a5; } .msg.sys { color:#e8c07a;
+  font-style:italic; }
+#sendform { display:flex; gap:.4rem; margin-top:.5rem; }
+#msg { flex:1; background:#0b0e11; color:#d8dee9; border:1px solid #2a3542;
+  border-radius:4px; padding:.5rem .6rem; font:inherit; }
+#msg:focus { outline:none; border-color:#88c0d0; }
+button { background:#2a3542; color:#d8dee9; border:0; border-radius:4px;
+  padding:.5rem .9rem; font:inherit; cursor:pointer; } button:hover { background:#39485a; }
+#users { width:200px; flex-shrink:0; display:flex; flex-direction:column; }
+#users h2 { font-size:.85rem; margin:.2rem 0 .4rem; color:#88c0d0; }
+#userlist { list-style:none; margin:0; padding:0; overflow-y:auto; flex:1;
+  background:#0b0e11; border:1px solid #2a3542; border-radius:6px; }
+#userlist li { padding:.3rem .6rem; cursor:pointer; font-size:.85rem; }
+#userlist li:hover { background:#182029; } #userlist li.op { color:#e8c07a; }
+@media (max-width:640px){ #body { flex-direction:column; } #users { width:auto;
+  order:-1; max-height:120px; } }
+</style>
+</head>
+
+<body>
+<header id="bar" hidden>
+<h1>dcd chat</h1>
+<div id="status" class="pill off">disconnected</div>
+</header>
+<div id="login">
+<form id="loginform" autocomplete="off">
+<h2>Log in</h2>
+<input id="nick" placeholder="nick" autofocus>
+<input id="pass" type="password" placeholder="password">
+<div id="loginerr"></div>
+<button type="submit">Log in</button>
+<p class="hint">A registered hub account is required.</p>
+</form>
+</div>
+<main id="app" hidden>
+<div id="who"></div>
+<div id="tabs"></div>
+<div id="body">
+<section id="chat">
+<div id="msgs"></div>
+<form id="sendform" autocomplete="off">
+<input id="msg" placeholder="message" autocomplete="off">
+<button type="submit">send</button>
+</form>
+</section>
+<aside id="users">
+<h2>Users</h2>
+<ul id="userlist"></ul>
+</aside>
+</div>
+</main>
+<script>
+"use strict";
+var $=function(s){return document.querySelector(s);};
+var statusEl=$('#status'),whoEl=$('#who'),tabsEl=$('#tabs'),msgsEl=$('#msgs'),
+  listEl=$('#userlist'),msgEl=$('#msg'),loginBox=$('#login'),loginErr=$('#loginerr'),
+  appEl=$('#app'),barEl=$('#bar');
+var ws=null,logged=false,me='';
+var main={id:'main',kind:'main',title:'Main',msgs:[],unread:0},tabs=[main],active=main,pm={};
+var users=[];
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function setstatus(t,ok){statusEl.textContent=t;statusEl.className='pill '+(ok?'on':'off');}
+function showLogin(){logged=false;barEl.hidden=true;loginBox.hidden=false;appEl.hidden=true;}
+function hideLogin(){barEl.hidden=false;loginBox.hidden=true;appEl.hidden=false;whoEl.textContent='logged in as '+me;}
+function connect(){
+  ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/chatws');
+  ws.onopen=function(){setstatus('connected',true);};
+  ws.onclose=function(){setstatus('disconnected',false);showLogin();setTimeout(connect,2000);};
+  ws.onmessage=function(e){try{handle(JSON.parse(e.data));}catch(x){}};
+}
+function activeOr(tab){active=tab;tab.unread=0;renderTabs();renderMsgs();msgEl.focus();}
+function renderTabs(){tabsEl.textContent='';tabs.forEach(function(t){
+  var b=el('button','tab'+(t===active?' on':''));
+  b.appendChild(document.createTextNode(t.title+(t.unread?' ('+t.unread+')':'')));
+  if(t.kind==='pm'){var x=el('span','x','\u00d7');x.onclick=function(ev){ev.stopPropagation();closePm(t);};b.appendChild(x);}
+  b.onclick=function(){activeOr(t);};tabsEl.appendChild(b);});}
+function renderMsgs(){msgsEl.textContent='';active.msgs.forEach(function(m){msgsEl.appendChild(row(m));});msgsEl.scrollTop=msgsEl.scrollHeight;}
+function row(m){var d=el('div','msg'+(m.me?' me':'')+(m.sys?' sys':''));
+  if(m.sys)d.textContent=m.t;else{d.appendChild(el('b',null,m.n+':'));d.appendChild(document.createTextNode(' '+m.t));}return d;}
+function addMsg(tab,m){tab.msgs.push(m);if(tab===active){msgsEl.appendChild(row(m));msgsEl.scrollTop=msgsEl.scrollHeight;}else tab.unread++;renderTabs();}
+function pmTab(nick){if(pm[nick])return pm[nick];var t={id:nick,kind:'pm',title:nick,nick:nick,msgs:[],unread:0};pm[nick]=t;tabs.push(t);return t;}
+function openPm(nick){if(!nick||nick===me)return;activeOr(pmTab(nick));}
+function closePm(t){var i=tabs.indexOf(t);if(i<0)return;tabs.splice(i,1);delete pm[t.nick];if(active===t)activeOr(main);}
+function renderUsers(){listEl.textContent='';users.forEach(function(u){addUser(u.n,u.op);});}
+function addUser(n,op){for(var i=0;i<users.length;i++){if(users[i].n===n){users[i].op=op;break;}}if(users.filter(function(u){return u.n===n;}).length===0)users.push({n:n,op:op});renderUsers();}
+function removeUser(n){users=users.filter(function(u){return u.n!==n;});renderUsers();}
+function sysMsg(t){addMsg(active,{sys:true,t:t});}
+function handle(m){
+  if(m.a==='ok'){me=m.n;logged=true;hideLogin();if(m.op)whoEl.textContent+=' (op)';}
+  else if(m.a==='err'){if(!logged){loginErr.textContent=m.m;}else sysMsg(m.m);}
+  else if(m.a==='users'){users=m.u.map(function(x){return {n:x[0],op:x[1]};});renderUsers();}
+  else if(m.a==='join'){addUser(m.n,m.op);}
+  else if(m.a==='leave'){removeUser(m.n);}
+  else if(m.a==='pub'){addMsg(main,{me:(m.n===me),n:m.n,t:m.t});}
+  else if(m.a==='pm'){var t=pmTab(m.n);addMsg(t,{me:!!m.me,n:m.n,t:m.t});}
+}
+$('#loginform').addEventListener('submit',function(e){e.preventDefault();
+  loginErr.textContent='';var n=$('#nick').value,p=$('#pass').value;
+  if(!ws||ws.readyState!==1){loginErr.textContent='not connected';return;}
+  if(!n||!p){loginErr.textContent='nick and password required';return;}
+  ws.send(JSON.stringify({a:'login',n:n,p:p}));$('#pass').value='';});
+$('#sendform').addEventListener('submit',function(e){e.preventDefault();
+  var text=msgEl.value;if(!logged||!text)return;
+  if(active.kind==='main')ws.send(JSON.stringify({a:'pub',t:text}));
+  else ws.send(JSON.stringify({a:'pm',n:active.nick,t:text}));
+  msgEl.value='';msgEl.focus();});
+renderTabs();renderMsgs();showLogin();connect();
+</script>
+</body>
+</html>

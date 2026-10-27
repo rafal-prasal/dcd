@@ -434,7 +434,7 @@ New `listen_port_http` config option (default 0 = disabled) starts an embedded H
 
 ### Implementation
 
-- `src/web.c` (new): one thread, static buffers, no per-client allocation. Routes: `GET /` (web console), `/console.js`, `/console.css`, `GET /healthcheck` (200 `OK online=… max_online=… logins=…` when the hub core is responsive, 500 otherwise — `pthread_mutex_timedlock` on `mutex_users` with 2 s timeout; every worker releases that lock each cycle, so timing out means a deadlock), `GET /ws` (RFC6455 upgrade).
+- `src/web.c` (new): one thread, static buffers, no per-client allocation. Routes: `GET /` (web console — chat became the `/` default and the console moved to `/console` in §19), `/console.js`, `/console.css`, `GET /healthcheck` (200 `OK online=… max_online=… logins=…` when the hub core is responsive, 500 otherwise — `pthread_mutex_timedlock` on `mutex_users` with 2 s timeout; every worker releases that lock each cycle, so timing out means a deadlock), `GET /ws` (RFC6455 upgrade).
 - WebSocket bridge: each `/ws` client gets a loopback TCP connection to `listen_port_cons` and protocol bytes are relayed raw; telnet IAC option triplets (`FF FB/FC/FD xx`) are stripped server-side. Minimal RFC6455 codec (`ws_parse_frame`/`ws_write_frame` in `src/web.{c,h}`, shared with tests) — text/close/ping/pong, no fragmentation; SHA-1 for the handshake uses OpenSSL `EVP_Q_digest` (§15). Non-console responses use proper status codes (400/404/405/500/503).
 - Config: `listen_port_http` (`src/main.h` field, `src/cmd.conf.c` handler, `conf/dcd.conf.in` entry); thread created in `make_threads()` and cancelled/closed in `do_shutdown()` alongside the console listener.
 
@@ -461,6 +461,110 @@ Scanned `src/` with `flawfinder 2.0.19` (CVE/CWE pattern DB, all 21 hits at risk
 - e2e `test_search_empty_options_no_crash` (NULL-deref regression) and `test_myinfo_oversized_line_kicks` (overflow must kick, never corrupt).
 - ctest 11/11; e2e 32/32; `gcc -fanalyzer` clean on touched files.
 
+## 19. Embedded web chat (/chat, JSON over /chatws) (2026-10-26)
+
+Extend the embedded web endpoint with a real chat client (separate from the
+admin console): login gate, a user list on the right, public main chat and
+one-on-one private conversations in tabs. A web chat client is **not** a hub
+`userrec_t`; it is bridged to the hub core through the existing locks.
+
+### Backend (`src/web.c` + small core hooks)
+
+- **JSON protocol** over `/chatws` (no console loopback): client sends
+  `{a:"login"|"pub"|"pm",...}`; server sends `ok`/`err`/`users`/`join`/
+  `leave`/`pub`/`pm` events. A single-level `jget`/`jesc` pair parses and
+  emits these (only string fields; nicks/messages are JSON-escaped and
+  stripped of `|`/control bytes). Login is required before any `pub`/`pm`;
+  a wrong/missing password or an over-cap login attempt is refused (the
+  session is torn down after `WEB_CHAT_LOGIN_MAX` tries). Messages are
+  rate-limited per second (`WEB_CHAT_RATE`).
+- **Auth** reuses the hub account table: new `login_verify(nick,pass,permbuf)`
+  (`src/conf.c`/`conf.h`) checks `nick2login` + `password_match` (plaintext or
+  `$sha512$`) without a `userrec`. Accounts come from `dcd.users`.
+- **Public chat** is fed to chat clients by tapping the user-table multicast:
+  `disttcp(NULL,line)` (`src/net.c`) now calls `web_chat_broadcast()` for every
+  broadcast; the tap only emits `<nick> text|`-shaped lines and skips the `$…`
+  protocol lines. Web-sent public lines go through `disttcp(NULL,...)` too, so
+  the sender is echoed back exactly like a hub client.
+- **Private messages**: web→hub via `privmsg(user[id],cnick,…)` (standard
+  `$To: … From: … $<cnick> …`); hub→web by extending `dc_To()` (`src/cmd.dc.c`)
+  so an unknown target nick is routed to `web_chat_deliver_pm()` (the leading
+  `$<nick> ` separator space is trimmed). PMs between two web sessions are
+  delivered in-process through the same registry.
+- **Presence**: `chat_poll()` snapshots registered non-console hub users plus
+  the chat sessions under the locks every ~2s and diffs the previous snapshot
+  into `join`/`leave` events; login gets the full `users` list (snapshot
+  capped at `WEB_ULIST_MAX`).
+- **Nick lock**: `validnick()` (`src/misc.c`) refuses a hub client's
+  `$ValidateNick` while a web session owns the nick (`web_chat_nick_used`).
+
+### Locking
+
+The web thread owns all per-client chat state. Worker threads (already holding
+`mutex_users`) only read the chat registry and append JSON events to client
+output queues. New locks: `mutex_webchat` (the `wchat[]` registry) and
+`mutex_out` (every `c->out` queue, since workers now append to it). Fixed lock
+order **`mutex_users → mutex_webchat → mutex_out`** everywhere, including
+`chat_login` (registers the nick in one users+webchat critical section so a hub
+client cannot take it in between) and `chat_pm`/`web_chat_broadcast`. `c->closing`
+stays web-thread-only; output-queue overflow is a separate atomic `obuffull`.
+`WEB_MAX_CLIENTS` 8→12; `chat_n` is an atomic "any session logged in" counter
+the `disttcp` tap checks.
+
+### Client (`src/web_assets.h`)
+
+`WEB_CHAT_HTML/CSS/JS`: full-height login overlay until `ok`; then a tab strip
+(Main pinned + one closable tab per PM peer, unread badges), a scrolling message
+pane, and a `<aside>` user list on the right — clicking a user opens/focuses a
+private tab. DOM text is set with `textContent` (no HTML injection). Routing in `web_handle_request`: the chat
+page is the **default endpoint** `/` (aliases `/index.html`, `/chat`); the
+console moved to `/console` (was `/` in §17); new asset/protocol routes
+`/chat.css`, `/chat.js`, `/chatws` (console assets `/console.css`,
+`/console.js` and the console bridge `/ws` unchanged).
+
+### Tests
+
+- `run_e2e.sh` adds a plain (non-console) account `chatuser / chatpass`.
+- `TestChat` (6 tests): login required before send; wrong password rejected;
+  `users` list contains the hub peer and the web user; public chat both ways
+  with sender echo; private messages both ways; a web-claimed nick is rejected
+  by a hub client (`already used`).
+- ctest 11/11; e2e 35/35. Under ThreadSanitizer the e2e suite is 35/35 with
+  **no data races in the chat locking** — the only findings are the 6
+  pre-existing thread-leak-at-shutdown warnings and, sporadically, an OpenSSL
+  lazy one-time-init vs `atexit` teardown race (`CRYPTO_THREAD_lock_free`)
+  triggered by the web thread's WebSocket SHA-1 handshake (`web.c`, §17):
+  OpenSSL initializes a global rwlock on first `EVP_Q_digest` while libcrypto's
+  exit handler destroys it — a libcrypto/TSAN interaction predating the chat,
+  not the `mutex_users → mutex_webchat → mutex_out` path.
+
+## 20. Web pages as configuration files (dcd.webchat / dcd.webconsole) (2026-10-27)
+
+The embedded HTML clients stopped being hard-coded blobs: each page is now a
+**configuration file in the config directory**, one self-contained file per
+client with **CSS and JS inlined** (no separate asset routes):
+
+- `conf/dcd.webchat` — the chat page (default endpoint `/`, `/chat`);
+- `conf/dcd.webconsole` — the console page (`/console`);
+- installed by CMake with the other config files (644); the container
+  entrypoint's `cp -a` seeds them automatically.
+- `src/web.c`: `webpage_t {path, buf, mtime}` per page; paths derived from
+  `conf.conf_main` (config dir); `web_page_check()` stats the file every poll
+  cycle (~1 s) and reloads on mtime change — **live editing supported**, errors
+  (oversized > 256 KB, short read) keep the previous copy; only the web thread
+  touches these buffers, no locking.
+- Fallback: `web_assets.h` fragments (`WEB_HTML_A/B + WEB_CSS/WEB_JS`,
+  `WEB_CHAT_HTML_A/B + WEB_CHAT_CSS/WEB_CHAT_JS`) composed once at thread
+  start via `my_sprintf` — the built-in copy stays byte-identical to the
+  installed default (self-contained binary preserved); a missing file logs
+  once and serves it.
+- Routes `/console.css`, `/console.js`, `/chat.css`, `/chat.js` removed (404);
+  everything is inlined.
+- e2e: `run_e2e.sh` copies the two files and appends an `e2e-page-marker` to
+  `dcd.webchat`; `TestWeb` now asserts inline `<style>`/`<script>` in the
+  served pages, `test_web_pages_from_config_files` proves the config-file
+  source, and `test_web_removed_asset_routes_404` covers the removals.
+
 ## Status
 
-§1–§11 are committed (`master` ahead of `origin/master`). The §12, §13, §14, §15, §16, §17 and §18 changes are **uncommitted** in the working tree.
+§1–§11 are committed (`master` ahead of `origin/master`). The §12, §13, §14, §15, §16, §17, §18, §19 and §20 changes are **uncommitted** in the working tree.

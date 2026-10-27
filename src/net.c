@@ -91,6 +91,10 @@ void disttcp(userrec_t *usr, char *str)
 	for ( i = 0; i < NUSERS; i++ )
 		if (user[i] && user_tst_state(user[i],STATE_REGISTERED) && user[i]->cons==0) sendtcp(user[i], str);
 
+	/* the user-table multicast skips console users; web chat clients have
+	   no user record at all, so feed them from the same multicast */
+	if (web_chat_active()) web_chat_broadcast(str);
+
 }
 
 /* disttcpf() - something like printf(), but to a socket {{{ */

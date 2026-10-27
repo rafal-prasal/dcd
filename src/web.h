@@ -12,6 +12,25 @@ void listen_thread_http(void *args);
 /* 1 when the hub core is responsive (user-table lock obtainable) */
 int web_health_ok(void);
 
+/* --- embedded web chat (/chat page, JSON protocol over /chatws) ---
+ * Hub-side entry points. They never touch the user table and never take
+ * mutex_users; the caller (worker/console paths) must already hold it.
+ * They take only the chat-registry and output-queue locks. */
+
+/* 1 when at least one logged-in web chat session exists */
+int web_chat_active(void);
+
+/* forward a hub public-chat multicast line ("<nick> text|") to chat clients */
+void web_chat_broadcast(const char *line);
+
+/* 1 when nick is claimed by a logged-in web chat session (nick reservation
+   in validnick(): a hub client must not take the nick of a web user) */
+int web_chat_nick_used(const char *nick);
+
+/* deliver a private message to a web chat session; 1 when delivered,
+   0 when no web session owns the nick */
+int web_chat_deliver_pm(const char *to,const char *from,const char *msg);
+
 /* RFC6455 codec, exposed for unit tests */
 
 struct ws_frame

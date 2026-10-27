@@ -4,6 +4,7 @@
 Requires a running DCD hub configured for testing (see run_e2e.sh):
   * hubname E2E-Test-Hub, search_interval 0, minslots/minshare 0
   * registered operator account  testop / secret  (permissions "sc")
+  * registered chat account      chatuser / chatpass
   * console access allowed from 127.0.0.1
 
 Usage: python3 test_e2e.py --port 41111 --cons-port 41511
@@ -12,6 +13,7 @@ Usage: python3 test_e2e.py --port 41111 --cons-port 41511
 import argparse
 import base64
 import itertools
+import json
 import os
 import select
 import socket
@@ -19,6 +21,7 @@ import struct
 import sys
 import time
 import unittest
+import urllib.error
 import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -34,6 +37,8 @@ from nmdc import (  # noqa: E402
 HUBNAME = "E2E-Test-Hub"
 OP_NICK = "testop"
 OP_PASS = "secret"
+CHAT_USER = "chatuser"
+CHAT_PASS = "chatpass"
 HTTP = 0
 
 
@@ -112,6 +117,61 @@ def ws_read_until(s, buf, needle, timeout=10.0):
     return text, buf
 
 _counter = itertools.count(1)
+
+
+def ws_json_until(s, buf, pred, timeout=10.0):
+    """Accumulate chat JSON events until pred(events) is satisfied."""
+    events = []
+
+    def need(n):
+        nonlocal buf
+        while len(buf) < n:
+            if not select.select([s], [], [], timeout)[0]:
+                raise TimeoutError("websocket read timeout")
+            chunk = s.recv(4096)
+            if not chunk:
+                raise ConnectionError("websocket closed")
+            buf += chunk
+
+    while not pred(events):
+        need(2)
+        b0, b1 = buf[0], buf[1]
+        if b1 & 0x80:
+            raise AssertionError("server must not mask frames")
+        ln = b1 & 0x7F
+        i = 2
+        if ln == 126:
+            need(4)
+            ln = struct.unpack("!H", buf[2:4])[0]
+            i = 4
+        elif ln == 127:
+            need(10)
+            ln = struct.unpack("!Q", buf[2:10])[0]
+            i = 10
+        need(i + ln)
+        op = b0 & 0x0F
+        payload = buf[i:i + ln]
+        buf = buf[i + ln:]
+        if op == 0x8:
+            raise ConnectionError("websocket close frame")
+        if op == 0x1:
+            events.append(json.loads(payload.decode()))
+
+    return events, buf
+
+
+def chat_ws_login(nick=CHAT_USER, password=CHAT_PASS):
+    """Open a chat websocket and complete the login; returns (sock, buf)."""
+    s, buf = ws_connect(HTTP, path="/chatws")
+    try:
+        ws_send(s, json.dumps({"a": "login", "n": nick, "p": password}))
+        events, buf = ws_json_until(s, buf, lambda e: any(x.get("a") == "ok" for x in e))
+        if not any(x.get("a") == "ok" and x.get("n") == nick for x in events):
+            raise AssertionError(f"chat login did not confirm: {events}")
+    except Exception:
+        s.close()
+        raise
+    return s, buf
 
 
 def uniq(base):
@@ -461,14 +521,31 @@ class TestWeb(E2EBase):
             self.assertIn("OK online=", r.read().decode())
 
     def test_web_static_assets(self):
-        for path, needle in [("/", "web console"),
-                             ("/console.js", "WebSocket"),
-                             ("/console.css", "body"),
-                             ("/index.html", "web console")]:
+        for path, needle in [("/", "dcd chat"),
+                             ("/chat", "dcd chat"),
+                             ("/index.html", "dcd chat"),
+                             ("/console", "web console")]:
             with urllib.request.urlopen(f"http://127.0.0.1:{HTTP}{path}",
                                         timeout=5) as r:
                 self.assertEqual(r.status, 200)
-                self.assertIn(needle, r.read().decode())
+                body = r.read().decode()
+                self.assertIn(needle, body)
+                self.assertIn("<style>", body)      # inlined CSS
+                self.assertIn("<script>", body)     # inlined JS
+
+    def test_web_pages_from_config_files(self):
+        """The pages come from dcd.webchat/dcd.webconsole in the config
+        directory (run_e2e.sh copies them and appends a marker)."""
+        with urllib.request.urlopen(f"http://127.0.0.1:{HTTP}/",
+                                    timeout=5) as r:
+            self.assertIn("e2e-page-marker", r.read().decode())
+
+    def test_web_removed_asset_routes_404(self):
+        for path in ("/console.css", "/console.js", "/chat.css", "/chat.js"):
+            with self.assertRaises(urllib.error.HTTPError) as cm:
+                urllib.request.urlopen(f"http://127.0.0.1:{HTTP}{path}",
+                                       timeout=5)
+            self.assertEqual(cm.exception.code, 404)
 
     def test_web_console_login_and_stats(self):
         self.used_nicks.add(OP_NICK)
@@ -501,6 +578,89 @@ class TestWeb(E2EBase):
             # the console kills the session; the bridge must tear down
             with self.assertRaises((ConnectionError, TimeoutError)):
                 ws_read_until(s, buf, "definitely-not-there", timeout=5.0)
+        finally:
+            s.close()
+
+
+class TestChat(E2EBase):
+    """Embedded web chat (/chatws JSON protocol): login gate, hub<->web
+    public chat, private messages both ways, presence list and nick lock."""
+
+    def test_chat_login_required(self):
+        s, buf = ws_connect(HTTP, path="/chatws")
+        try:
+            ws_send(s, json.dumps({"a": "pub", "t": "before login"}))
+            events, buf = ws_json_until(s, buf, lambda e: any(x.get("a") == "err" for x in e))
+            self.assertIn("login", [x for x in events if x["a"] == "err"][0]["m"])
+        finally:
+            s.close()
+
+    def test_chat_wrong_password(self):
+        s, buf = ws_connect(HTTP, path="/chatws")
+        try:
+            ws_send(s, json.dumps({"a": "login", "n": CHAT_USER, "p": "totally-wrong"}))
+            events, buf = ws_json_until(s, buf, lambda e: any(x.get("a") == "err" for x in e))
+            self.assertIn("invalid", [x for x in events if x["a"] == "err"][0]["m"])
+        finally:
+            s.close()
+
+    def test_chat_userlist(self):
+        hnick = uniq("chatlist")
+        h = self.logged_in(hnick)
+        self.used_nicks.add(CHAT_USER)
+        s, buf = ws_connect(HTTP, path="/chatws")
+        try:
+            ws_send(s, json.dumps({"a": "login", "n": CHAT_USER, "p": CHAT_PASS}))
+            events, buf = ws_json_until(s, buf, lambda e: any(x.get("a") == "users" for x in e))
+            users = next(x for x in events if x.get("a") == "users")["u"]
+            names = [u[0] for u in users]
+            self.assertIn(hnick, names)          # hub user present
+            self.assertIn(CHAT_USER, names)      # web user present
+            self.assertTrue(any(x.get("a") == "ok" for x in events))
+        finally:
+            s.close()
+
+    def test_chat_public_both_ways(self):
+        hnick = uniq("chatpub")
+        h = self.logged_in(hnick)
+        self.used_nicks.add(CHAT_USER)
+        s, buf = chat_ws_login()
+        try:
+            h.chat("hello from hub")
+            events, buf = ws_json_until(
+                s, buf, lambda e: any(x.get("a") == "pub" and x.get("n") == hnick
+                                      and x.get("t") == "hello from hub" for x in e))
+            ws_send(s, json.dumps({"a": "pub", "t": "hello from web"}))
+            h.expect(lambda m: m.kind == "chat" and m.cmd == CHAT_USER
+                     and m.arg == "hello from web")
+            # sender-included echo back to the web session
+            events, buf = ws_json_until(
+                s, buf, lambda e: any(x.get("a") == "pub" and x.get("n") == CHAT_USER for x in e))
+        finally:
+            s.close()
+
+    def test_chat_pm_both_ways(self):
+        hnick = uniq("chatpm")
+        h = self.logged_in(hnick)
+        self.used_nicks.add(CHAT_USER)
+        s, buf = chat_ws_login()
+        try:
+            h.pm(CHAT_USER, "hi to web")
+            ws_json_until(s, buf, lambda e: any(x.get("a") == "pm" and x.get("n") == hnick
+                                                and x.get("t") == "hi to web" for x in e))
+            ws_send(s, json.dumps({"a": "pm", "n": hnick, "t": "hi to hub"}))
+            h.expect(lambda m: m.kind == "dc" and m.cmd == "To:"
+                     and f"From: {CHAT_USER}" in m.arg and "hi to hub" in m.arg)
+        finally:
+            s.close()
+
+    def test_chat_nick_lock(self):
+        self.used_nicks.add(CHAT_USER)
+        s, buf = chat_ws_login()
+        try:
+            c = connect(CHAT_USER)
+            self.clients.append(c)
+            self.expect_rejected(c, "already used")
         finally:
             s.close()
 

@@ -1,7 +1,9 @@
 # DCD (DConnect Daemon) — Architecture
 
-Version documented: 1.1.1 (post-modernization tree: CMake build, poll()-based worker,
-single user lock, hash command dispatch, sanitizer-clean under TSan/ASan).
+Version documented: 2.0.0 (post-modernization tree: CMake build, poll()-based worker,
+single user lock, hash command dispatch, salted SHA-512 passwords, runtime telemetry,
+embedded HTTP endpoint (web console + web chat + /healthcheck), Docker packaging,
+sanitizer-clean under TSan/ASan).
 
 ---
 
@@ -37,12 +39,16 @@ strengthened) in this tree:
 | `src/cmd.conf.c` | `dcd.conf` directive handlers (~65 directives) |
 | `src/cmd.udp.c` | hub-to-hub UDP commands (`$Up`, `$UpToo`, `$Search`, `$SR`, `$ConnectToMe`) |
 | `src/cmd.opt_line.c` | command-line options (`-h`, `-v`, `-c`) |
-| `src/console.c` | remote administration console (telnet) |
-| `src/conf.c` | config/message/login/pattern/penalty/hublist file parsers |
+| `src/console.c` | remote administration console (telnet; the web endpoint bridges to it) |
+| `src/conf.c` | config/message/login/pattern/penalty/hublist file parsers; `login_verify()` |
 | `src/net.c` | TCP/UDP send & receive, multicast helpers, telnet-IAC stripping, disconnect |
 | `src/misc.c` | allocator wrappers, lock/key derivation, nick validation, nick→id hash, MyINFO parsing, buffers |
 | `src/match.c` | wildcard matcher (`*`, `?`, `%`, `\` quoting) used for bans/nick patterns |
 | `src/penalties.c` | punishment subsystem (bitmask penalties, persistence) |
+| `src/sha512.c` | OpenSSL-backed `sha512_hex()` + `password_match()` (`$sha512$salt$hex`) |
+| `src/stats.c` | runtime telemetry: traffic/command/rotation counters, report formatter |
+| `src/web.c` | embedded HTTP/WebSocket endpoint: web console, web chat, `/healthcheck` |
+| `src/web_assets.h` | built-in default pages (fallback when config files are missing) |
 | `src/log.c` | logging to syslog or per-facility files |
 | `src/compatibility.c` | small portability shims (e.g. `daemon()` fallback) |
 | `tests/` | unit + perf tests (C, `ctest`) and an end-to-end Python NMDC suite |
@@ -75,6 +81,9 @@ main thread ── daemonize ──► supervisory loop: sleep(1); consume `reha
    │
    └── listen_thread_cons ×1   accept() on listen_port_cons → addcons()
             (console sessions are then driven by the same user_manager loop)
+
+   └── listen_thread_http ×1   (only when listen_port_http != 0)
+            HTTP/WebSocket endpoint: web console, web chat, /healthcheck
 ```
 
 * **Main thread.** `main()` (`main.c:1040`) parses CLI options, reads `dcd.conf`,
@@ -115,6 +124,16 @@ main thread ── daemonize ──► supervisory loop: sleep(1); consume `reha
   sends the banner + `login: `, and registers the session as a `userrec_t` with
   `cons=1`. From then on the console session is just another socket handled by the
   protocol worker.
+* **Web endpoint** (`listen_thread_http`, `web.c:1309`; created only when
+  `listen_port_http != 0`). One thread, static per-client slots (no per-client
+  malloc), a ~1 s poll cycle that also re-stats the page files
+  (`dcd.webchat`/`dcd.webconsole` — live-editable, rebuilt from `web_assets.h`
+  fragments when missing). Serves the web console (WebSocket `/ws` bridged raw to
+  the console port) and the web chat (`/chatws`, JSON protocol — chat sessions are
+  *not* `userrec_t`s; they tap `disttcp()` for public traffic and route PMs via
+  `dc_To()`/`privmsg()`); `GET /healthcheck` answers 200/500 based on whether
+  `mutex_users` can be acquired with a 2 s `pthread_mutex_timedlock`. Cancelled
+  by `do_shutdown()` alongside the console listener.
 
 ### 2.2 Synchronization model
 
@@ -142,6 +161,10 @@ The current design collapses all of that into **one recursive mutex**:
   copies out under it (`misc.c:73`).
 * `mutex_myinfo` guards the pre-rendered `$MyINFO` cache string inside
   `userrec_t.myinfo.cache` (`net.c:172`, `misc.c:304`).
+* `mutex_webchat` guards the web-chat session registry (`wchat[]`) and
+  `mutex_out` every client output queue (`c->out`) — the worker/cleaner threads
+  append chat events to web clients. Fixed lock order everywhere:
+  **`mutex_users → mutex_webchat → mutex_out`**.
 * Each command dictionary is built exactly once via `pthread_once()`
   (`dc_dict_once`, `chat_dict_once`, `udp_dict_once`, `conf_dict_once`).
 
@@ -307,7 +330,8 @@ command from `chat_set` (case-insensitive). The same set serves the telnet
 console, minus the `#`. Commands: `amnesty`, `amnesty_all`, `conf`, `date`/`time`,
 `help`, `kick`, `lspunished`, `mmsg(_all)`, `msg(_all)`, `msg_prv(_all)`, `myip`,
 `punish`, `quit`, `redirect(_all)`, `rehash`, `rules`, `showops`, `stat`,
-`uptime`, `users`, `version`, `who`, `whoip`, `whois`.
+`stats` (telemetry report, console-only), `uptime`, `users`, `version`, `who`,
+`whoip`, `whois`.
 
 Permission model (`dcd.users` permission letters): `s` superior operator,
 `a` administrator, `c` console access, `n` reserved nick, `p` passive allowed,
@@ -355,7 +379,8 @@ Format: `name = value`, `#` comments. Directives group as:
 
 * **startup-only** (ignored on rehash, enforced at bind time): `bind_address`,
   `listen_port_main` (also sets the UDP port), `listen_port_cons`,
-  `n_listen_main`, `n_user_manager` (inert — see §2.2), `user`, `group`;
+  `listen_port_http` (0 disables the web endpoint), `n_listen_main`,
+  `n_user_manager` (inert — see §2.2), `user`, `group`;
 * **file pointers**: `conf_welcome`, `conf_motd`, `conf_rules`,
   `conf_usercommands`, `conf_banned`, `conf_cusers`, `conf_callow`,
   `conf_nallow`, `conf_penalties`, `conf_hublinks`;
@@ -378,13 +403,14 @@ Invalid values for critical directives abort startup (`exit(1)`); on rehash,
 
 | File | Format | Reloaded |
 |---|---|---|
-| `dcd.users` | `nick:password:email:description:permissions` (plain-text passwords); also reserves nicks with `n` | cleaner every 5 s; logins looked up by `bsearch` over a `qsort`ed table |
+| `dcd.users` | `nick:password:email:description:permissions`; passwords plaintext or salted SHA-512 (`$sha512$salt$hex`, `password_match()`); also reserves nicks with `n` | cleaner every 5 s; logins looked up by `bsearch` over a `qsort`ed table; `login_verify()` also authenticates web-chat sessions |
 | `console.allow` | IPs/wildcards, `include:name` (one level) | per console connection |
 | `nicks.allow` | one wildcard pattern per line | cleaner every 5 s |
 | `dcd.banned` | `IP[:reason]`, wildcards, `include:` | checked by cleaner per user |
 | `dcd.penalties` | see §3.9 | read at startup; written on change + periodically |
 | `dcd.hublinks` | `ip:port:pass_in:pass_out` | on rehash |
 | `dcd.welcome` / `dcd.motd` / `dcd.rules` / `dcd.usercommands` | raw text / raw `$UserCommand` lines | cleaner every 5 s |
+| `dcd.webchat` / `dcd.webconsole` | self-contained HTML pages (CSS/JS inlined) for the embedded web endpoint | web thread every ~1 s (mtime check); built-in fallback from `web_assets.h` when missing |
 
 Wildcard matching (`match.c`, public-domain IRC matcher) supports `*`, `?`,
 legacy `%`, and `\` quoting, case-insensitively; it is used for bans, nick
@@ -407,6 +433,8 @@ debugging tool (and what the E2E suite greps).
 
 `CMakeLists.txt` (CMake ≥ 3.16, C17):
 
+* `find_package(Threads)` + `find_package(OpenSSL REQUIRED)` — libcrypto backs
+  `sha512_hex()`/`password_match()` and the WebSocket handshake (SHA-1);
 * cache variables: `DCD_CONFIG_DIR` (default `<prefix>/etc/dcd`, compiled in as
   `CONFIGDIR`), `DEFAULT_USER`/`DEFAULT_GROUP` (compile definitions), `LOG_DIR`;
 * compile definitions: `PACKAGE_NAME`, `PACKAGE_VERSION`, `CONFIGDIR`,
@@ -418,8 +446,14 @@ debugging tool (and what the E2E suite greps).
   optional `DCD_ENABLE_LTO`, `DCD_ENABLE_TSAN`, `DCD_ENABLE_ASAN`;
 * the daemon sources (everything except `main.c`) compile once into an OBJECT
   library `dcd_obj`, shared by the binary and the tests;
-* install: `dcd` + `dcd.adduser` to `sbin/`, 11 config files to
-  `DCD_CONFIG_DIR` (mode 640 for `dcd.users`/`console.allow`), man pages.
+* install: `dcd` + `dcd.adduser` to `sbin/`, 13 config files (incl. the web
+  pages `dcd.webchat`/`dcd.webconsole`) to `DCD_CONFIG_DIR` (mode 640 for
+  `dcd.users`/`console.allow`), man pages.
+* `Dockerfile` + `docker/`: multi-stage image (unit tests run at image-build
+  time, `ctest -LE perf`), entrypoint seeds `/etc/dcd` and applies `DCD_*`
+  env overrides, `syslog-forward` pumps `/dev/log` to stdout for
+  `docker logs`, `HEALTHCHECK` probes `/healthcheck`; `DCD_NO_DAEMON=1`
+  keeps dcd in the foreground.
 
 ---
 
@@ -520,7 +554,40 @@ the key before the string is freed. The hash is guarded by the same
 `mutex_users` as the user table. `bench_nick2id`: ~110 Mops/s vs ~1.1 Mops/s
 for the scan at 1000 users (~100×).
 
-### 5.9 Known protocol quirks (documented, not "fixed")
+### 5.10 Salted SHA-512 password hashes (OpenSSL-backed)
+
+`dcd.users` passwords used to be plaintext only. Accounts now accept
+`$sha512$<salt>$<hex(sha512(salt+password))>` (`/etc/shadow`-style layout,
+constant-time digest compare, plaintext still accepted for legacy entries);
+`validlogin()` and `dc_MyPass()` go through `password_match()`, and
+`dcd.adduser` generates random-salt hashes. The SHA-512 core is OpenSSL's
+`EVP_Q_digest` — an earlier hand-rolled implementation was replaced (~4×
+faster, nothing to audit).
+
+### 5.11 Runtime telemetry (`stats`)
+
+`src/stats.c` keeps relaxed-atomic counters: TCP/UDP totals (hooked in
+`my_recv`/`sendtcp`/`sendudp`/UDP recv loop), per-command dispatch counts
+(`cmd_dict_t.hits[]`, config/CLI dictionaries built non-counted) and user
+rotation driven by `user_set_state()` (the single state-transition choke
+point) incl. concurrent/max online + EWMA logins/hour. Console-only
+`stats` / `stats reset` commands render the report.
+
+### 5.12 Embedded web endpoint (web console + web chat + /healthcheck)
+
+`listen_port_http` starts `web.c`: one thread, static buffers, minimal
+RFC6455 codec (handshake SHA-1 via OpenSSL). Console page (`/console`)
+bridges a WebSocket to the loopback console port (IAC triplets stripped);
+chat page (`/`) uses a JSON protocol over `/chatws` and is bridged to the
+hub core under the locks (`disttcp()` tap for public traffic, `dc_To()`
+fallback + `privmsg()` for PMs, presence snapshots diffed into
+join/leave, `login_verify()` against `dcd.users`, nick reservation via
+`web_chat_nick_used()` in `validnick()`). `/healthcheck` reports core
+responsiveness via a timed lock on `mutex_users`. Pages are editable
+config files (`dcd.webchat`/`dcd.webconsole`, hot-reloaded by mtime), with
+byte-identical built-in fallbacks in `web_assets.h`.
+
+### 5.13 Known protocol quirks (documented, not "fixed")
 
 * `$Hello`/`$LogedIn` are **unicast** to the joining client; other users learn of
   a new user only via the `$MyINFO` broadcast (standard NMDC clients treat
@@ -541,8 +608,9 @@ for the scan at 1000 users (~100×).
 
 * `add2buf()` still runs `strlen(*buf)` per append (aggregate quadratic for a
   long unterminated stream); fixing needs per-buffer length tracking (API change).
-* Hub linking is UDP-only with no TCP fallback; passwords in `dcd.users` and
-  `dcd.hublinks` are plain text; no TLS, no IPv6 (both on the upstream TODO).
+* Hub linking is UDP-only with no TCP fallback; `dcd.hublinks` passwords are
+  still plain text (`dcd.users` supports hashed entries — §5.10); no TLS, no
+  IPv6 (both on the upstream TODO).
 * Quit/kick visibility is delayed up to `CLEANER_INTERVAL` (5 s) by design.
 * `n_user_manager` is accepted but inert (single worker under one lock).
 * Threads are cancelled asynchronously at shutdown; the process exits without
@@ -556,15 +624,15 @@ for the scan at 1000 users (~100×).
   dependency-free harness (`tests/test.h`); `tests/globals.c`/`stubs.c` provide
   the `main.c`-owned globals so test binaries link against `dcd_obj` without
    `main()`. Suites: `test_cmd_dict`, `test_match`, `test_misc` (incl. the
-   nick-hash suite), `test_myinfo`;
+   nick-hash suite), `test_myinfo`, `test_sha512`, `test_stats`;
    perf floors: `bench_cmd_dict`, `bench_add2buf`, `bench_match`,
-   `bench_nick2id` (ctest label
-  `perf`).
+   `bench_nick2id`, `bench_sha512` (ctest label
+   `perf`).
 * **End-to-end suite** (`tests/e2e/`): `nmdc.py` is a dependency-free NMDC
   client (frame parser, out-of-order inbox, `compute_key()` implementing the
-  lock→key derivation, `ConsoleClient`); `test_e2e.py` runs 25 protocol/console
-  scenarios against a real daemon started by `run_e2e.sh` in a writable install
-  prefix.
+  lock→key derivation, `ConsoleClient`); `test_e2e.py` runs 35 protocol/console/
+  web scenarios (incl. raw-RFC6455 web console and web chat clients) against a
+  real daemon started by `run_e2e.sh` in a writable install prefix.
 * **Sanitizers**: `-DDCD_ENABLE_TSAN=ON` / `-DDCD_ENABLE_ASAN=ON` instrument the
   binary only; `DCD_SANITIZER=thread|address tests/e2e/run_e2e.sh` runs the E2E
   suite against an instrumented build and prints the sanitizer findings
@@ -580,5 +648,13 @@ for the scan at 1000 users (~100×).
 * Stop: `SIGTERM` (or `SIGINT`/`SIGQUIT`) — cancels threads, disconnects users,
   closes listeners.
 * Administration: telnet console on `listen_port_cons` (default 511, restricted
-  by `console.allow` + `c` permission) or `#commands` in the DC chat window.
-* `dcd.adduser` is an interactive helper that appends accounts to `dcd.users`.
+  by `console.allow` + `c` permission), the same commands via `#commands` in the
+  DC chat window, or the web console at `http://host:PORT/console` when
+  `listen_port_http` is set (`/healthcheck` for liveness probes).
+* Web chat lives at `/` (page + `/chatws` JSON protocol); both web pages are
+  editable config files, hot-reloaded on change.
+* `dcd.adduser` is an interactive helper that appends accounts to `dcd.users`
+  (generating a salted SHA-512 hash).
+* Container: `docker build -t dcd . && docker run -p 411:411 -p 411:411/udp
+  -p 511:511 -p 8080:8080 -v dcd-conf:/etc/dcd dcd` — config seeded into the
+  volume, `DCD_*` env overrides, foreground daemon, `/healthcheck` healthcheck.

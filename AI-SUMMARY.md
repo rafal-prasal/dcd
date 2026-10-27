@@ -565,6 +565,39 @@ client with **CSS and JS inlined** (no separate asset routes):
   served pages, `test_web_pages_from_config_files` proves the config-file
   source, and `test_web_removed_asset_routes_404` covers the removals.
 
+## 21. Docker packaging (2026-10-26)
+
+- `Dockerfile`: multi-stage build (Debian bookworm build stage compiles dcd
+  with CMake and runs the unit tests via `ctest -LE perf`, then installs into
+  the stage; bookworm-slim runtime stage needs only `libssl3`). Binary +
+  `dcd.adduser` (`docker exec -it <ctr> dcd.adduser` works) + a small syslog
+  forwarder; pristine config copied to `/usr/share/dcd/conf-defaults` to seed
+  a fresh `/etc/dcd` volume; `EXPOSE 411/tcp+udp, 511/tcp, 8080/tcp`;
+  `HEALTHCHECK` GETs `/healthcheck` (parses `listen_port_http` from the
+  config, healthy when the web endpoint is disabled).
+- `docker/docker-entrypoint.sh`: seeds the config volume on first start,
+  applies `DCD_*` environment overrides to `dcd.conf` (`set_conf` rewrites or
+  appends `hubname`, ports, `user_limit`, `min_share/min_slots`,
+  `registered_only`, `log_facility` …), chowns the config dir for the
+  privilege-drop user, starts a `syslog-forward` helper and runs dcd with
+  `DCD_NO_DAEMON=1` in the foreground; forwards TERM/INT to the daemon.
+- `docker/syslog-forward.c`: binds `/dev/log`, pumps datagrams to stdout so
+  `docker logs` shows the hub's syslog output (dcd only logs via syslog).
+- `src/main.c`: `DCD_NO_DAEMON=1` env skips `daemon()` (foreground for
+  containers).
+- `.dockerignore` excludes `build/`, `.git`, `tests/` leftovers.
+
+## 22. Version bump to 2.0.0 (2026-10-27)
+
+The CMake project version (the single source of truth — `PACKAGE_VERSION`
+compile definition feeds `dcd -v`/`-h`, the console `version` output, the
+banner and the distro spec templates) moved `1.1.1` → **`2.0.0`**:
+`CMakeLists.txt` `project(dcd VERSION 2.0.0)`; Docker image tags in the
+`Dockerfile` header and README examples updated; the e2e `version` assertion
+pinned to 2.0.0; a `2.0.0` changelog entry added to `NEWS` (EN + PL sections).
+Historical records (`ChangeLog`, older `NEWS` entries) untouched.
+
 ## Status
 
-§1–§11 are committed (`master` ahead of `origin/master`). The §12, §13, §14, §15, §16, §17, §18, §19 and §20 changes are **uncommitted** in the working tree.
+All §1–§21 work is committed; branch `ai-update` is in sync with
+`origin/ai-update`, working tree clean.

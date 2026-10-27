@@ -25,7 +25,7 @@
   <refsect1>
     <title>Description</title>
     <para>DConnectDeamon is a hub for Direct Connect p2p network, working under *nix system. DCD runs in background as system daemon.
-Alternate config file can be specified using 'c' option (default is <filename>/usr/local/etc/dcd.conf</filename>).
+Alternate config file can be specified using 'c' option (default is <filename>/usr/local/etc/dcd/dcd.conf</filename>).
 'h' shows help screen and 'v' dumps version number.
 </para>
   </refsect1>
@@ -33,7 +33,7 @@ Alternate config file can be specified using 'c' option (default is <filename>/u
  <refsect1>
     <title>Config file</title>
     <para>   
-After installation, DCD would use <filename>/usr/local/etc/dcd.conf</filename> as a config file, if you haven't passed the --prefix option to the configure script.
+After installation, DCD would use <filename>/usr/local/etc/dcd/dcd.conf</filename> as a config file, if you haven't changed the DCD_CONFIG_DIR CMake option.
 Notation in this file is as follows: <option>option = value</option>. Options in config file:
 </para>
 
@@ -51,6 +51,12 @@ Notation in this file is as follows: <option>option = value</option>. Options in
 	<term>listen_port_cons</term>
 	<listitem>
 	  <para>Remote console listening port. Set 0 to disable. Default is <envar>511</envar></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>listen_port_http</term>
+	<listitem>
+	  <para>Web endpoint listening port: web console (<filename>/console</filename>), web chat (<filename>/</filename>), <filename>/healthcheck</filename> and the WebSocket bridges. Set 0 to disable. Default is <envar>0</envar></para>
 	</listitem>
       </varlistentry>
       <varlistentry>
@@ -86,13 +92,19 @@ Notation in this file is as follows: <option>option = value</option>. Options in
       <varlistentry>
 	<term>conf_cusers</term>
 	<listitem>
-	  <para>A text file in dcd's config directory with administration accounts. Default is <filename>dcd.users</filename>. Each line of this file contain one account <envar>login:password:e-mail:description:permissions</envar>, where permissions are: <option>c</option> - access to the telnet console; <option>a</option> - administration account.</para>
-	</listitem>
-      </varlistentry>
-      <varlistentry>
+	  <para>A text file in dcd's config directory with administration accounts. Default is <filename>dcd.users</filename>. Each line of this file contain one account <envar>login:password:e-mail:description:permissions</envar>, where permissions are: <option>c</option> - access to the telnet and web console; <option>a</option> - administration account. The <option>password</option> field may be plaintext or a salted SHA-512 hash in an /etc/shadow-like format <envar>$sha512$&lt;salt&gt;$&lt;hex(sha512(salt+password))&gt;</envar>; <command>dcd.adduser</command> generates such hashes with a random salt automatically.</para>
+ 	</listitem>
+       </varlistentry>
+       <varlistentry>
 	<term>conf_callow</term>
 	<listitem>
 	  <para>A text file in dcd's config directory with list of hosts allowed to access the console. Default is <filename>console.allow</filename></para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>conf_hublinks</term>
+	<listitem>
+	  <para>A text file in dcd's config directory with hubs to link with, one per line: <envar>IP:port:pass_in:pass_out</envar>. Default is <filename>dcd.hublinks</filename></para>
 	</listitem>
       </varlistentry>
       <varlistentry>

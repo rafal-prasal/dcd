@@ -20,6 +20,10 @@ Features
 * uses threads (no forking)
 * nick pattern matching
 * simple administration throught telnet console
+* built-in web endpoint: web console, web chat and /healthcheck
+* salted SHA-512 password hashes in dcd.users
+* hub statistics (traffic, per-command counts, user rotation)
+* ready-to-run Docker image (Dockerfile + docker/)
 * should work on every Unix system
 
 
@@ -35,8 +39,9 @@ Requirements
 To compile DConnect Daemon, you will need:
 
 * libpthread
-* CMake (min. 3.10)
-* a C compiler
+* OpenSSL (libcrypto; SHA-512 for password hashes and the WebSocket handshake)
+* CMake (min. 3.16)
+* a C compiler (C17)
 
 Instalation
 -----------
@@ -60,8 +65,33 @@ about it.
 				because it's present in every Unix system.
 
    -DDEFAULT_GROUP=GROUP	- Set default group. You should make your own group.
-   				Default is set to daemon, because this group is
+    				Default is set to daemon, because this group is
 				present on every Unix system.
+
+   -DDCD_BUILD_TESTS=ON/OFF	- build the unit/perf test suite (default: ON).
+    				Run it with: ctest --test-dir build
+
+   -DDCD_ENABLE_LTO=ON		- enable link-time optimization (default: OFF).
+   -DDCD_ENABLE_TSAN=ON		- instrument the dcd binary with ThreadSanitizer.
+   -DDCD_ENABLE_ASAN=ON		- instrument the dcd binary with AddressSanitizer.
+
+Docker
+------
+
+A multi-stage Dockerfile builds and runs dcd (unit tests run as part of the
+image build):
+
+$ docker build -t dcd:2.0.0 .
+$ docker run -d -p 411:411 -p 411:411/udp -p 511:511 -p 8080:8080 \
+      -e DCD_HUBNAME="My Hub" -v dcd-conf:/etc/dcd dcd:2.0.0
+
+The entrypoint seeds a fresh /etc/dcd volume from the pristine config, applies
+DCD_* environment overrides (DCD_HUBNAME, DCD_PORT, DCD_CONS_PORT,
+DCD_HTTP_PORT, DCD_USER_LIMIT, DCD_MIN_SHARE, DCD_MIN_SLOTS,
+DCD_REGISTERED_ONLY, ...) and runs dcd in the foreground with a syslog forwarder
+so hub logs reach the container log. dcd.adduser is available via
+`docker exec -it <container> dcd.adduser`. The image HEALTHCHECK probes
+/healthcheck on the web endpoint.
 
 Usage
 -----
@@ -139,9 +169,28 @@ dcd.penalties	- contains punished hosts list and is updated every time op or sOP
 
 dcd.welcome	- message sent before login. Usefull to put rules.
 
+dcd.hublinks	- hubs to link with. Syntax:
+			IP:port:pass_in:pass_out
+
+dcd.usercommands - $UserCommand lines shown to users after registration.
+
+dcd.webchat	- the web chat page served by the built-in HTTP endpoint
+			(default endpoint /, also /chat). One self-contained
+			HTML file with CSS and JS inlined; edit it to
+			customize - dcd re-reads it when it changes, and
+			serves its built-in default copy if the file is
+			missing.
+
+dcd.webconsole	- the web console page (served at /console). Same rules as
+			dcd.webchat.
+
 nicks.allow	- patterns that nicks must match. Every line is one rule.
 
 By default daemon binds to port 411(TCP/UDP) and telnet console to 511(TCP). 
+The web endpoint (web console at /console, web chat at /, /healthcheck) is
+disabled by default; set listen_port_http (e.g. 8080) in dcd.conf to enable it.
+The web console bridges to the console port, so the browser behaves exactly
+like the telnet console; the web chat logs in with accounts from dcd.users.
 
 You can login to console:
 $ telnet localhost 511

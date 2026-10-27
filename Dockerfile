@@ -2,9 +2,9 @@
 #
 # Multi-stage build of dcd (Direct Connect hub daemon).
 #
-#   docker build -t dcd:1.1.1 .
+#   docker build -t dcd:2.0.0 .
 #   docker run -d -p 411:411 -p 411:411/udp -p 511:511 -p 8080:8080 \
-#       -e DCD_HUBNAME="My Hub" -v dcd-conf:/etc/dcd dcd:1.1.1
+#       -e DCD_HUBNAME="My Hub" -v dcd-conf:/etc/dcd dcd:2.0.0
 
 ##################### build stage #####################
 FROM debian:bookworm AS build

@@ -28,6 +28,11 @@ You can find newest version of DConnect Deamon on website <url url="http://www.d
 	    <item> low memory per user consumption</item>
 	    <item> uses threads (no forking)</item>
 	    <item> nick pattern matching</item>
+	    <item> administration through telnet console and built-in web console</item>
+	    <item> built-in web chat and /healthcheck endpoint</item>
+	    <item> salted SHA-512 password hashes</item>
+	    <item> runtime statistics (traffic, per-command counts, user rotation)</item>
+	    <item> ready-to-run Docker image</item>
 	  </list>
         </p>
       </sect1>
@@ -435,7 +440,9 @@ To compile DConnect Daemon, you need:
 
 <list>
 	    <item>libpthread</item>
-	    <item>CMake</item>
+	    <item>OpenSSL (libcrypto)</item>
+	    <item>CMake (min. 3.16)</item>
+	    <item>a C compiler (C17)</item>
 	  </list>
 </p>
       </sect1>
@@ -445,60 +452,48 @@ To compile DConnect Daemon, you need:
 In most cases this procedure should work:
 
 <list>
-	    <item>&dollar; cd dcd-0.0.3</item>
-	    <item>&dollar; ./configure</item>
-	    <item>&dollar; make</item>
-	    <item>&dollar; make install<p><p></item>
+	    <item>&dollar; cmake -B build -S .</item>
+	    <item>&dollar; cmake --build build</item>
+	    <item>&dollar; cmake --install build<p><p></item>
 	  </list>
 
-You may propably use some traditional configure options. There are no dcd-specific options, so don&apos;t worry about it.
+You may propably use some standard CMake options. There are dcd-specific ones
+(-DDCD_CONFIG_DIR=PATH, -DDEFAULT_USER=USER, -DDEFAULT_GROUP=GROUP), but you
+propably don&apos;t have to worry about it.
 </p>
       </sect1>
       <sect1>
 	<heading>Config File.</heading>
-	<p>Config file <em>dchub.conf</em> is located in <em>/etc/dcd folder</em>. There is located config example after installation. Some options from this file  are ignored yet. Don&apos;t touch this while the hub is running (for now)
+	<p>Config file <em>dcd.conf</em> is located in the config directory
+(<em><prefix>/etc/dcd</em> by default, <option>DCD_CONFIG_DIR</option> at build
+time). All options are documented in the comments of the config file installed
+there and in the <em>dcd(2)</em> man page. Startup-only options (addresses,
+ports, UID/GID) take effect only after a restart; everything else can be
+reloaded with <option>SIGHUP</option> or the <option>rehash</option> console
+command.
 
-Parameters in dchub.conf
+<bf>Most important options:</bf>
 
-<bf>General Options:</bf>
+<em>bind_address</em> - address to bind to, default 0.0.0.0
 
-<em>listening_port</em> - default is 411
+<em>listen_port_main</em> - clients&apos; port (TCP and UDP), default 411
 
-<em>user = 65534<newline>
-group = 65534</em>
+<em>listen_port_cons</em> - remote console port, default 511 (0 disables)
 
-UID/GID - default it&apos;s nobody user/gruop, but it&apos;s not the best idea, because
-That user/group shouldn&apos;t own any file. But if you don&apos;t need any logs 
-uncomment these lines.
+<em>listen_port_http</em> - web endpoint port (web console, web chat,
+/healthcheck), default 0 (disabled)
 
-<em>logfile_location</em> - Log file location. Not working option yet. Default is /var/log/dcd/dcd.log
+<em>user / group</em> - UID/GID the daemon runs as (set at build time with
+-DDEFAULT_USER/-DDEFAULT_GROUP, default daemon)
 
-<bf>Hub configuration:</bf>
+<em>hubname</em> - name of your hub
 
-<em>hubname</em> - Some name of your Hub. Default is "DConnect Daemon"
+<em>user_limit</em> - max amount of users, default 1000
 
-<em>motd</em> - Some message of the day
+<em>min_share / min_slots</em> - minimum shared data (MB) / upload slots
 
-<em>user_limit</em> - Max amount of users you allow to connect to hub. Default is 1000
-
-<em>ban</em> - allow/deny users. Not implemented yet.
-
-<em>allow_broken_key</em> - we don&apos;t yet check for a valid key, so this is ignored
-
-<em>ping_timeout</em> - How long hub&apos;s waiting for users.
-
-<em>register_timeout</em> - Time for send authorization from user to hub (in seconds). Default is 30.
-
-<em>nickname_pattern</em> - Users nick pattern, who&apos;s allow to connect to hub. See match.c for details on wildcards. Well, this should be done with regexp - now this is lame
-Example:
-<em>nickname_pattern = *[ds?*]</em>
-Default nickname_pattern = *
-
-<em>min_share</em> - minimum shared data in megabytes. Default is 300
-
-<em>min_slots</em> - minimum number of slots. Default is 4.
-
-       </p>
+<em>idle_timeout / register_timeout</em> - client timeouts in seconds
+</p>
       </sect1>
     </sect>
     <sect>

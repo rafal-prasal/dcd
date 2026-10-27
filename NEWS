@@ -1,5 +1,28 @@
 $Id: NEWS,v 1.266 2007/05/30 06:27:09 rav Exp $
 [EN]
+2.0.0
+  * build system: autotools replaced with CMake (min. 3.16, C17); tcp-wrappers
+    support removed
+  * code modernization: sigaction(), inet_pton(), poll() instead of select(),
+    C17 headers, no deprecated APIs
+  * security & correctness campaign: static analysis (flawfinder/cppcheck/
+    gcc -fanalyzer), ThreadSanitizer/AddressSanitizer clean; remote $MyINFO
+    buffer overflow and other real defects fixed; single recursive user lock
+    removes all data races
+  * performance: hash command dispatch, nick->index hash (~100x faster
+    nick2id), in-place receive buffers, FD_SETSIZE landmine removed
+  * passwords in dcd.users may be salted SHA-512 hashes ($sha512$salt$hex,
+    OpenSSL libcrypto); dcd.adduser generates them
+  * runtime telemetry: console `stats` (traffic, per-command counts,
+    user rotation)
+  * embedded HTTP endpoint: web console (/console), web chat (/ with /chatws
+    JSON protocol), /healthcheck; web pages are editable config files
+    (dcd.webchat, dcd.webconsole)
+  * Docker support: multi-stage Dockerfile, entrypoint with DCD_* config
+    overrides, syslog-forward helper, HEALTHCHECK via /healthcheck
+  * unit + perf test suites (ctest) and a Python end-to-end NMDC/console/
+    web suite
+
 1.1.1
   * fixing MacOS X compilation problems
   * handling lack of get_default_domain() better way
@@ -639,6 +662,21 @@ $Id: NEWS,v 1.266 2007/05/30 06:27:09 rav Exp $
   * initial, very raw version
 [/EN]
 [PL]
+2.0.0
+  * system budowania: autotools zastapione przez CMake (min. 3.16, C17);
+    usunieto obsluge tcp-wrappers
+  * unowoczesnienie kodu: sigaction(), inet_pton(), poll() zamiast select()
+  * naprawione bledy (przepelnienie bufora w $MyINFO, fatalne watki,
+    wyScigi) - kod czysty pod ThreadSanitizer i AddressSanitizer
+  * szybkosc: haszowe tablice komend i nickow, bufor odbioru in-place
+  * hasla w dcd.users moga byc solonymi hashami SHA-512 (OpenSSL)
+  * statystyki w konsoli: polecenie `stats` (ruch, liczniki komend,
+    rotacja uzytkownikow)
+  * wbudowany endpoint HTTP: konsola www, chat www, /healthcheck; strony
+    WWW to edytowalne pliki konfiguracyjne
+  * obsluga Dockera: wieloetapowy Dockerfile, entrypoint z DCD_*, HEALTHCHECK
+  * testy jednostkowe i wydajnosciowe (ctest) oraz koncowe testy e2e w Pythonie
+
 1.1.1
   * usunieto problemy z kompilacja pod MacOS X
   * lepsza obsluga braku yp_get_default_domain()

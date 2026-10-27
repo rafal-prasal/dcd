@@ -447,7 +447,7 @@ class TestConsole(E2EBase):
             self.assertIn(user.nick, out)
             out = con.command("version")
             self.assertIn("Project page", out)
-            self.assertIn("1.1.1", out)
+            self.assertIn("2.0.0", out)
         finally:
             con.quit()
             con.close()

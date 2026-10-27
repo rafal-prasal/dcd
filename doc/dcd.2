@@ -3,19 +3,19 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "DCD" "2" "14 January 2003" "" ""
+.TH "DCD" "2" "27 October 2026" "" ""
 .SH NAME
 DConnectDaemon, dcd \- This is hub of p2p network: Direct Connect from NeoModus Software  <URL:http://www.neomodus.com>
-.SH SYNOPSIS
+.SH SYNOPSIS 
 
-\fBdcd\fR [ \fB-c config_file\fR ]
+\fBdcd\fR [ \fB-h\fR ] [ \fB-v\fR ] [ \fB-c config_file\fR ]
 
 .SH "DESCRIPTION"
 .PP
-DConnect Deamon is hub of Direct Connect working under *nix system. DConnect working as system daemon. Alternative config file name is the only one option of this program. This is \fI/usr/local/etc/dcd.conf\fR file default.
+DConnect Deamon is hub of Direct Connect working under *nix system. DConnect working as system daemon. \fB-h\fR shows the help screen, \fB-v\fR prints the version, and an alternative config file name is the only other option of this program. The default config file is \fI/usr/local/etc/dcd/dcd.conf\fR.
 .SH "CONFIG FILE"
 .PP
-After installatio, DConnecDaemon use file \fI/usr/local/etc/dcd.conf\fR as a config file, if this was not change while installation. Notation in this file is as follows: \fBoption = value\fR. Options in cofig file:
+After installatio, DConnecDaemon use file \fI/usr/local/etc/dcd/dcd.conf\fR as a config file, if this was not change while installation (\fBDCD_CONFIG_DIR\fR CMake option). Notation in this file is as follows: \fBoption = value\fR. Options in cofig file:
 .SS "ADMINISTRATOR OPTIONS"
 .TP
 \fBlisten_port_main\fR
@@ -24,11 +24,14 @@ Daemon's listening port. Default is \fB411\fR
 \fBlisten_port_cons\fR
 Remote console listening port. Set 0 to disable. Default is \fB511\fR
 .TP
+\fBlisten_port_http\fR
+Web endpoint listening port: web console (\fI/console\fR), web chat (\fI/\fR), \fI/healthcheck\fR and the WebSocket bridges. Requires \fBOpenSSL (libcrypto)\fR at build time. Set 0 to disable. Default is \fB0\fR
+.TP
 \fBuser\fR
-UID. Default is \fBnobody\fR
+UID. Default is \fBdaemon\fR (CMake \fBDEFAULT_USER\fR option)
 .TP
 \fBgroup\fR
-GID. Default is \fBnobody\fR
+GID. Default is \fBdaemon\fR (CMake \fBDEFAULT_GROUP\fR option)
 .TP
 \fB\fIconf_welcome\fB\fR
 A text file in dcd's config directory with welcome message. This file will be played to the public chat window when users connect. Set empty if you don't want it at all. Default is \fIdcd.welcome\fR.
@@ -44,6 +47,9 @@ A text file in dcd's config directory with administration accounts. Default is \
 .TP
 \fBconf_callow\fR
 A text file in dcd's config directory with list of hosts allowed to access the console. Default is \fIconsole.allow\fR
+.TP
+\fBconf_hublinks\fR
+A text file in dcd's config directory with hubs to link with, one per line: \fBIP:port:pass_in:pass_out\fR. Default is \fIdcd.hublinks\fR
 .TP
 \fBconf_nallow\fR
 A text file in dcd's config directory with list of allowed nicks. All nicks are allowed by default. Set empty if you don't want it at all. If you want to restrict allowed nick use pattern ex. \fB[ADSL]*\fR - [ADSL]-begin nicks only allowed. Default is \fInick.allow\fR.
@@ -81,12 +87,9 @@ Minimum shared data in megabytes. Default is \fB300MB\fR.
 .TP
 \fBmin_slots\fR
 Minimum number of slots.
-.SH "BUGS"
-.PP
-DCD not building on RedHat, because there is only static librap library. We looking someone to patch this bug.
 .SH "SEE ALSO"
 .PP
-\fBdcd.console\fR(1)
+\fBdcd.console\fR(2)
 .SH "AVAILABILITY"
 .PP
 Newest version of DConnectDaemon is available on  <URL:http://www.dc.ds.pg.gda.pl>
